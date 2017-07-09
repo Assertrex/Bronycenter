@@ -136,7 +136,7 @@ class User
         $existingUsers = $this->database->read(
 			'COUNT(*) AS users',
 			'users',
-			'WHERE account_type NOT IN (0, 9)',
+			'WHERE account_type != 0 AND account_standing != 2',
 			[]
 		);
 
