@@ -1,10 +1,11 @@
 <?php
-// Allow access only for logged users
+// Allow access only for logged users.
 $loginRequired = true;
 
+// Require system initialization code.
 require_once('../system/inc/init.php');
 
-// Change selected setting when user has submitted form
+// Change selected setting when user has submitted a form.
 if (!empty($_POST['submit'])) {
     switch($_POST['submit']) {
         case 'changedisplayname':
@@ -23,23 +24,22 @@ if (!empty($_POST['submit'])) {
             $o_user->changeCity($_SESSION['account']['id'], $_POST['city']);
             break;
         case 'changedescription':
-            $o_user->changeDescription($_SESSION['account']['id'], $_POST['description']); // Allow to change case of characters
+            $o_user->changeDescription($_SESSION['account']['id'], $_POST['description']);
             break;
         case 'changeavatar':
-            // Require Image class for ImageMagick
+            // Require Image class for image manipulation.
             require_once('../system/class/image.php');
 
-            // Check if file has been uploaded correctly
-            if ($_FILES['avatar']['error'] != 0) {
-                $o_system->setMessage('error', 'Avatar couldn\'t be uploaded!');
-            }
-
-            $o_user->changeAvatar($_SESSION['account']['id'], $_FILES['avatar']['tmp_name']);
+            // Try to change user's avatar.
+            $o_user->changeAvatar($_SESSION['account']['id'], $_FILES['avatar']);
             break;
     }
 }
 
+// Get details about current user.
 $user = $o_user->getDetails($_SESSION['account']['id']);
+
+// Store birthdate as day, month and year variables if set up.
 if (!is_null($user['birthdate'])) {
     $birthdate_temp = explode('-', $user['birthdate']);
     $user['birthdate_temp']['year'] = $birthdate_temp[0];
@@ -51,7 +51,7 @@ if (!is_null($user['birthdate'])) {
     $user['birthdate_temp']['day'] = '';
 }
 
-// Get avatar of user
+// Get current avatar of user or show the default one.
 $avatarName = $_SESSION['user']['avatar'] ?? 'default';
 ?>
 
@@ -68,12 +68,21 @@ $avatarName = $_SESSION['user']['avatar'] ?? 'default';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
 </head>
 <body>
-    <?php require_once('inc/header.php'); ?>
+    <?php
+    // Require HTML of header for not social pages.
+    require_once('inc/header.php');
+
+    // Require code to display system messages.
+    require_once('../system/inc/messages.php');
+    ?>
 
     <div class="container">
         <h1 class="text-center my-3">Settings</h1>
 
-        <?php if ($emailVerified) { ?>
+        <?php
+        // Show forms for changing settings if user has verified his e-mail address.
+        if ($emailVerified) {
+        ?>
         <section class="my-5">
             <h5>Change display name</h5>
             <form method="post" action="settings.php">
@@ -170,14 +179,23 @@ $avatarName = $_SESSION['user']['avatar'] ?? 'default';
                 </div>
             </form>
         </section>
-        <?php } else { ?>
+        <?php
+        } // if
+        // Show warning about required e-mail verification if user has not verified it.
+        else {
+        ?>
         <section class="my-5">
             <p class="text-danger"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> You need to verify your e-mail address before you'll be able to make changes to your account!</p>
         </section>
-        <?php } ?>
+        <?php
+        } // else
+        ?>
     </div>
 
-    <?php require_once('../system/inc/scripts.php'); ?>
+    <?php
+    // Require all common JavaScript (like JQuery and Bootstrap).
+    require_once('../system/inc/scripts.php');
+    ?>
     <script type="text/javascript" src="../resources/js/social.js"></script>
 </body>
 </html>

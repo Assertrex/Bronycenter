@@ -1,14 +1,14 @@
 <?php
-// Allow access only for logged users
+// Allow access only for logged users.
 $loginRequired = true;
 
+// Require system initialization code.
 require_once('../system/inc/init.php');
 
-// Create a post if user has submitted a form
+// Create a post if user has submitted a form.
 if (!empty($_POST['submit']) && $_POST['submit'] === 'createpost') {
-    if ($o_post->create($_SESSION['account']['id'], $_POST['message'], 1)) {
-        header('Location: index.php');
-    }
+    // Try to create a new post.
+    $o_post->create($_SESSION['account']['id'], $_POST['message'], 1);
 }
 ?>
 
@@ -29,41 +29,59 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'createpost') {
     </style>
 </head>
 <body>
-    <?php require_once('inc/header.php'); ?>
+    <?php
+    // Require HTML of header for not social pages.
+    require_once('inc/header.php');
+
+    // Require code to display system messages.
+    require_once('../system/inc/messages.php');
+    ?>
 
     <div class="container">
         <section class="my-5">
-            <?php require_once('inc/posts-create.php'); ?>
+            <?php
+            // Require HTML containing form for post creating.
+            require_once('inc/posts-create.php');
+            ?>
         </section>
 
         <section class="mb-5">
-            <?php require_once('inc/posts-recent.php'); ?>
+            <?php
+            // Require HTML containing recent posts.
+            require_once('inc/posts-recent.php');
+            ?>
         </section>
     </div>
 
-    <?php require_once('../system/inc/scripts.php'); ?>
+    <?php
+    // Require all common JavaScript (like JQuery and Bootstrap).
+    require_once('../system/inc/scripts.php');
+    ?>
     <script type="text/javascript" src="../resources/js/social.js"></script>
     <script type="text/javascript">
-    // Check if document is ready first
+    // First check if document is ready.
     $(document).ready(function() {
-        // Call a post like function on button click
+        // Call a post like function on button click.
         $(".btn-postlike").click(likePost);
 
-        // Call a post delete function on button click
+        // Call a post delete function on button click.
         $(".btn-postdelete").click(deletePost);
 
-        // Post like function
+        // Post like function.
         function likePost(e) {
+            // Store details in a variables.
             let postID = e.currentTarget.getAttribute('data-postid');
             let likeStatus = e.currentTarget.getAttribute('data-liked');
 
+            // Make an AJAX call to like post code.
             $.post(
-                "../system/ajax/likePost.php",
+                "ajax/likePost.php",
                 { id: postID },
                 function(json) {
-                    // TODO Display status from JSON here
+                    // TODO Display status from JSON here.
+                    // TODO Check if action was successful first.
 
-                    // TODO Check if action was successful first
+                    // Check if post was already liked and like or unlike it.
                     if (likeStatus === 'false') {
                         e.currentTarget.setAttribute('data-liked', 'true');
                         $(e.currentTarget).toggleClass('btn-outline-primary');
@@ -79,20 +97,23 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'createpost') {
             );
         }
 
-        // Post delete function
+        // Post delete function.
         function deletePost(e) {
+            // Store details in a variables.
             let postID = e.currentTarget.getAttribute('data-postid');
             let articleElement = e.currentTarget.parentNode.parentNode.parentNode.parentNode;
 
-            // TODO Show a confirmation modal
+            // TODO Show a confirmation modal.
 
+            // Make an AJAX call to like post code.
             $.post(
-                "../system/ajax/deletePost.php",
+                "ajax/deletePost.php",
                 { id: postID },
                 function(json) {
-                    // TODO Display status from JSON here
+                    // TODO Display status from JSON here.
+                    // TODO Check if post was successfully removed first.
 
-                    // TODO Check if post was successfully removed first
+                    // Hide a deleted post from DOM.
                     $(articleElement).hide();
                 }
             );

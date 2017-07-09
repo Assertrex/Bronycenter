@@ -1,6 +1,5 @@
 <?php
-$displayJumbotron = true;
-
+// Require system initialization code.
 require_once('system/inc/init.php');
 ?>
 
@@ -10,12 +9,31 @@ require_once('system/inc/init.php');
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
-    <title>Homepage :: BronyCenter</title>
+    <title>Welcome to BronyCenter! Social network designed to share love and tolerance.</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha256-rr9hHBQ43H7HSOmmNkxzQGazS/Khx+L8ZRHteEY1tQ4=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
 </head>
 <body>
-    <?php require_once('system/inc/header.php'); ?>
+    <?php
+    // Require HTML of header for not social pages.
+    require_once('system/inc/header.php');
+    ?>
+
+    <div class="jumbotron bg-faded">
+        <div class="container">
+            <h1 class="display-4">Welcome to the BronyCenter</h1>
+            <p class="lead">
+                A social network website created for those who love My Little Pony
+                and/or want to make new friends.
+            </p>
+        </div>
+    </div>
+
+    <?php
+    // Require code to display system messages.
+    require_once('system/inc/messages.php');
+    ?>
 
     <div class="container mb-5">
         <section class="mb-5">
@@ -50,7 +68,7 @@ require_once('system/inc/init.php');
 
                     <ul class="list-group text-right" style="list-style: none;">
                         <li>Server status: <b class="text-success">Open</b></li>
-                        <li class="text-muted">Last update: <b>03.07.2017</b></li>
+                        <li class="text-muted">Last update: <b>09.07.2017</b></li>
                         <li class="text-muted">Suggestions: <b>0</b> (of <b>0</b>)</li>
                         <br />
                         <li>Online now: <b><?php echo $o_user->getOnlineUsersCount(); ?></b></li>
@@ -99,6 +117,9 @@ require_once('system/inc/init.php');
         </section>
     </div>
 
-    <?php require_once('system/inc/footer.php'); ?>
+    <?php
+    // Require HTML of footer for not social pages.
+    require_once('system/inc/footer.php');
+    ?>
 </body>
 </html>

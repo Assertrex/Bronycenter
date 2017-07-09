@@ -1,29 +1,28 @@
 <?php
-// Load system messages after executing the code
-$deferSystemMessages = true;
-
+// Require system initialization code.
 require_once('system/inc/init.php');
 
-// Check if register form has been submitted
+// Check if register form has been submitted.
 if (!empty($_POST['submit']) && $_POST['submit'] === 'register') {
-    // Require GeoIP class to get details about visitor's IP address
+    // Require GeoIP class to get details about visitor's IP address.
     require_once('system/class/geoip.php');
 
-    // Require Mail class to send a verification email to new user
+    // Require Mail class to send a verification email to new user.
     require_once('system/class/mail.php');
 
-    // Try to register new user
+    // Try to register new user.
     if ($o_user->register()) {
+        // Redirect new user into login page.
         header('Location: login.php');
         die();
     }
 
-    $o_system->setMessage('error', 'Couldn\'t create an account.');
+    // Show failed system message when new user couldn't be created.
+    $o_system->setMessage(
+        'error',
+        'Couldn\'t create an account.'
+    );
 }
-
-// Store system messages for use inside website
-$systemMessages = $o_system->getMessages();
-$o_system->clearMessages();
 ?>
 
 <!DOCTYPE html>
@@ -35,9 +34,16 @@ $o_system->clearMessages();
     <title>Register :: BronyCenter</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha256-rr9hHBQ43H7HSOmmNkxzQGazS/Khx+L8ZRHteEY1tQ4=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
 </head>
 <body>
-    <?php require_once('system/inc/header.php'); ?>
+    <?php
+    // Require HTML of header for not social pages.
+    require_once('system/inc/header.php');
+
+    // Require code to display system messages.
+    require_once('system/inc/messages.php');
+    ?>
 
     <div class="container mb-5">
         <section class="mb-5">
@@ -76,6 +82,9 @@ $o_system->clearMessages();
         </section>
     </div>
 
-    <?php require_once('system/inc/footer.php'); ?>
+    <?php
+    // Require HTML of footer for not social pages.
+    require_once('system/inc/footer.php');
+    ?>
 </body>
 </html>

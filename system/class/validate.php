@@ -1,49 +1,61 @@
 <?php
 
 /**
- * Class used for validating user inputs
+ * Class used for validating user inputs.
  *
+ * @copyright 2017 BronyCenter
+ * @author Assertrex <norbert.gotowczyc@gmail.com>
  * @since 0.1.0
  */
 class Validate
 {
     /**
-     * Object of system class
+     * Object of a system class.
      *
      * @since 0.1.0
-     * @var object
+     * @var null|object
      */
     private $system = null;
 
     /**
      * @since 0.1.0
-     * @var object $o_system Object of system class
+     * @var object $o_system Object of a system class.
      */
     public function __construct($o_system)
     {
+        // Store required class object in a property.
         $this->system = $o_system;
     }
 
     /**
-     * Validate user's display name for registration
+     * Validate user's display name.
      *
-     * @var string $displayname User's display name
      * @since 0.1.0
+     * @var string $displayname User's account display name.
+     * @return boolean Result of this method.
      */
-    public function displayname($displayname)
+    public function displayName($displayname)
     {
-        // Start from a valid value
+        // Start from a valid value.
         $isValid = true;
 
-        // Check if display name is between 3 and 32 characters
+        // Check if display name is between 3 and 32 characters.
         if (strlen($displayname) < 3 || strlen($displayname) > 32) {
-            $this->system->setMessage('error', 'Display name must be between 3 and 32 characters.');
+            $this->system->setMessage(
+                'error',
+                'Display name must be between 3 and 32 characters.'
+            );
+
             $isValid = false;
         }
 
-        // Check if display name is using only allowed characters
+        // Check if display name is using only allowed characters.
 		if (preg_match('/[^a-zA-Z0-9 _()]/', $displayname)) {
-            $this->system->setMessage('error', 'Display name can contain only alphanumeric characters <b>a-zA-Z0-9</b>, <b>_()</b> and <b>spaces</b>.');
+            $this->system->setMessage(
+                'error',
+                'Display name can contain only alphanumeric characters <b>a-zA-Z0-9</b>, <b>_()</b> and <b>spaces</b>.'
+            );
+
             $isValid = false;
         }
 
@@ -51,25 +63,34 @@ class Validate
     }
 
     /**
-     * Validate user's username
+     * Validate user's username.
      *
-     * @var string $username User's username
      * @since 0.1.0
+     * @var string $username User's account username.
+     * @return boolean Result of this method.
      */
     public function username($username)
     {
-        // Start from a valid value
+        // Start from a valid value.
         $isValid = true;
 
-        // Check if username is between 3 and 24 characters
+        // Check if username is between 3 and 24 characters.
         if (strlen($username) < 3 || strlen($username) > 24) {
-            $this->system->setMessage('error', 'Username must be between 3 and 24 characters.');
+            $this->system->setMessage(
+                'error',
+                'Username must be between 3 and 24 characters.'
+            );
+
             $isValid = false;
         }
 
-        // Check if username is using only alphanumeric characters
+        // Check if username is using only alphanumeric characters.
 		if (!ctype_alnum($username)) {
-            $this->system->setMessage('error', 'Username can contain only alphanumeric characters (a-zA-Z0-9).');
+            $this->system->setMessage(
+                'error',
+                'Username can contain only alphanumeric characters (a-zA-Z0-9).'
+            );
+
             $isValid = false;
         }
 
@@ -77,25 +98,34 @@ class Validate
     }
 
     /**
-     * Validate user's e-mail address
+     * Validate user's e-mail address.
      *
-     * @var string $email User's e-mail address
      * @since 0.1.0
+     * @var string $email User's account e-mail address.
+     * @return boolean Result of this method.
      */
     public function email($email)
     {
-        // Start from a valid value
+        // Start from a valid value.
         $isValid = true;
 
-        // Check if e-mail address contains allowed amount of characters
+        // Check if e-mail address contains allowed amount of characters.
 		if (strlen($email) < 5 || strlen($email) > 64) {
-            $this->system->setMessage('error', 'E-mail address needs to be between 5 and 64 characters.');
+            $this->system->setMessage(
+                'error',
+                'E-mail address needs to be between 5 and 64 characters.'
+            );
+
             $isValid = false;
 		}
 
-        // Check if e-mail address is valid
+        // Check if e-mail address is valid.
 		if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $this->system->setMessage('error', 'E-mail address is invalid.');
+            $this->system->setMessage(
+                'error',
+                'E-mail address is invalid.'
+            );
+
             $isValid = false;
         }
 
@@ -103,19 +133,24 @@ class Validate
     }
 
     /**
-     * Validate user's password
+     * Validate user's password.
      *
-     * @var string $password User's password
      * @since 0.1.0
+     * @var string $password User's account password.
+     * @return boolean Result of this method.
      */
     public function password($password)
     {
-        // Start from a valid value
+        // Start from a valid value.
         $isValid = true;
 
-        // Check if password is too short
+        // Check if password is not too short.
 		if (strlen($password) < 6) {
-            $this->system->setMessage('error', 'Password needs to be at least 6 characters long.');
+            $this->system->setMessage(
+                'error',
+                'Password needs to be at least 6 characters long.'
+            );
+
 			$isValid = false;
 		}
 
@@ -123,11 +158,11 @@ class Validate
     }
 
     /**
-     * Validate city name
+     * Validate city name.
      *
-     * @var string $city City name
-     * @return bool Is valid
      * @since 0.1.0
+     * @var string $city User's city name.
+     * @return boolean Result of this method.
      */
     public function city($city)
     {
@@ -136,7 +171,11 @@ class Validate
 
         // Check if city contains more than 32 characters
         if (strlen($city) >= 32) {
-            $this->system->setMessage('error', 'City name can\'t contain more than 32 characters.');
+            $this->system->setMessage(
+                'error',
+                'City name can\'t contain more than 32 characters.'
+            );
+
             $isValid = false;
         }
 

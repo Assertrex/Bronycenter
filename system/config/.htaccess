@@ -1,1 +1,2 @@
+# Disable access to config files to anyone.
 Deny from all

@@ -14,11 +14,13 @@
                     <li>Discord: <b>NorbertGTI#4048</b></li>
                     <li>Skype: <b><a href="skype:norbertgti?add">NorbertGTI</a></b></li>
                     <li>Temporiary e-mail: <b><a href="mailto:norbert.gotowczyc@gmail.com">norbert.gotowczyc@gmail.com</a></b></li>
-                    <li>BronySquares: <b><a href="https://brony.squares.im/assertrex/" target="_blank">https://brony.squares.im/assertrex/</a></b></li>
                 </ul>
             </div>
         </div>
     </footer>
 </div>
 
-<?php require_once(__DIR__ . '/scripts.php'); ?>
+<?php
+// Require all common JavaScript (like JQuery and Bootstrap).
+require_once(__DIR__ . '/scripts.php');
+?>

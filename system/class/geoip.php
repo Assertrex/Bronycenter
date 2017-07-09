@@ -1,25 +1,27 @@
 <?php
 
 /**
- * Class used for getting details about visitor IP address
+ * Class used for getting details about visitors IP addresses.
  *
+ * @copyright 2017 BronyCenter
+ * @author Assertrex <norbert.gotowczyc@gmail.com>
  * @since 0.1.0
  */
 class GeoIP
 {
     /**
-     * Store an array with details about visitor IP from decoded JSON in constructor
+     * Store an array with details about a visitor's IP address.
      *
      * @since 0.1.0
-     * @var array
+     * @var null|array
      */
     public $details = null;
 
     /**
-     * Get details about visitor IP and store it in an array
+     * Get details about visitor's IP and store it in an array.
      *
      * @since 0.1.0
-     * @var string $ip Visitor's IP address
+     * @var string $ip Visitor's IP address.
      */
     public function __construct($ip)
 	{
@@ -29,13 +31,14 @@ class GeoIP
 	}
 
     /**
-     * Check if timezone is valid
+     * Check if timezone from IP details is valid.
      *
      * @since 0.1.0
-     * @var string Timezone returned from API
-     * @return boolean
+     * @var string Timezone returned from API.
+     * @return boolean Result of a timezone validation.
      */
     private function isValidTimezone($timezone) {
+        // Return false if timezone value is empty.
         if (is_null($timezone)) {
             return false;
         }
@@ -44,26 +47,26 @@ class GeoIP
 	}
 
     /**
-     * Get country code
+     * Get country code from IP details.
      *
      * @since 0.1.0
-     * @return string|null Two characters long country code or null on error
+     * @return null|string Two-characters long country code or null.
      */
     public function getCountryCode() {
 		return $this->details['countryCode'] ?? null;
 	}
 
     /**
-     * Get timezone offset in minutes
+     * Get timezone offset to UTC in minutes.
      *
      * @since 0.1.0
-     * @return int|null Timezone offset in minutes
+     * @return int|null Time offset in minutes.
      */
     public function getTimezoneOffset() {
-		$timezone = $this->json['timezone'] ?? null;
+		$timezone = $this->details['timezone'] ?? null;
 		$offset = 0;
 
-		// Get timestamp difference in minutes if timezone is valid
+		// Get time difference in minutes if timezone is valid.
 		if (!is_null($timezone) && $this->isValidTimezone($timezone)) {
 			$usertime = new DateTimeZone($timezone);
 			$usertime = new DateTime('now', $usertime);

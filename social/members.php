@@ -1,6 +1,8 @@
 <?php
+// Require system initialization code.
 require_once('../system/inc/init.php');
 
+// Get details about last online members.
 $members = $o_database->read(
     'id, display_name, username, last_online, avatar',
     'users',
@@ -29,7 +31,13 @@ $members = $o_database->read(
     </style>
 </head>
 <body>
-    <?php require_once('inc/header.php'); ?>
+    <?php
+    // Require HTML of header for not social pages.
+    require_once('inc/header.php');
+
+    // Require code to display system messages.
+    require_once('../system/inc/messages.php');
+    ?>
 
     <div class="container">
         <h1 class="text-center">Members</h1>
@@ -37,13 +45,13 @@ $members = $o_database->read(
         <section class="my-5">
             <div class="d-flex flex-row flex-wrap justify-content-center">
                 <?php
+                // Display each member.
                 foreach ($members as $member) {
+                    // Set user's avatar or get the default one if not existing.
                     $avatar = $member['avatar'] ?? 'default';
 
-                    $isOnline = false;
-                    if ($o_system->countDateInterval($member['last_online']) < 90) {
-                        $isOnline = true;
-                    }
+                    // Check if user is currently logged in.
+                    $isOnline = $o_user->isOnline(null, $member['last_online']);
                 ?>
                 <a href="profile.php?u=<?php echo $member['id']; ?>" class="member-col my-2 mx-1">
                     <div class="d-flex align-items-center rounded member-col-wrap">
@@ -64,7 +72,10 @@ $members = $o_database->read(
         </section>
     </div>
 
-    <?php require_once('../system/inc/scripts.php'); ?>
+    <?php
+    // Require all common JavaScript (like JQuery and Bootstrap).
+    require_once('../system/inc/scripts.php');
+    ?>
     <script type="text/javascript" src="../resources/js/social.js"></script>
 </body>
 </html>
