@@ -101,7 +101,7 @@ class Session
 
         // Get details about selected account from database.
 		$details = $this->database->read(
-			'id, email, account_type, account_standing',
+			'id, email, avatar, account_type, account_standing',
 			'users',
 			'WHERE id = ?',
 			[$_SESSION['account']['id']]
@@ -121,6 +121,7 @@ class Session
 
         // Update dynamic details in an account session.
         $_SESSION['user']['email'] = $details['email'];
+        $_SESSION['user']['avatar'] = $details['avatar'];
         $_SESSION['account']['type'] = $details['account_type'];
         $_SESSION['account']['standing'] = $details['account_standing'];
 
