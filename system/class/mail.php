@@ -72,7 +72,7 @@ you\'ll be able to do anything with it, you need to prove that this e-mail
 belongs to you.
 
 Click on the link below to finish e-mail verification:
-' $link . '
+' . $link . '
 
 Why we need your e-mail?
 

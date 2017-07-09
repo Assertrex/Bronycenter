@@ -40,6 +40,7 @@
                 <li class="nav-item"><a href="../about.php" class="nav-link">About</a></li>
                 <li class="nav-item"><a href="../contact.php" class="nav-link">Contact</a></li>
                 <li class="nav-item"><a href="members.php" class="nav-link">Members</a></li>
+                <li class="nav-item"><a href="https://github.com/Assertrex/BronyCenter" target="_blank" class="nav-link">Github</a></li>
                 <?php
                 } // else
                 ?>

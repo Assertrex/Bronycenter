@@ -20,7 +20,7 @@
                     <a href="social/members.php" class="nav-link">Members</a>
                 </li>
                 <li class="nav-item">
-                    <a href="https://github.com/Assertrex/BronyCenter" class="nav-link" target="_blank">Github</a>
+                    <a href="https://github.com/Assertrex/BronyCenter" target="_blank" class="nav-link">Github</a>
                 </li>
             </ul>
 

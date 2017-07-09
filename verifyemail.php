@@ -83,16 +83,17 @@ $o_database->update(
 	[$currentIP, $currentDatetime, $rowKey[0]['id']]
 );
 
-// Set a new e-mail address for a user.
-$o_database->update(
-	'email, account_type',
-	'users',
-	'WHERE id = ?',
-	[$rowKey[0]['email'], $account_type, $_GET['id']]
-);
-
 // Show a successful system message for the new user.
 if (is_null($account[0]['email'])) {
+    // Set a new e-mail address for a user and update the registration date.
+    $o_database->update(
+    	'email, registration_datetime, account_type',
+    	'users',
+    	'WHERE id = ?',
+    	[$rowKey[0]['email'], $currentDatetime, $account_type, $_GET['id']]
+    );
+
+    // Show successful system message about e-mail has been verified.
     $o_system->setMessage(
         'success',
         'Your e-mail address has been verified successfully. You can now start using your account.'
@@ -100,6 +101,15 @@ if (is_null($account[0]['email'])) {
 }
 // Show a successful system message for a user that is changing his e-mail.
 else {
+    // Set a new e-mail address for a user.
+    $o_database->update(
+    	'email, account_type',
+    	'users',
+    	'WHERE id = ?',
+    	[$rowKey[0]['email'], $account_type, $_GET['id']]
+    );
+
+    // Show successful system message about e-mail has been verified.
     $o_system->setMessage(
         'success',
         'Your e-mail address has been changed successfully.'
@@ -107,7 +117,7 @@ else {
 }
 
 // Check if user is already logged in.
-if ($o_user->verifySession()) {
+if ($o_session->verify()) {
     // Change user's e-mail address in the session.
     $_SESSION['user']['email'] = $rowKey[0]['email'];
 

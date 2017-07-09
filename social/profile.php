@@ -33,13 +33,13 @@ if (!empty($_GET['u']) || !empty($_SESSION['account']['id'])) {
             $user['gender'] = 'Female';
             break;
         default:
-            $user['gender'] = 'Undefined';
+            $user['gender'] = 'Unknown';
     }
 
     // Name account types.
     switch ($user['account_type']) {
         case 0:
-            $user['account_type'] = 'Unverified user';
+            $user['account_type'] = '<span class="text-muted">Unverified user</span>';
             break;
         case 1:
             $user['account_type'] = 'Standard member';
@@ -114,14 +114,14 @@ if (!empty($_GET['u']) || !empty($_SESSION['account']['id'])) {
 
     <div class="container">
         <section class="d-flex flex-column flex-md-row my-4">
-            <div class="py-2 pr-3" id="aside-details">
+            <div class="py-2 pr-0 pr-md-3" id="aside-details">
                 <div class="rounded p-3 mb-3 text-center" style="border: 1px solid #E0E0E0;">
                     <img src="../media/avatars/<?php echo $user['avatar']; ?>/128.jpg" class="rounded mb-3" style="border: 2px solid #E0E0E0;" />
 
                     <h5 class="mb-0"><?php echo $user['display_name']; ?></h5>
                     <p class="mb-1 text-muted" style="margin-top: -2px;"><small>@<?php echo $user['username']; ?></small></p>
 
-                    <p class="mb-0"><small><?php echo $user['description'] ?? 'No description'; ?></small></p>
+                    <p class="mb-0" style="line-height: 1.2;"><small><?php echo $user['description'] ?? 'No description'; ?></small></p>
                 </div>
 
                 <div class="rounded mb-3" style="border: 1px solid #E0E0E0;">
@@ -133,37 +133,37 @@ if (!empty($_GET['u']) || !empty($_SESSION['account']['id'])) {
                         </p>
                         <p class="mb-0">
                             <span class="d-inline-block text-center mr-2" style="width: 16px;">
-                                <i class="fa fa-map-marker text-muted" aria-hidden="true"></i>
+                                <i class="fa fa-map-marker text-primary" aria-hidden="true"></i>
                             </span>
                             <?php echo ($user['city'] ?? 'Ponyville') . ', ' . ($user['country_code'] ?? 'Equestria'); ?>
                         </p>
                         <p class="mb-0">
                             <span class="d-inline-block text-center mr-2" style="width: 16px;">
-                                <i class="fa fa-user-o text-muted" aria-hidden="true"></i>
+                                <i class="fa fa-user-o text-primary" aria-hidden="true"></i>
                             </span>
-                            <?php echo $user['birthdate'] ?? 'Undefined'; ?>
+                            <?php echo $user['birthdate'] ?? 'Unknown'; ?>
                         </p>
                         <p class="mb-0">
                             <span class="d-inline-block text-center mr-2" style="width: 16px;">
-                                <i class="fa fa-transgender text-muted" aria-hidden="true"></i>
+                                <i class="fa fa-transgender text-primary" aria-hidden="true"></i>
                             </span>
                             <?php echo $user['gender']; ?>
                         </p>
                         <p class="mb-0">
                             <span class="d-inline-block text-center mr-2" style="width: 16px;">
-                                <i class="fa fa-address-book-o text-muted" aria-hidden="true"></i>
+                                <i class="fa fa-address-book-o text-primary" aria-hidden="true"></i>
                             </span>
                             <span title="<?php echo $user['registration_datetime']; ?> (UTC)"><?php echo $registeredAt; ?></span>
                         </p>
                         <p class="mb-0">
                             <span class="d-inline-block text-center mr-2" style="width: 16px;">
-                                <i class="fa fa-clock-o text-muted" aria-hidden="true"></i>
+                                <i class="fa fa-clock-o text-primary" aria-hidden="true"></i>
                             </span>
                             <span title="<?php echo $user['last_online']; ?> (UTC)"><?php echo $isOnline ? 'Just now ' : $lastOnlineAt; ?></span>
                         </p>
                         <p class="mb-0">
                             <span class="d-inline-block text-center mr-2" style="width: 16px;">
-                                <i class="fa fa-user-circle-o text-muted" aria-hidden="true"></i>
+                                <i class="fa fa-user-circle-o text-primary" aria-hidden="true"></i>
                             </span>
                             <?php echo $user['account_type']; ?>
                         </p>
@@ -197,17 +197,20 @@ if (!empty($_GET['u']) || !empty($_SESSION['account']['id'])) {
                         <i class="fa fa-exclamation-triangle mr-1" aria-hidden="true"></i>
                         User's posts and posting to a user's profile will be available there soon (somewhere in the future).
                     </p>
+
+                    <?php
+                    // Show warning about not verified account if user is logged in with no e-mail.
+                    if ($isLogged && $user['id'] === $_SESSION['account']['id'] && !$emailVerified) {
+                    ?>
+                    <p class="text-danger mt-3 mb-0">
+                        <i class="fa fa-exclamation-triangle mr-1" aria-hidden="true"></i>
+                        You need to verify your e-mail address before other's will be able to see your account!
+                    </p>
+                    <?php
+                    } // if
+                    ?>
                 </div>
             </div>
-
-            <?php
-            // Show warning about not verified account if user is logged in with no e-mail.
-            if ($isLogged && $user['id'] === $_SESSION['account']['id'] && !$emailVerified) {
-            ?>
-                <p class="text-danger"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> You need to verify your e-mail address before other's will be able to see your account!</p>
-            <?php
-            } // if
-            ?>
         </section>
     </div>
 
