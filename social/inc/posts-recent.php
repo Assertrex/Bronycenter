@@ -14,6 +14,12 @@ foreach ($posts as $post) {
 
     // Check if user is currently logged in.
     $isOnline = $o_user->isOnline(null, $post['last_online']);
+
+    // Get list of post likes.
+    $likes = $o_post->getLikes($post['id']);
+
+    // Get string about users that has liked a post.
+    $likesString = $o_post->getLikesString($likes, $post['like_id']);
 ?>
 
 <article class="post-row py-4">
@@ -72,6 +78,17 @@ foreach ($posts as $post) {
                 } // else
                 ?>
             </div>
+
+            <?php
+            // Display likes string if anyone has liked a post.
+            if (count($likes) != 0) {
+            ?>
+            <div class="pt-3">
+                <small><i class="fa fa-thumbs-o-up text-muted mr-1" aria-hidden="true"></i> <?php echo $likesString; ?></small>
+            </div>
+            <?php
+            } // if
+            ?>
         </div>
         <div class="ml-auto pl-3">
             <small class="text-muted" style="cursor: help;" data-toggle="tooltip" data-placement="top" title="<?php echo $post['datetime']; ?> (UTC)"><?php echo $publishInterval; ?> <i class="fa fa-clock-o"></i></small>
