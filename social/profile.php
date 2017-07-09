@@ -45,10 +45,10 @@ if (!empty($_GET['u']) || !empty($_SESSION['account']['id'])) {
             $user['account_type'] = 'Standard member';
             break;
         case 8:
-            $user['account_type'] = 'BronyCenter\'s moderator';
+            $user['account_type'] = '<span class="text-primary">Moderator</span>';
             break;
         case 9:
-            $user['account_type'] = 'BronyCenter\'s administrator';
+            $user['account_type'] = '<span class="text-danger">Administrator</span>';
             break;
         default:
             $user['account_type'] = 'Unknown user';
@@ -88,6 +88,20 @@ if (!empty($_GET['u']) || !empty($_SESSION['account']['id'])) {
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha256-rr9hHBQ43H7HSOmmNkxzQGazS/Khx+L8ZRHteEY1tQ4=" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <style type="text/css">
+    #aside-details { flex: 0 0 25%; }
+    #aside-posts { flex: 0 0 75%; }
+
+    @media (max-width: 1200px) {
+        #aside-details { flex: 0 0 29%; }
+        #aside-posts { flex: 0 0 71%; }
+    }
+
+    @media (max-width: 992px) {
+        #aside-details { flex: 0 0 35%; }
+        #aside-posts { flex: 0 0 65%; }
+    }
+    </style>
 </head>
 <body>
     <?php
@@ -99,36 +113,93 @@ if (!empty($_GET['u']) || !empty($_SESSION['account']['id'])) {
     ?>
 
     <div class="container">
-        <h1 class="text-center my-3">User profile</h1>
+        <section class="d-flex flex-column flex-md-row my-4">
+            <div class="py-2 pr-3" id="aside-details">
+                <div class="rounded p-3 mb-3 text-center" style="border: 1px solid #E0E0E0;">
+                    <img src="../media/avatars/<?php echo $user['avatar']; ?>/128.jpg" class="rounded mb-3" style="border: 2px solid #E0E0E0;" />
 
-        <section class="my-5">
-            <?php echo $isOnline ? '<span class="badge badge-success">Online</span>' : ''; ?>
-            <h2 class="mb-3"><?php echo $user['display_name']; ?> (@<?php echo $user['username']; ?>)</h2>
+                    <h5 class="mb-0"><?php echo $user['display_name']; ?></h5>
+                    <p class="mb-1 text-muted" style="margin-top: -2px;"><small>@<?php echo $user['username']; ?></small></p>
 
-            <p>
-                <img src="../media/avatars/<?php echo $user['avatar']; ?>/128.jpg" class="rounded" />
-            </p>
+                    <p class="mb-0"><small><?php echo $user['description'] ?? 'No description'; ?></small></p>
+                </div>
 
-            <?php if ($isLogged && $emailVerified && $_SESSION['account']['id'] != $user['id']) { ?>
-                <p>Actions: <a href="messages.php?u=<?php echo $user['id']; ?>">Send message</a></p>
-            <?php } else if ($isLogged && !$emailVerified && $_SESSION['account']['id'] != $user['id']) { ?>
-                <p class="text-danger"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> You need to verify your e-mail address before you'll be able to interact with other users!</p>
-            <?php } ?>
+                <div class="rounded mb-3" style="border: 1px solid #E0E0E0;">
+                    <h6 class="p-2 mb-0 text-center" style="background-color: #F4F4F4; border-bottom: 1px solid #E0E0E0;">About</h6>
 
-            <p>
-                <b>Location:</b> <?php echo ($user['city'] ?? 'Ponyville') . ', ' . ($user['country_code'] ?? 'Equestria'); ?><br />
-                <?php if ($user['gender'] != 'Undefined') { ?><b>Gender:</b> <?php echo $user['gender']; ?><br /><?php } ?>
-                <?php if (!is_null($user['birthdate'])) { ?><b>Age:</b> <?php echo $user['birthdate'] ?? 'Undefined'; ?><br /><?php } ?>
-                <b>Joined:</b> <span title="<?php echo $user['registration_datetime']; ?> (UTC)"><?php echo $registeredAt; ?></span><br />
-                <b>Last seen:</b> <span title="<?php echo $user['last_online']; ?> (UTC)"><?php echo $isOnline ? 'Just now ' : $lastOnlineAt; ?></span><br />
-                <!-- <b>Timezone:</b> <?php echo $user['timezone']; ?> (offset in minutes)<br /> -->
-                <!-- <b>Account standing:</b> <?php echo $user['account_standing']; ?> (0 is not muted/banned)<br /> -->
-                <b>Account type:</b> <?php echo $user['account_type']; ?>
-            </p>
-            <p>
-                <b>Description:</b><br />
-                <?php echo $user['description'] ?? 'No description'; ?>
-            </p>
+                    <div class="p-3">
+                        <p class="mb-1">
+                            <?php echo $isOnline ? '<span class="badge badge-success">Online</span>' : '<span class="badge badge-danger">Offline</span>'; ?>
+                        </p>
+                        <p class="mb-0">
+                            <span class="d-inline-block text-center mr-2" style="width: 16px;">
+                                <i class="fa fa-map-marker text-muted" aria-hidden="true"></i>
+                            </span>
+                            <?php echo ($user['city'] ?? 'Ponyville') . ', ' . ($user['country_code'] ?? 'Equestria'); ?>
+                        </p>
+                        <p class="mb-0">
+                            <span class="d-inline-block text-center mr-2" style="width: 16px;">
+                                <i class="fa fa-user-o text-muted" aria-hidden="true"></i>
+                            </span>
+                            <?php echo $user['birthdate'] ?? 'Undefined'; ?>
+                        </p>
+                        <p class="mb-0">
+                            <span class="d-inline-block text-center mr-2" style="width: 16px;">
+                                <i class="fa fa-transgender text-muted" aria-hidden="true"></i>
+                            </span>
+                            <?php echo $user['gender']; ?>
+                        </p>
+                        <p class="mb-0">
+                            <span class="d-inline-block text-center mr-2" style="width: 16px;">
+                                <i class="fa fa-address-book-o text-muted" aria-hidden="true"></i>
+                            </span>
+                            <span title="<?php echo $user['registration_datetime']; ?> (UTC)"><?php echo $registeredAt; ?></span>
+                        </p>
+                        <p class="mb-0">
+                            <span class="d-inline-block text-center mr-2" style="width: 16px;">
+                                <i class="fa fa-clock-o text-muted" aria-hidden="true"></i>
+                            </span>
+                            <span title="<?php echo $user['last_online']; ?> (UTC)"><?php echo $isOnline ? 'Just now ' : $lastOnlineAt; ?></span>
+                        </p>
+                        <p class="mb-0">
+                            <span class="d-inline-block text-center mr-2" style="width: 16px;">
+                                <i class="fa fa-user-circle-o text-muted" aria-hidden="true"></i>
+                            </span>
+                            <?php echo $user['account_type']; ?>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="rounded" style="border: 1px solid #E0E0E0;">
+                    <h6 class="p-2 mb-0 text-center" style="background-color: #F4F4F4; border-bottom: 1px solid #E0E0E0;">Actions</h6>
+
+                    <div class="p-3 text-center">
+                        <?php
+                        // Show disabled buttons if user is not allowed to use it.
+                        if (!$isLogged || $user['id'] === $_SESSION['account']['id'] || !$emailVerified) {
+                        ?>
+                        <p class="mb-0"><button class="btn btn-outline-primary btn-sm" role="button" disabled>Send message</button></p>
+                        <?php
+                        } // if
+                        else {
+                        ?>
+                        <p class="mb-0"><a href="messages.php?u=<?php echo $user['id']; ?>"><button class="btn btn-outline-primary btn-sm" role="button">Send message</button></a></p>
+                        <?php
+                        } // else
+                        ?>
+                    </div>
+                </div>
+            </div>
+
+            <div class="py-2" id="aside-posts">
+                <div class="rounded p-3 mb-3 text-center" style="border: 1px solid #E0E0E0;">
+                    <p class="mb-0 text-info">
+                        <i class="fa fa-exclamation-triangle mr-1" aria-hidden="true"></i>
+                        User's posts and posting to a user's profile will be available there soon (somewhere in the future).
+                    </p>
+                </div>
+            </div>
+
             <?php
             // Show warning about not verified account if user is logged in with no e-mail.
             if ($isLogged && $user['id'] === $_SESSION['account']['id'] && !$emailVerified) {
