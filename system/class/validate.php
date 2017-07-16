@@ -40,10 +40,10 @@ class Validate
         $isValid = true;
 
         // Check if display name is between 3 and 32 characters.
-        if (strlen($displayname) < 3 || strlen($displayname) > 32) {
+        if (strlen($displayname) < 3 || strlen($displayname) > 24) {
             $this->system->setMessage(
                 'error',
-                'Display name must be between 3 and 32 characters.'
+                'Display name must be between 3 and 24 characters.'
             );
 
             $isValid = false;
@@ -75,10 +75,10 @@ class Validate
         $isValid = true;
 
         // Check if username is between 3 and 24 characters.
-        if (strlen($username) < 3 || strlen($username) > 24) {
+        if (strlen($username) < 3 || strlen($username) > 20) {
             $this->system->setMessage(
                 'error',
-                'Username must be between 3 and 24 characters.'
+                'Username must be between 3 and 20 characters.'
             );
 
             $isValid = false;

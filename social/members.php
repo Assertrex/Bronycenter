@@ -40,7 +40,7 @@ $members = $o_database->read(
     ?>
 
     <div class="container">
-        <h1 class="text-center">Members</h1>
+        <h1 class="text-center my-5">Members</h1>
 
         <section class="my-5">
             <div class="d-flex flex-row flex-wrap justify-content-center">

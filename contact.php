@@ -23,9 +23,15 @@ require_once('system/inc/init.php');
     require_once('system/inc/messages.php');
     ?>
 
-    <div class="container mb-5" id="main_content">
-        <section class="mb-5">
-            <h1 class="mb-3 text-center">Contact</h1>
+    <div class="container" id="main_content">
+        <section class="my-5">
+            <h1 class="text-center mb-5">Contact</h1>
+
+            <p>
+                As a contact form is not needed yet, you can contact with
+                me using one of the options listed below in the footer of a
+                page.
+            </p>
         </section>
     </div>
 
