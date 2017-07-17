@@ -72,6 +72,7 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'createpost') {
             // Store details in a variables.
             let postID = e.currentTarget.getAttribute('data-postid');
             let likeStatus = e.currentTarget.getAttribute('data-liked');
+            let likeID = e.currentTarget.getAttribute('data-ownlike-id');
 
             // Make an AJAX call to like post code.
             $.post(
@@ -83,16 +84,33 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'createpost') {
 
                     // Check if post was already liked and like or unlike it.
                     if (likeStatus === 'false') {
+                        likeStatus = true;
                         e.currentTarget.setAttribute('data-liked', 'true');
                         $(e.currentTarget).toggleClass('btn-outline-primary');
                         $(e.currentTarget).toggleClass('btn-outline-success');
                         $(e.currentTarget).html('<i class="fa fa-thumbs-o-down" aria-hidden="true"></i> Unlike');
                     } else if (likeStatus === 'true') {
+                        likeStatus = false;
                         e.currentTarget.setAttribute('data-liked', 'false');
                         $(e.currentTarget).toggleClass('btn-outline-success');
                         $(e.currentTarget).toggleClass('btn-outline-primary');
                         $(e.currentTarget).html('<i class="fa fa-thumbs-o-up" aria-hidden="true"></i> Like');
                     }
+
+                    // Update post likes string after successful like/unlike.
+                    $.ajax({
+                        url: "ajax/getPostLikesString.php",
+                        data: { id: postID, ownlike: likeStatus },
+                        success: function(response) {
+                            if (response.length === 0) {
+                                $('#post-like-string-' + postID).html("");
+                                $('#post-like-wrapper-' + postID).css("display", "none");
+                            } else {
+                                $('#post-like-string-' + postID).html(response);
+                                $('#post-like-wrapper-' + postID).css("display", "block");
+                            }
+                        }
+                    });
                 }
             );
         }

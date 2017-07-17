@@ -19,7 +19,7 @@ foreach ($posts as $post) {
     $likes = $o_post->getLikes($post['id']);
 
     // Get string about users that has liked a post.
-    $likesString = $o_post->getLikesString($likes, $post['like_id']);
+    $likesString = $o_post->getLikesString($likes, $post['ownlike']);
 ?>
 
 <article class="post-row py-4">
@@ -57,16 +57,22 @@ foreach ($posts as $post) {
                 // Display available actions for logged user with verified e-mail.
                 if ($emailVerified) {
                 ?>
-                    <?php if (is_null($post['like_id'])) { ?>
-                    <button type="button" class="btn btn-outline-primary btn-sm btn-postlike" role="button" data-postid="<?php echo $post['id']; ?>" data-liked="false"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i> Like</button>
+                    <?php if (!$post['ownlike']) { ?>
+                    <button type="button" class="btn btn-outline-primary btn-sm btn-postlike" role="button" data-postid="<?php echo $post['id']; ?>" data-liked="false" data-ownlike-id="false">
+                        <i class="fa fa-thumbs-o-up" aria-hidden="true"></i> Like
+                    </button>
                     <?php } else { ?>
-                    <button type="button" class="btn btn-outline-success btn-sm btn-postlike" role="button" data-postid="<?php echo $post['id']; ?>" data-liked="true"><i class="fa fa-thumbs-o-down" aria-hidden="true"></i> Unlike</button>
+                    <button type="button" class="btn btn-outline-success btn-sm btn-postlike" role="button" data-postid="<?php echo $post['id']; ?>" data-liked="true" data-ownlike-id="<?php echo $post['ownlike_id']; ?>">
+                        <i class="fa fa-thumbs-o-down" aria-hidden="true"></i> Unlike
+                    </button>
                     <?php } ?>
                     <button type="button" class="btn btn-outline-primary btn-sm disabled" role="button"><i class="fa fa-comment-o" aria-hidden="true"></i> Comment</button>
                     <button type="button" class="btn btn-outline-primary btn-sm disabled" role="button"><i class="fa fa-retweet" aria-hidden="true"></i> Share</button>
                     <button type="button" class="btn btn-outline-danger btn-sm disabled" role="button"><i class="fa fa-flag-o" aria-hidden="true"></i> Report</button>
                     <?php if ($post['user_id'] == $_SESSION['account']['id'] && $post['type'] == 1) { ?>
-                        <button type="button" class="btn btn-outline-danger btn-sm btn-postdelete" role="button" data-postid="<?php echo $post['id']; ?>"><i class="fa fa-trash-o" aria-hidden="true"></i> Delete</button>
+                        <button type="button" class="btn btn-outline-danger btn-sm btn-postdelete" role="button" data-postid="<?php echo $post['id']; ?>">
+                            <i class="fa fa-trash-o" aria-hidden="true"></i> Delete
+                        </button>
                     <?php } ?>
                 <?php
                 } // if
@@ -79,20 +85,16 @@ foreach ($posts as $post) {
                 ?>
             </div>
 
-            <?php
-            // Display likes string if anyone has liked a post.
-            if (count($likes) != 0) {
-            ?>
-            <div class="pt-3">
-                <small><i class="fa fa-thumbs-o-up text-muted mr-1" aria-hidden="true"></i> <?php echo $likesString; ?></small>
+            <div class="pt-3" id="post-like-wrapper-<?php echo $post['id']; ?>" style="display: <?php echo $post['any_likes'] ? 'block' : 'none'; ?>">
+                <small>
+                    <i class="fa fa-thumbs-o-up text-muted mr-1" aria-hidden="true"></i>
+                    <span id="post-like-string-<?php echo $post['id']; ?>"><?php echo $likesString ?? ''; ?></span>
+                </small>
             </div>
-            <?php
-            } // if
-            ?>
         </div>
         <div class="ml-auto pl-3">
             <small class="text-muted" style="cursor: help;" data-toggle="tooltip" data-placement="top" title="<?php echo $post['datetime']; ?> (UTC)"><?php echo $publishInterval; ?> <i class="fa fa-clock-o"></i></small>
-            <div style="padding-top: 1px; text-align: right;"><?php echo $isOnline ? '<span class="badge badge-success">Online</span>' : ''; ?></div>
+                        <div style="padding-top: 1px; text-align: right;"><?php echo $isOnline ? '<span class="badge badge-success">Online</span>' : ''; ?></div>
         </div>
     </div>
 </article>

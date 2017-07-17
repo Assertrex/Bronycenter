@@ -60,7 +60,7 @@ class Post
 	{
         // Get an array of matching posts.
 		$posts = $this->database->read(
-			'p.id, p.user_id, p.datetime, p.content, p.type, u.display_name, u.last_online, u.country_code, u.avatar, d.birthdate, d.gender, l.user_id AS like_id',
+			'p.id, p.user_id, p.datetime, p.content, p.like_count, p.type, u.display_name, u.last_online, u.country_code, u.avatar, d.birthdate, d.gender, l.user_id AS ownlike_id',
 			'posts p',
 			'INNER JOIN users u ON p.user_id = u.id
              INNER JOIN users_details d ON d.user_id = u.id
@@ -68,6 +68,23 @@ class Post
              WHERE status != 9 ORDER BY id DESC LIMIT ?',
 			[$_SESSION['account']['id'], $amount]
 		);
+
+        // Add more elements to an array if any post has been found.
+        for ($i = 0; $i < count($posts); $i++) {
+            // Remember if post contains any likes.
+            if ($posts[$i]['like_count'] == 0) {
+                $posts[$i]['any_likes'] = false;
+            } else {
+                $posts[$i]['any_likes'] = true;
+            }
+
+            // Remember if user has liked a post.
+            if ($posts[$i]['ownlike_id'] == null) {
+                $posts[$i]['ownlike'] = false;
+            } else {
+                $posts[$i]['ownlike'] = true;
+            }
+        }
 
 		return $posts;
 	}
@@ -109,7 +126,7 @@ class Post
      *
      * @since 0.1.0
      * @var null|array $array Array with likes from getLikes method.
-     * @var null|string $userLiked Null or ID of current user if has liked a post.
+     * @var boolean $userLiked Boolean if current user has liked a post.
      * @return null|string Text showing who has liked a post.
      */
     public function getLikesString($array, $hasLiked)
@@ -117,6 +134,7 @@ class Post
         // Store required variables.
         $likesAmount = count($array);
         $randomUser = null;
+        $secondUser = null;
 
         // Check if post has any likes.
         if ($likesAmount === 0) {
@@ -128,32 +146,45 @@ class Post
         foreach ($array as $like) {
             // Check if it's not a current user.
             if ($like['id'] != $_SESSION['account']['id']) {
-                // Set a display name of a user and break a loop.
-                $randomUser = $like;
-                break;
+                // Set a display name of a two users and break a loop.
+                if (is_null($randomUser)) {
+                    $randomUser = $like;
+                } else {
+                    $secondUser = $like;
+                    break;
+                }
             }
         }
 
         // Check if current user has liked a post.
-        if (!is_null($hasLiked)) {
-            // Check if there is only one like (of current user).
+        if ($hasLiked == 'true') {
+            // Check if there is only one like.
             if ($likesAmount === 1)
                 $string = 'You like this post.';
-            // Check if there are two likes (of current user and somepony else).
+            // Check if there are two likes.
             else if ($likesAmount === 2)
                 $string = 'You and <a href="profile.php?u=' . $randomUser['id'] . '">' . $randomUser['display_name'] . '</a> like this post.';
-            // Check if there are more than two likes (with current user's like).
-            else
-                $string = 'You and ' . ($likesAmount - 1) . ' other ponies like this post.';
+            // Check if there are three likes.
+            else if ($likesAmount === 3)
+                $string = 'You, <a href="profile.php?u=' . $randomUser['id'] . '">' . $randomUser['display_name'] . '</a> and ' . ($likesAmount - 2) . ' other pony like this post.';
+            // Check if there are more than three likes.
+            else if ($likesAmount === 3)
+                $string = 'You, <a href="profile.php?u=' . $randomUser['id'] . '">' . $randomUser['display_name'] . '</a> and ' . ($likesAmount - 2) . ' other ponies like this post.';
         }
         // Do it if current user has not liked a post.
         else {
             // Check if there is only one like.
             if ($likesAmount === 1)
                 $string = '<a href="profile.php?u=' . $randomUser['id'] . '">' . $randomUser['display_name'] . '</a> like this post.';
-            // Check if there are more likes than one.
+            // Check if there are two likes.
+            else if ($likesAmount === 2)
+                $string = '<a href="profile.php?u=' . $randomUser['id'] . '">' . $randomUser['display_name'] . '</a> and <a href="profile.php?u=' . $secondUser['id'] . '">' . $secondUser['display_name'] . '</a> like this post.';
+            // Check if there are three likes.
+            else if ($likesAmount === 3)
+                $string = '<a href="profile.php?u=' . $randomUser['id'] . '">' . $randomUser['display_name'] . '</a> and <a href="profile.php?u=' . $secondUser['id'] . '">' . $secondUser['display_name'] . '</a> and ' . ($likesAmount - 2) . ' other pony like this post.';
+            // Check if there are more than three likes.
             else
-                $string = $likesAmount . ' ponies like this post.';
+                $string = '<a href="profile.php?u=' . $randomUser['id'] . '">' . $randomUser['display_name'] . '</a> and <a href="profile.php?u=' . $secondUser['id'] . '">' . $secondUser['display_name'] . '</a> and ' . ($likesAmount - 2) . ' other ponies like this post.';
         }
 
         return $string;
