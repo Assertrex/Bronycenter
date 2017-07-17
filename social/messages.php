@@ -264,9 +264,8 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'sendmessage' && $isSelecte
     </div>
 
     <?php
-    // Require all common JavaScript (like JQuery and Bootstrap).
-    require_once('../system/inc/scripts.php');
+    // Require footer for social pages.
+    require_once('inc/footer.php');
     ?>
-    <script type="text/javascript" src="../resources/js/social.js"></script>
 </body>
 </html>

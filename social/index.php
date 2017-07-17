@@ -26,6 +26,8 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'createpost') {
     <style type="text/css">
     .post-row { border-bottom: 1px solid #EEE; }
     .post-row:last-child { border: 0; }
+    .btn-postshowlikes { color: #0275d8; cursor: pointer; }
+    .btn-postshowlikes:hover { color: #014c8c; text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -54,10 +56,10 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'createpost') {
     </div>
 
     <?php
-    // Require all common JavaScript (like JQuery and Bootstrap).
-    require_once('../system/inc/scripts.php');
+    // Require footer for social pages.
+    require_once('inc/footer.php');
     ?>
-    <script type="text/javascript" src="../resources/js/social.js"></script>
+
     <script type="text/javascript">
     // First check if document is ready.
     $(document).ready(function() {
@@ -66,6 +68,9 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'createpost') {
 
         // Call a post delete function on button click.
         $(".btn-postdelete").click(deletePost);
+
+        // Call a post update likes modal function on button click.
+        $(".btn-postshowlikes").click(updateLikesModal);
 
         // Post like function.
         function likePost(e) {
@@ -135,6 +140,32 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'createpost') {
                     $(articleElement).hide();
                 }
             );
+        }
+
+        // Update modal with user's likes list.
+        function updateLikesModal(e) {
+            // Store details in a variables.
+            let postID = e.currentTarget.getAttribute('data-postid');
+
+            // Update modal details after opening.
+            $('#mainModal').on('show.bs.modal', function(event) {
+                console.log(postID);
+                let button = $(event.relatedTarget);
+
+                // Store modal in a variable.
+                let modal = $(this);
+
+                // Get list of users that has liked a post.
+                $.ajax({
+                    url: "ajax/getPostLikesList.php",
+                    data: { id: postID },
+                    success: function(response) {
+                        // Update modal's title and content.
+                        modal.find('.modal-title').text('Ponies that like this post.');
+                        modal.find('.modal-body').html(response);
+                    }
+                });
+            });
         }
     });
     </script>

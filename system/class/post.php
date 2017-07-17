@@ -112,11 +112,17 @@ class Post
     {
         // Get an array of users that has liked a post.
         $likes = $this->database->read(
-            'u.id, u.display_name',
+            'u.id, u.display_name, u.username, u.avatar',
             'posts_likes p',
             'INNER JOIN users u ON p.user_id = u.id WHERE p.post_id = ? AND p.active = 1',
             [$postID]
         );
+
+        // Add more elements to an array if any like has been found.
+        for ($i = 0; $i < count($likes); $i++) {
+            // Set user's avatar or get the default one if not existing.
+            $likes[$i]['avatar'] = $likes[$i]['avatar'] ?? 'default';
+        }
 
         return $likes;
     }
@@ -125,11 +131,12 @@ class Post
      * Get users that has liked a post.
      *
      * @since 0.1.0
+     * @var integer $array ID of a post.
      * @var null|array $array Array with likes from getLikes method.
      * @var boolean $userLiked Boolean if current user has liked a post.
      * @return null|string Text showing who has liked a post.
      */
-    public function getLikesString($array, $hasLiked)
+    public function getLikesString($postID, $array, $hasLiked)
     {
         // Store required variables.
         $likesAmount = count($array);
@@ -166,10 +173,12 @@ class Post
                 $string = 'You and <a href="profile.php?u=' . $randomUser['id'] . '">' . $randomUser['display_name'] . '</a> like this post.';
             // Check if there are three likes.
             else if ($likesAmount === 3)
-                $string = 'You, <a href="profile.php?u=' . $randomUser['id'] . '">' . $randomUser['display_name'] . '</a> and ' . ($likesAmount - 2) . ' other pony like this post.';
+                $string = 'You, <a href="profile.php?u=' . $randomUser['id'] . '">' . $randomUser['display_name'] . '</a> and ' .
+                          '<span class="btn-postshowlikes" data-postid="' . $postID . '" data-toggle="modal" data-target="#mainModal">' . ($likesAmount - 2) . ' other pony</span> like this post.';
             // Check if there are more than three likes.
             else if ($likesAmount === 3)
-                $string = 'You, <a href="profile.php?u=' . $randomUser['id'] . '">' . $randomUser['display_name'] . '</a> and ' . ($likesAmount - 2) . ' other ponies like this post.';
+                $string = 'You, <a href="profile.php?u=' . $randomUser['id'] . '">' . $randomUser['display_name'] . '</a> and ' .
+                          '<span class="btn-postshowlikes" data-postid="' . $postID . '" data-toggle="modal" data-target="#mainModal">' . ($likesAmount - 2) . ' other ponies</span> like this post.';
         }
         // Do it if current user has not liked a post.
         else {
@@ -181,10 +190,12 @@ class Post
                 $string = '<a href="profile.php?u=' . $randomUser['id'] . '">' . $randomUser['display_name'] . '</a> and <a href="profile.php?u=' . $secondUser['id'] . '">' . $secondUser['display_name'] . '</a> like this post.';
             // Check if there are three likes.
             else if ($likesAmount === 3)
-                $string = '<a href="profile.php?u=' . $randomUser['id'] . '">' . $randomUser['display_name'] . '</a> and <a href="profile.php?u=' . $secondUser['id'] . '">' . $secondUser['display_name'] . '</a> and ' . ($likesAmount - 2) . ' other pony like this post.';
+                $string = '<a href="profile.php?u=' . $randomUser['id'] . '">' . $randomUser['display_name'] . '</a>, <a href="profile.php?u=' . $secondUser['id'] . '">' . $secondUser['display_name'] . '</a> and ' .
+                          '<span class="btn-postshowlikes" data-postid="' . $postID . '" data-toggle="modal" data-target="#mainModal">' . ($likesAmount - 2) . ' other pony</span> like this post.';
             // Check if there are more than three likes.
             else
-                $string = '<a href="profile.php?u=' . $randomUser['id'] . '">' . $randomUser['display_name'] . '</a> and <a href="profile.php?u=' . $secondUser['id'] . '">' . $secondUser['display_name'] . '</a> and ' . ($likesAmount - 2) . ' other ponies like this post.';
+                $string = '<a href="profile.php?u=' . $randomUser['id'] . '">' . $randomUser['display_name'] . '</a>, <a href="profile.php?u=' . $secondUser['id'] . '">' . $secondUser['display_name'] . '</a> and ' .
+                          '<span class="btn-postshowlikes" data-postid="' . $postID . '" data-toggle="modal" data-target="#mainModal">' . ($likesAmount - 2) . ' other ponies</span> like this post.';
         }
 
         return $string;

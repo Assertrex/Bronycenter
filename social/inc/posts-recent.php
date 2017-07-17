@@ -19,10 +19,10 @@ foreach ($posts as $post) {
     $likes = $o_post->getLikes($post['id']);
 
     // Get string about users that has liked a post.
-    $likesString = $o_post->getLikesString($likes, $post['ownlike']);
+    $likesString = $o_post->getLikesString($post['id'], $likes, $post['ownlike']);
 ?>
 
-<article class="post-row py-4">
+<article class="post-row py-4" id="post-<?php echo $post['id']; ?>">
     <div class="d-flex">
         <div class="pr-3">
             <img src="../media/avatars/<?php echo $post['avatar']; ?>/64.jpg" class="rounded" />

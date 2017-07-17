@@ -9,7 +9,7 @@ require_once('../../system/inc/init.php');
 $likes = $o_post->getLikes($_GET['id']);
 
 // Get string about users that has liked a post.
-$likesString = $o_post->getLikesString($likes, $_GET['ownlike']);
+$likesString = $o_post->getLikesString($_GET['id'], $likes, $_GET['ownlike']);
 
 // Return a string containing string about user likes.
 echo $likesString;
