@@ -64,7 +64,7 @@ class Post
 			'posts p',
 			'INNER JOIN users u ON p.user_id = u.id
              INNER JOIN users_details d ON d.user_id = u.id
-             LEFT JOIN (SELECT id, post_id, user_id FROM posts_likes WHERE user_id = ?) AS l ON p.id = l.post_id
+             LEFT JOIN (SELECT id, post_id, user_id FROM posts_likes WHERE user_id = ? AND active = 1) AS l ON p.id = l.post_id
              WHERE status != 9 ORDER BY id DESC LIMIT ?',
 			[$_SESSION['account']['id'], $amount]
 		);
@@ -97,7 +97,7 @@ class Post
         $likes = $this->database->read(
             'u.id, u.display_name',
             'posts_likes p',
-            'INNER JOIN users u ON p.user_id = u.id WHERE p.post_id = ?',
+            'INNER JOIN users u ON p.user_id = u.id WHERE p.post_id = ? AND p.active = 1',
             [$postID]
         );
 
@@ -138,22 +138,22 @@ class Post
         if (!is_null($hasLiked)) {
             // Check if there is only one like (of current user).
             if ($likesAmount === 1)
-                $string = 'You like this.';
+                $string = 'You like this post.';
             // Check if there are two likes (of current user and somepony else).
             else if ($likesAmount === 2)
-                $string = 'You and <a href="profile.php?u=' . $randomUser['id'] . '">' . $randomUser['display_name'] . '</a> like this.';
+                $string = 'You and <a href="profile.php?u=' . $randomUser['id'] . '">' . $randomUser['display_name'] . '</a> like this post.';
             // Check if there are more than two likes (with current user's like).
             else
-                $string = 'You and ' . ($likesAmount - 1) . ' other ponies like this.';
+                $string = 'You and ' . ($likesAmount - 1) . ' other ponies like this post.';
         }
         // Do it if current user has not liked a post.
         else {
             // Check if there is only one like.
             if ($likesAmount === 1)
-                $string = '<a href="profile.php?u=' . $randomUser['id'] . '">' . $randomUser['display_name'] . '</a> like this.';
+                $string = '<a href="profile.php?u=' . $randomUser['id'] . '">' . $randomUser['display_name'] . '</a> like this post.';
             // Check if there are more likes than one.
             else
-                $string = $likesAmount . ' ponies like this.';
+                $string = $likesAmount . ' ponies like this post.';
         }
 
         return $string;
@@ -170,9 +170,9 @@ class Post
     {
         // Get details about likes for post.
         $post = $this->database->read(
-            'pst.id, pst.like_count, lik.id AS like_id, lik.user_id',
+            'pst.id, pst.like_count, lik.id AS like_id, lik.user_id, lik.active',
             'posts pst',
-            'LEFT JOIN (SELECT id, post_id, user_id FROM posts_likes WHERE post_id = ? AND user_id = ?) AS lik ON pst.id = lik.post_id WHERE pst.id = ? AND status != 9',
+            'LEFT JOIN (SELECT id, post_id, user_id, active FROM posts_likes WHERE post_id = ? AND user_id = ?) AS lik ON pst.id = lik.post_id WHERE pst.id = ? AND status != 9',
             [$postID, $_SESSION['account']['id'], $postID]
         );
 
@@ -181,7 +181,7 @@ class Post
             return false;
         }
 
-        // Add like if user has not liked it before.
+        // Add like if user has not liked it before (Like).
         if (is_null($post[0]['user_id'])) {
             // Add like row to the database.
             $hasLiked = $this->database->create(
@@ -204,13 +204,32 @@ class Post
                 [$post[0]['like_count'] + 1, $postID]
             );
         }
-        // Remove like if user has already liked post.
-        else {
-            // Delete like from the database.
-            $hasUnliked = $this->database->delete(
+        // Update like if user has unliked it (Like again).
+        else if ($post[0]['active'] == false) {
+            // Change the active status to true for the like in the database.
+            $this->database->update(
+                'active',
                 'posts_likes',
                 'WHERE id = ?',
-                [$post[0]['like_id']]
+                [1, $post[0]['like_id']]
+            );
+
+            // Add one to post like counter.
+            $this->database->update(
+                'like_count',
+                'posts',
+                'WHERE id = ?',
+                [$post[0]['like_count'] + 1, $postID]
+            );
+        }
+        // Remove like if user has already liked post (Unlike).
+        else {
+            // Change the active status to false for the like in the database.
+            $this->database->update(
+                'active',
+                'posts_likes',
+                'WHERE id = ?',
+                [0, $post[0]['like_id']]
             );
 
             // Subtract one from post like counter.
