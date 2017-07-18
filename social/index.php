@@ -113,6 +113,9 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'createpost') {
                             } else {
                                 $('#post-like-string-' + postID).html(response);
                                 $('#post-like-wrapper-' + postID).css("display", "block");
+
+                                // Call a post update likes modal function on new button click.
+                                $('#post-like-string-' + postID).find(".btn-postshowlikes").click(updateLikesModal);
                             }
                         }
                     });
@@ -149,7 +152,6 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'createpost') {
 
             // Update modal details after opening.
             $('#mainModal').on('show.bs.modal', function(event) {
-                console.log(postID);
                 let button = $(event.relatedTarget);
 
                 // Store modal in a variable.
