@@ -264,7 +264,11 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'createpost') {
             let postID = e.currentTarget.parentNode.getAttribute('data-postid');
             let articleElement = e.currentTarget.parentNode.parentNode.parentNode.parentNode;
 
-            // TODO Show a confirmation modal.
+            // Stop removing if user has canceled action.
+            // TODO Change it to a modal somehow.
+            if (!confirm("Are you sure that you want to delete this post?")) {
+                return false;
+            }
 
             // Make an AJAX call to like post code.
             $.post(
