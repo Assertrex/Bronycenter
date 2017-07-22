@@ -287,7 +287,7 @@ class Message
     public function getConversations() {
         // Get list of conversations.
         $conversations = $this->database->read(
-            'mbr.conversation_id, cvr.members_count, cvr.messages_count, usr.id, usr.display_name, usr.username, usr.last_online, usr.avatar, msg.user_id AS sender_id, msg.datetime, msg.message',
+            'mbr.conversation_id, cvr.members_count, cvr.messages_count, usr.id, usr.display_name, usr.username, usr.last_online, usr.avatar, usr.account_type, msg.user_id AS sender_id, msg.datetime, msg.message',
             'conversations_members mbr',
             'INNER JOIN conversations cvr ON mbr.conversation_id = cvr.id
             INNER JOIN (SELECT DISTINCT id, conversation_id, user_id, datetime, message FROM conversations_messages ORDER BY id) msg ON mbr.conversation_id = msg.conversation_id

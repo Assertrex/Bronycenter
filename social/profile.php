@@ -36,22 +36,19 @@ if (!empty($_GET['u']) || !empty($_SESSION['account']['id'])) {
             $user['gender'] = 'Unknown';
     }
 
-    // Name account types.
+    // Display badge for administrators and moderators.
     switch ($user['account_type']) {
-        case 0:
-            $user['account_type'] = '<span class="text-muted">Unverified user</span>';
+        case '0':
+            $userBadge = '<span class="badge badge-primary">Unverified</span>';
             break;
-        case 1:
-            $user['account_type'] = 'Standard member';
+        case '9':
+            $userBadge = '<span class="badge badge-danger">Admin</span>';
             break;
-        case 8:
-            $user['account_type'] = '<span class="text-primary">Moderator</span>';
-            break;
-        case 9:
-            $user['account_type'] = '<span class="text-danger">Administrator</span>';
+        case '8':
+            $userBadge = '<span class="badge badge-info">Mod</span>';
             break;
         default:
-            $user['account_type'] = 'Unknown user';
+            $userBadge = '';
     }
 
     // Format birthdate if available.
@@ -119,7 +116,8 @@ if (!empty($_GET['u']) || !empty($_SESSION['account']['id'])) {
                     <img src="../media/avatars/<?php echo $user['avatar']; ?>/128.jpg" class="rounded mb-3" style="border: 2px solid #E0E0E0;" />
 
                     <h5 class="mb-0"><?php echo $user['display_name']; ?></h5>
-                    <p class="mb-1 text-muted" style="margin-top: -2px;"><small>@<?php echo $user['username']; ?></small></p>
+                    <p class="mb-0 text-muted" style="margin-top: -2px;"><small>@<?php echo $user['username']; ?></small></p>
+                    <p><?php echo $userBadge; ?> <?php echo $isOnline ? '<span class="badge badge-success">Online</span>' : '<span class="badge badge-danger">Offline</span>'; ?></p>
 
                     <p class="mb-0" style="line-height: 1.2;"><small><?php echo $user['description'] ?? 'No description'; ?></small></p>
                 </div>
@@ -128,44 +126,35 @@ if (!empty($_GET['u']) || !empty($_SESSION['account']['id'])) {
                     <h6 class="p-2 mb-0 text-center" style="background-color: #F4F4F4; border-bottom: 1px solid #E0E0E0;">About</h6>
 
                     <div class="p-3">
-                        <p class="mb-1">
-                            <?php echo $isOnline ? '<span class="badge badge-success">Online</span>' : '<span class="badge badge-danger">Offline</span>'; ?>
-                        </p>
                         <p class="mb-0">
-                            <span class="d-inline-block text-center mr-2" style="width: 16px;">
+                            <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="Location">
                                 <i class="fa fa-map-marker text-primary" aria-hidden="true"></i>
                             </span>
                             <?php echo ($user['city'] ?? 'Ponyville') . ', ' . ($user['country_code'] ?? 'Equestria'); ?>
                         </p>
                         <p class="mb-0">
-                            <span class="d-inline-block text-center mr-2" style="width: 16px;">
-                                <i class="fa fa-user-o text-primary" aria-hidden="true"></i>
-                            </span>
-                            <?php echo $user['birthdate'] ?? 'Unknown'; ?>
-                        </p>
-                        <p class="mb-0">
-                            <span class="d-inline-block text-center mr-2" style="width: 16px;">
+                            <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="Gender">
                                 <i class="fa fa-transgender text-primary" aria-hidden="true"></i>
                             </span>
                             <?php echo $user['gender']; ?>
                         </p>
                         <p class="mb-0">
-                            <span class="d-inline-block text-center mr-2" style="width: 16px;">
-                                <i class="fa fa-address-book-o text-primary" aria-hidden="true"></i>
+                            <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="Age">
+                                <i class="fa fa-user-o text-primary" aria-hidden="true"></i>
                             </span>
-                            <span title="<?php echo $user['registration_datetime']; ?> (UTC)"><?php echo $registeredAt; ?></span>
+                            <?php echo $user['birthdate'] ?? 'Unknown'; ?>
                         </p>
                         <p class="mb-0">
-                            <span class="d-inline-block text-center mr-2" style="width: 16px;">
+                            <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="Last seen">
                                 <i class="fa fa-clock-o text-primary" aria-hidden="true"></i>
                             </span>
-                            <span title="<?php echo $user['last_online']; ?> (UTC)"><?php echo $isOnline ? 'Just now ' : $lastOnlineAt; ?></span>
+                            <span style="cursor: help;"  data-toggle="tooltip" data-placement="top" title="<?php echo $user['last_online']; ?> (UTC)"><?php echo $isOnline ? 'Just now ' : $lastOnlineAt; ?></span>
                         </p>
                         <p class="mb-0">
-                            <span class="d-inline-block text-center mr-2" style="width: 16px;">
-                                <i class="fa fa-user-circle-o text-primary" aria-hidden="true"></i>
+                            <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="Account created">
+                                <i class="fa fa-address-book-o text-primary" aria-hidden="true"></i>
                             </span>
-                            <?php echo $user['account_type']; ?>
+                            <span style="cursor: help;"  data-toggle="tooltip" data-placement="top" title="<?php echo $user['registration_datetime']; ?> (UTC)"><?php echo $registeredAt; ?></span>
                         </p>
                     </div>
                 </div>

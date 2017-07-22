@@ -4,7 +4,7 @@ require_once('../system/inc/init.php');
 
 // Get details about last online members.
 $members = $o_database->read(
-    'id, display_name, username, last_online, avatar',
+    'id, display_name, username, last_online, avatar, account_type',
     'users',
     'WHERE account_type != 0 ORDER BY last_online DESC LIMIT 25',
     []
@@ -47,6 +47,18 @@ $members = $o_database->read(
                 <?php
                 // Display each member.
                 foreach ($members as $member) {
+                    // Display badge for administrators and moderators.
+                    switch ($member['account_type']) {
+                        case '9':
+                            $userBadge = '<span class="badge badge-danger mt-2">Admin</span>';
+                            break;
+                        case '8':
+                            $userBadge = '<span class="badge badge-info mt-2">Mod</span>';
+                            break;
+                        default:
+                            $userBadge = '';
+                    }
+
                     // Set user's avatar or get the default one if not existing.
                     $avatar = $member['avatar'] ?? 'default';
 
@@ -61,7 +73,7 @@ $members = $o_database->read(
                         <div class="d-flex flex-column justify-content-center text-center px-3" style="width: 100%; line-height: 1.2;">
                             <div style="color: #000;"><?php echo $member['display_name']; ?></div>
                             <div class="text-muted"><small>@<?php echo $member['username']; ?></small></div>
-                            <div style="padding-top: 3px;"><?php echo $isOnline ? '<span class="badge badge-success">Online</span>' : ''; ?></div>
+                            <div class="mt-2"><?php echo $userBadge; ?> <?php echo $isOnline ? '<span class="badge badge-success">Online</span>' : ''; ?></div>
                         </div>
                     </div>
                 </a>

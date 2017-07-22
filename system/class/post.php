@@ -60,7 +60,7 @@ class Post
 	{
         // Get an array of matching posts.
 		$posts = $this->database->read(
-			'p.id, p.user_id, p.datetime, p.content, p.like_count, p.comment_count, p.type, u.display_name, u.last_online, u.country_code, u.avatar, d.birthdate, d.gender, l.user_id AS ownlike_id',
+			'p.id, p.user_id, p.datetime, p.content, p.like_count, p.comment_count, p.type, u.display_name, u.last_online, u.country_code, u.avatar, u.account_type, d.birthdate, d.gender, l.user_id AS ownlike_id',
 			'posts p',
 			'INNER JOIN users u ON p.user_id = u.id
              INNER JOIN users_details d ON d.user_id = u.id

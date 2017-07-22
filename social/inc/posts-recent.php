@@ -9,6 +9,18 @@ foreach ($posts as $post) {
     // Make a named interval of when a post has been published.
     $publishInterval = $o_system->getDateIntervalString($o_system->countDateInterval($post['datetime']));
 
+    // Display badge for administrators and moderators.
+    switch ($post['account_type']) {
+        case '9':
+            $userBadge = '<span class="d-block badge badge-danger mt-2">Admin</span>';
+            break;
+        case '8':
+            $userBadge = '<span class="d-block badge badge-info mt-2">Mod</span>';
+            break;
+        default:
+            $userBadge = '';
+    }
+
     // Set user's avatar or get the default one if not existing.
     $post['avatar'] = $post['avatar'] ?? 'default';
 
@@ -32,8 +44,9 @@ foreach ($posts as $post) {
 
 <article class="post-row py-4" id="post-<?php echo $post['id']; ?>">
     <div class="d-flex">
-        <div class="pr-3">
-            <img src="../media/avatars/<?php echo $post['avatar']; ?>/64.jpg" class="rounded" />
+        <div class="d-flex flex-column pr-3">
+            <div><img src="../media/avatars/<?php echo $post['avatar']; ?>/64.jpg" class="rounded" /></div>
+            <div><?php echo $userBadge; ?></div>
         </div>
         <div class="d-flex flex-column" style="flex: 100%;">
             <div style="margin-top: -5px;">
@@ -130,12 +143,12 @@ foreach ($posts as $post) {
 
                     <div class="d-flex align-items-center pt-2 comment-container" id="comment-<?php echo $comment['id']; ?>" data-commentid="<?php echo $comment['id']; ?>">
                         <div>
-                            <img src="../media/avatars/<?php echo $comment['avatar'] ?? 'default'; ?>/64.jpg" class="rounded" style="display: block; width: 27px; height: 27px;" />
+                            <img src="../media/avatars/<?php echo $comment['avatar'] ?? 'default'; ?>/64.jpg" class="rounded" style="display: block; width: 26px; height: 26px;" />
                         </div>
                         <div class="ml-2" style="line-height: 1.4;">
                             <small class="d-block">
                                 <a href="profile.php?u=<?php echo $comment['user_id']; ?>"><?php echo $comment['display_name']; ?></a>
-                                <span class="ml-1"><?php echo htmlspecialchars($comment['content'], ENT_QUOTES); ?></span>
+                                <span class="ml-1"><?php echo htmlspecialchars($comment['content']); ?></span>
                             </small>
                             <small class="d-inline-block text-muted" style="cursor: help;" data-toggle="tooltip" data-placement="top" title="<?php echo $comment['datetime']; ?> (UTC)">
                                 <?php echo $o_system->getDateIntervalString($o_system->countDateInterval($comment['datetime'])); ?>

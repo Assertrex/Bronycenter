@@ -223,6 +223,17 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'sendmessage' && $isSelecte
 
                 // Display each conversation.
                 foreach ($conversations as $conversation) {
+                    // Display badge for administrators and moderators.
+                    switch ($conversation['account_type']) {
+                        case '9':
+                            $userBadge = '<span class="badge badge-danger">Admin</span>';
+                            break;
+                        case '8':
+                            $userBadge = '<span class="badge badge-info">Mod</span>';
+                            break;
+                        default:
+                            $userBadge = '';
+                    }
             ?>
 
             <div class="conversation-row py-3">
@@ -234,7 +245,7 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'sendmessage' && $isSelecte
                         <div class="d-flex justify-content-start mb-1">
                             <div class="pr-2 font-weight-bold"><a href="messages.php?u=<?php echo $conversation['id']; ?>"><?php echo $conversation['display_name']; ?></a></div>
                             <div class="pr-2"><small class="text-muted">(@<?php echo $conversation['username']; ?>)</small></div>
-                            <?php echo $conversation['user_online'] ? '<div class="pr-2"><span class="badge badge-success">Online</span></div>' : ''; ?>
+                            <div class="pr-2"><?php echo $userBadge; ?><?php echo $conversation['user_online'] ? ' <span class="badge badge-success">Online</span>' : ''; ?></div>
                             <div class="ml-auto text-muted"><small style="cursor: help;" data-toggle="tooltip" data-placement="top" title="<?php echo $conversation['datetime']; ?> (UTC)"><?php echo $conversation['send_interval']; ?> <i class="fa fa-clock-o"></i></small></div>
                         </div>
                         <div style="color: #424242;">
