@@ -394,7 +394,7 @@ class Post
         $existingPosts = $this->database->read(
 			'COUNT(*) AS posts',
 			'posts',
-			'WHERE type = 1',
+			'WHERE type = 1 AND status = 0',
 			[]
 		);
 
