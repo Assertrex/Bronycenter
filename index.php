@@ -42,8 +42,7 @@ require_once('system/inc/init.php');
                     <h3 class="pb-3 text-left">Progress</h3>
 
                     <ul class="list-group" style="list-style: none;">
-                        <!-- <li class="text-muted"><b style="color: #4CAF50;">&#x2713;</b> Login and registration</li> -->
-                        <li class="ml-3" style="padding-left: 1px;"><b style="display: none; color: #4CAF50;">&#x2713;</b> Posts comments</li>
+                        <li class="text-muted"><b style="color: #4CAF50;">&#x2713;</b> Posts comments</li>
                         <li class="ml-3" style="padding-left: 1px;"><b style="display: none; color: #4CAF50;">&#x2713;</b> Profile posts</li>
                         <li class="ml-3" style="padding-left: 1px;"><b style="display: none; color: #4CAF50;">&#x2713;</b> Administration panel</li>
                         <li class="ml-3" style="padding-left: 1px;"><b style="display: none; color: #4CAF50;">&#x2713;</b> Suggestions page</li>
@@ -70,7 +69,7 @@ require_once('system/inc/init.php');
 
                     <ul class="list-group text-right" style="list-style: none;">
                         <li>Server status: <b class="text-success">Open</b></li>
-                        <li class="text-muted">Last update: <b>17.07.2017</b></li>
+                        <li class="text-muted">Last update: <b>22.07.2017</b></li>
                         <li class="text-muted">Suggestions: <b>0</b> (of <b>0</b>)</li>
                         <br />
                         <li>Online now: <b><?php echo $o_user->getOnlineUsersCount(); ?></b></li>

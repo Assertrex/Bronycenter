@@ -60,7 +60,7 @@ class Session
 		$_SESSION['user']['displayName'] = $details['display_name'];
         $_SESSION['user']['username'] = $details['username'];
         $_SESSION['user']['email'] = $details['email'];
-        $_SESSION['user']['avatar'] = $details['avatar'];
+        $_SESSION['user']['avatar'] = $details['avatar'] ?? 'default';
 
         // Store account details in an account session.
         $_SESSION['account']['id'] = $details['id'];
@@ -121,7 +121,7 @@ class Session
 
         // Update dynamic details in an account session.
         $_SESSION['user']['email'] = $details['email'];
-        $_SESSION['user']['avatar'] = $details['avatar'];
+        $_SESSION['user']['avatar'] = $details['avatar'] ?? 'default';
         $_SESSION['account']['type'] = $details['account_type'];
         $_SESSION['account']['standing'] = $details['account_standing'];
 

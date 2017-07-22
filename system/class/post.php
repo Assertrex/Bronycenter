@@ -60,7 +60,7 @@ class Post
 	{
         // Get an array of matching posts.
 		$posts = $this->database->read(
-			'p.id, p.user_id, p.datetime, p.content, p.like_count, p.type, u.display_name, u.last_online, u.country_code, u.avatar, d.birthdate, d.gender, l.user_id AS ownlike_id',
+			'p.id, p.user_id, p.datetime, p.content, p.like_count, p.comment_count, p.type, u.display_name, u.last_online, u.country_code, u.avatar, d.birthdate, d.gender, l.user_id AS ownlike_id',
 			'posts p',
 			'INNER JOIN users u ON p.user_id = u.id
              INNER JOIN users_details d ON d.user_id = u.id
@@ -284,6 +284,103 @@ class Post
         }
 
         return true;
+    }
+
+    /**
+     * Add a comment to a post.
+     *
+     * @since 0.1.0
+     * @var integer $postID ID of a post.
+     * @var string $content Comment content.
+     * @return boolean Status of this method.
+     */
+    public function comment($postID, $content) {
+        // Return false if comment contains more than 250 characters.
+        if (strlen($content) > 250) {
+            return false;
+        }
+
+        // Store required variables.
+        $currentDatetime = $this->system->getDatetime();
+
+        // Get a selected post.
+        $post = $this->database->read(
+            'comment_count',
+            'posts',
+            'WHERE id = ?',
+            [$postID]
+        );
+
+        // Check if post is existing.
+        if (count($post) != 1) {
+            return false;
+        }
+
+        // Add new comment to the database
+        $commentID = $this->database->create(
+            'post_id, user_id, datetime, content',
+            'posts_comments',
+            '',
+            [$postID, $_SESSION['account']['id'], $currentDatetime, $content]
+        );
+
+        // Update post's comments counter.
+        $this->database->update(
+            'comment_count',
+            'posts',
+            'WHERE id = ?',
+            [intval($post[0]['comment_count']) + 1, $postID]
+        );
+
+        return $commentID;
+    }
+
+    /**
+     * Get comments for a post.
+     *
+     * @since 0.1.0
+     * @var integer $postID ID of a post.
+     * @var integer $lastCommentID ID of an oldest fetched post.
+     * @var null|integer $amount Amount of comments to fetch.
+     * @var string $mode Mode of comments fetching (first, more, send).
+     * @return array Array of selected post comments.
+     */
+    public function getPostComments($postID, $lastCommentID, $amount, $mode = 'first') {
+        // Get array of comments for selected post.
+        switch ($mode) {
+            case 'first':
+                $comments = $this->database->read(
+                    'pcm.id, pcm.user_id, usr.display_name, usr.username, usr.avatar, pcm.datetime, pcm.content',
+                    'posts_comments pcm',
+                    'INNER JOIN users usr ON usr.id = pcm.user_id WHERE pcm.post_id = ? ORDER BY pcm.id DESC LIMIT ?',
+                    [$postID, $amount]
+                );
+                break;
+            case 'more':
+                $comments = $this->database->read(
+                    'pcm.id, pcm.user_id, usr.display_name, usr.username, usr.avatar, pcm.datetime, pcm.content',
+                    'posts_comments pcm',
+                    'INNER JOIN users usr ON usr.id = pcm.user_id WHERE pcm.post_id = ? AND pcm.id < ? ORDER BY pcm.id DESC LIMIT ?',
+                    [$postID, $lastCommentID, $amount]
+                );
+                break;
+            case 'send':
+                $comments = $this->database->read(
+                    'pcm.id, pcm.user_id, usr.display_name, usr.username, usr.avatar, pcm.datetime, pcm.content',
+                    'posts_comments pcm',
+                    'INNER JOIN users usr ON usr.id = pcm.user_id WHERE pcm.post_id = ? AND pcm.id > ? ORDER BY pcm.id DESC',
+                    [$postID, $lastCommentID]
+                );
+                break;
+            default:
+                return false;
+        }
+
+        // Reverse an array to display newest post on bottom.
+        $comments = array_reverse($comments);
+
+        // Return array of selected post comments.
+        return $comments;
     }
 
     /**

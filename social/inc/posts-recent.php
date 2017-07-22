@@ -20,6 +20,14 @@ foreach ($posts as $post) {
 
     // Get string about users that has liked a post.
     $likesString = $o_post->getLikesString($post['id'], $likes, $post['ownlike']);
+
+    // Remember amount of post comments.
+    $commentsAmount = intval($post['comment_count']);
+
+    // Get array of post comments (limit to 2 newest) if any exists.
+    if ($commentsAmount > 0) {
+        $comments = $o_post->getPostComments($post['id'], null, 2);
+    }
 ?>
 
 <article class="post-row py-4" id="post-<?php echo $post['id']; ?>">
@@ -27,7 +35,7 @@ foreach ($posts as $post) {
         <div class="pr-3">
             <img src="../media/avatars/<?php echo $post['avatar']; ?>/64.jpg" class="rounded" />
         </div>
-        <div class="d-flex flex-column">
+        <div class="d-flex flex-column" style="flex: 100%;">
             <div style="margin-top: -5px;">
                 <?php if ($post['type'] == 1) { // Standard post ?>
 
@@ -52,25 +60,25 @@ foreach ($posts as $post) {
                 <?php } ?>
             </div>
 
-            <div class="pt-3">
+            <div class="pt-3" data-postid="<?php echo $post['id']; ?>">
                 <?php
                 // Display available actions for logged user with verified e-mail.
                 if ($emailVerified) {
                 ?>
                     <?php if (!$post['ownlike']) { ?>
-                    <button type="button" class="btn btn-outline-primary btn-sm btn-postlike" role="button" data-postid="<?php echo $post['id']; ?>" data-liked="false" data-ownlike-id="false">
+                    <button type="button" class="btn btn-outline-primary btn-sm btn-postlike" role="button" data-liked="false" data-ownlike-id="false">
                         <i class="fa fa-thumbs-o-up" aria-hidden="true"></i> Like
                     </button>
                     <?php } else { ?>
-                    <button type="button" class="btn btn-outline-success btn-sm btn-postlike" role="button" data-postid="<?php echo $post['id']; ?>" data-liked="true" data-ownlike-id="<?php echo $post['ownlike_id']; ?>">
+                    <button type="button" class="btn btn-outline-success btn-sm btn-postlike" role="button" data-liked="true" data-ownlike-id="<?php echo $post['ownlike_id']; ?>">
                         <i class="fa fa-thumbs-o-down" aria-hidden="true"></i> Unlike
                     </button>
                     <?php } ?>
-                    <button type="button" class="btn btn-outline-primary btn-sm disabled" role="button"><i class="fa fa-comment-o" aria-hidden="true"></i> Comment</button>
+                    <button type="button" class="btn btn-outline-primary btn-sm btn-postcommentswitch" role="button" data-active="false"><i class="fa fa-comment-o" aria-hidden="true"></i> Comment</button>
                     <button type="button" class="btn btn-outline-primary btn-sm disabled" role="button"><i class="fa fa-retweet" aria-hidden="true"></i> Share</button>
                     <button type="button" class="btn btn-outline-danger btn-sm disabled" role="button"><i class="fa fa-flag-o" aria-hidden="true"></i> Report</button>
                     <?php if ($post['user_id'] == $_SESSION['account']['id'] && $post['type'] == 1) { ?>
-                        <button type="button" class="btn btn-outline-danger btn-sm btn-postdelete" role="button" data-postid="<?php echo $post['id']; ?>">
+                        <button type="button" class="btn btn-outline-danger btn-sm btn-postdelete" role="button">
                             <i class="fa fa-trash-o" aria-hidden="true"></i> Delete
                         </button>
                     <?php } ?>
@@ -91,10 +99,76 @@ foreach ($posts as $post) {
                     <span id="post-like-string-<?php echo $post['id']; ?>"><?php echo $likesString ?? ''; ?></span>
                 </small>
             </div>
+
+            <div class="pt-2" id="post-comments-wrapper" style="<?php echo $commentsAmount ? '' : 'display: none;'; ?>">
+                <?php
+                if ($commentsAmount > 2) {
+                    $lastCommentID = $comments[0]['id'];
+                    $commentsShown = count($comments);
+                ?>
+                <p class="mb-0 text-muted" id="posts-comments-showing-wrapper">
+                    <small>
+                        Showing <span class="var-commentsshown"><?php echo $commentsShown; ?></span> of <span class="var-commentsamount"><?php echo $commentsAmount; ?></span> comments.
+                        <span class="btn-loadmorecomments"
+                              data-postID="<?php echo $post['id']; ?>"
+                              data-lastCommentID="<?php echo $lastCommentID; ?>"
+                              data-commentsAmount="<?php echo $commentsAmount; ?>"
+                              data-commentsShown="<?php echo $commentsShown; ?>">
+                              View more</span>
+                    </small>
+                </p>
+                <?php
+                } // if
+                ?>
+
+                <div id="post-comments-container-<?php echo $post['id']; ?>">
+                    <?php
+                    // Display each comment.
+                    if ($commentsAmount) {
+                        foreach ($comments as $comment) {
+                    ?>
+
+                    <div class="d-flex align-items-center pt-2 comment-container" id="comment-<?php echo $comment['id']; ?>" data-commentid="<?php echo $comment['id']; ?>">
+                        <div>
+                            <img src="../media/avatars/<?php echo $comment['avatar'] ?? 'default'; ?>/64.jpg" class="rounded" style="display: block; width: 27px; height: 27px;" />
+                        </div>
+                        <div class="ml-2" style="line-height: 1.4;">
+                            <small class="d-block">
+                                <a href="profile.php?u=<?php echo $comment['user_id']; ?>"><?php echo $comment['display_name']; ?></a>
+                                <span class="ml-1"><?php echo htmlspecialchars($comment['content'], ENT_QUOTES); ?></span>
+                            </small>
+                            <small class="d-inline-block text-muted" style="cursor: help;" data-toggle="tooltip" data-placement="top" title="<?php echo $comment['datetime']; ?> (UTC)">
+                                <?php echo $o_system->getDateIntervalString($o_system->countDateInterval($comment['datetime'])); ?>
+                            </small>
+                        </div>
+                    </div>
+
+                    <?php
+                        } // foreach
+                    } // if
+                    ?>
+                </div>
+            </div>
+
+            <div id="post-comment-input-wrapper-<?php echo $post['id']; ?>" style="display: none;">
+                <div class="d-flex pt-3">
+                    <div class="pr-2">
+                        <img src="../media/avatars/<?php echo $_SESSION['user']['avatar']; ?>/64.jpg" class="rounded" style="display: block; width: 27px; height: 27px;" />
+                    </div>
+                    <div class="pr-2" style="flex: 100%;">
+                        <input type="text" class="form-control form-control-sm post-comment-input" placeholder="Write a comment..." maxlength="300" />
+                    </div>
+                    <div style="flex: 100%;">
+                        <button type="button" class="btn btn-outline-primary btn-sm btn-postcommentsend" role="button"><i class="fa fa-paper-plane-o" aria-hidden="true"></i> Send</button>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="ml-auto pl-3">
-            <small class="text-muted" style="cursor: help;" data-toggle="tooltip" data-placement="top" title="<?php echo $post['datetime']; ?> (UTC)"><?php echo $publishInterval; ?> <i class="fa fa-clock-o"></i></small>
-                        <div style="padding-top: 1px; text-align: right;"><?php echo $isOnline ? '<span class="badge badge-success">Online</span>' : ''; ?></div>
+        <div class="pl-3" style="flex: 150px; text-align: right;">
+            <small class="text-muted" style="cursor: help;" data-toggle="tooltip" data-placement="top" title="<?php echo $post['datetime']; ?> (UTC)">
+                <?php echo $publishInterval; ?> <i class="fa fa-clock-o"></i>
+            </small>
+            <div style="padding-top: 1px;"><?php echo $isOnline ? '<span class="badge badge-success">Online</span>' : ''; ?></div>
         </div>
     </div>
 </article>
