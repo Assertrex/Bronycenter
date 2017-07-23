@@ -57,4 +57,5 @@ if (!empty($loginRequired) && !$isLogged) {
 
     // Redirect user into homepage if user is not logged in.
     header('Location: ../index.php');
+    die();
 }

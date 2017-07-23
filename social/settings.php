@@ -82,7 +82,7 @@ $avatarName = $_SESSION['user']['avatar'] ?? 'default';
     ?>
 
     <div class="container">
-        <h1 class="text-center my-3">Settings</h1>
+        <h1 class="text-center my-5">Settings</h1>
 
         <?php
         // Show forms for changing settings if user has verified his e-mail address.

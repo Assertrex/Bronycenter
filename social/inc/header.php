@@ -24,23 +24,39 @@
                 // Show navbar links for logged users.
                 if ($isLogged) {
                 ?>
+
                 <li class="nav-item"><a href="index.php" class="nav-link">Feed</a></li>
                 <li class="nav-item"><a href="profile.php?u=<?php echo $_SESSION['account']['id']; ?>" class="nav-link">Profile</a></li>
                 <li class="nav-item"><a href="members.php" class="nav-link">Members</a></li>
                 <li class="nav-item"><a href="messages.php" class="nav-link">Messages</a></li>
                 <li class="nav-item"><a href="settings.php" class="nav-link">Settings</a></li>
                 <!-- <li class="nav-item"><a href="suggestions.php" class="nav-link">Suggestions</a></li> -->
+
+                <?php
+                // Show link to administration panel for moderators and administrators.
+                if ($_SESSION['account']['type'] === 9 || $_SESSION['account']['type'] === 8) {
+                ?>
+
+                <li class="nav-item"><a href="manage.php" class="nav-link">Manage</a></li>
+
+                <?php
+                } // if
+                ?>
+
                 <li class="nav-item"><a href="../logout.php" class="nav-link">Logout</a></li>
+
                 <?php
                 } // if
                 // Show navbar links for guests.
                 else {
                 ?>
+
                 <li class="nav-item"><a href="../index.php" class="nav-link">Homepage</a></li>
                 <li class="nav-item"><a href="../about.php" class="nav-link">About</a></li>
                 <li class="nav-item"><a href="../contact.php" class="nav-link">Contact</a></li>
                 <li class="nav-item"><a href="members.php" class="nav-link">Members</a></li>
                 <li class="nav-item"><a href="https://github.com/Assertrex/BronyCenter" target="_blank" class="nav-link">Github</a></li>
+
                 <?php
                 } // else
                 ?>
