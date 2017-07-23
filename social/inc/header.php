@@ -37,7 +37,7 @@
                 if ($_SESSION['account']['type'] === 9 || $_SESSION['account']['type'] === 8) {
                 ?>
 
-                <li class="nav-item"><a href="manage.php" class="nav-link">Manage</a></li>
+                <li class="nav-item"><a href="dashboard.php" class="nav-link">Manage</a></li>
 
                 <?php
                 } // if
