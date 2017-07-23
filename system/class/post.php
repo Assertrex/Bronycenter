@@ -426,9 +426,6 @@ class Post
 			return false;
 		}
 
-        // Escape HTML characters in post's content.
-        $postContent = htmlspecialchars($postContent, ENT_QUOTES);
-
         // Insert post into database.
 		$this->database->create(
 			'user_id, ip, datetime, content, type',

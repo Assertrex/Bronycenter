@@ -80,7 +80,6 @@ class Message
 
         // Store required variables.
         $userID = $_SESSION['account']['id'];
-        $message = htmlspecialchars($_POST['message'], ENT_QUOTES);
         $datetime = $this->system->getDatetime();
 
         // Add message into the conversation in database.

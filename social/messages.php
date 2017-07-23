@@ -187,7 +187,7 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'sendmessage' && $isSelecte
                             <div class="ml-auto text-muted"><small style="cursor: help;" data-toggle="tooltip" data-placement="top" title="<?php echo $message['datetime']; ?> (UTC)"><?php echo $message['send_interval']; ?> <i class="fa fa-clock-o"></i></small></div>
                         </div>
                         <div>
-                            <?php echo $message['message']; ?>
+                            <?php echo htmlspecialchars($message['message']); ?>
                         </div>
                     </div>
                 </div>
@@ -250,7 +250,7 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'sendmessage' && $isSelecte
                         </div>
                         <div style="color: #424242;">
                             <?php echo $conversation['current_sent'] ? '<small class="text-muted pr-1">You: </small>' : ''; ?>
-                            <?php echo $conversation['message']; ?>
+                            <?php echo htmlspecialchars($conversation['message']); ?>
                         </div>
                     </div>
                 </div>

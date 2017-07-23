@@ -393,9 +393,6 @@ class User
               return false;
           }
 
-          // Escape HTML characters in new city name.
-          $city = htmlspecialchars($city, ENT_QUOTES);
-
           // Set null if city name value is empty.
           if (strlen($city) === 0) {
               $city = null;
@@ -446,9 +443,6 @@ class User
 
               return false;
           }
-
-          // Escape HTML characters in new description.
-          $description = htmlspecialchars($description, ENT_QUOTES);
 
           // Set null if new description value is empty.
           if (strlen($description) === 0) {

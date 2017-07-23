@@ -22,7 +22,7 @@ foreach ($comments as $comment) {
     <div class="ml-2" style="line-height: 1.4;">
         <small class="d-block">
             <a href="profile.php?u=<?php echo $comment['user_id']; ?>"><?php echo $comment['display_name']; ?></a>
-            <span class="ml-1"><?php echo htmlspecialchars($comment['content'], ENT_QUOTES); ?></span>
+            <span class="ml-1"><?php echo htmlspecialchars($comment['content']); ?></span>
         </small>
         <small class="d-inline-block text-muted" style="cursor: help;" data-toggle="tooltip" data-placement="top" title="<?php echo $comment['datetime']; ?> (UTC)">
             <?php echo $o_system->getDateIntervalString($o_system->countDateInterval($comment['datetime'])); ?>

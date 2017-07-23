@@ -54,7 +54,7 @@ foreach ($posts as $post) {
 
                 <div>
                     <div class="font-weight-bold mb-1"><a href="profile.php?u=<?php echo $post['user_id']; ?>"><?php echo $post['display_name']; ?></a></div>
-                    <div><?php echo $post['content']; ?></div>
+                    <div><?php echo htmlspecialchars($post['content']); ?></div>
                 </div>
 
                 <?php } else if ($post['type'] == 10) { // Join post ?>

@@ -119,7 +119,7 @@ if (!empty($_GET['u']) || !empty($_SESSION['account']['id'])) {
                     <p class="mb-0 text-muted" style="margin-top: -2px;"><small>@<?php echo $user['username']; ?></small></p>
                     <p><?php echo $userBadge; ?> <?php echo $isOnline ? '<span class="badge badge-success">Online</span>' : '<span class="badge badge-danger">Offline</span>'; ?></p>
 
-                    <p class="mb-0" style="line-height: 1.2;"><small><?php echo $user['description'] ?? 'No description'; ?></small></p>
+                    <p class="mb-0" style="line-height: 1.2;"><small><?php echo htmlspecialchars($user['description'] ?? 'No description'); ?></small></p>
                 </div>
 
                 <div class="rounded mb-3" style="border: 1px solid #E0E0E0;">
@@ -130,7 +130,7 @@ if (!empty($_GET['u']) || !empty($_SESSION['account']['id'])) {
                             <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="Location">
                                 <i class="fa fa-map-marker text-primary" aria-hidden="true"></i>
                             </span>
-                            <?php echo ($user['city'] ?? 'Ponyville') . ', ' . ($user['country_code'] ?? 'Equestria'); ?>
+                            <?php echo htmlspecialchars(($user['city'] ? $user['city'] . ', ' : '') . ($user['country_code'] ?? 'Unknown')); ?>
                         </p>
                         <p class="mb-0">
                             <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="Gender">
