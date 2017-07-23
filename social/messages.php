@@ -89,7 +89,7 @@ if (!empty($userID) || !empty($conversationID)) {
     if ($membersCount === 2) {
         // Get details about second user.
         $user = $o_database->read(
-            'id, display_name, username, last_online',
+            'id, display_name, username, last_online, account_type',
             'users',
             'WHERE id = ?',
             [$userID]
@@ -98,7 +98,7 @@ if (!empty($userID) || !empty($conversationID)) {
         // Get string with last seen message.
         $lastOnlineInterval = $o_system->countDateInterval($user['last_online']);
         if ($lastOnlineInterval < 90) {
-            $lastOnline = 'Just now';
+            $lastOnline = 'now';
         } else {
             $lastOnline = $o_system->getDateIntervalString($lastOnlineInterval);
         }
@@ -141,8 +141,18 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'sendmessage' && $isSelecte
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha256-rr9hHBQ43H7HSOmmNkxzQGazS/Khx+L8ZRHteEY1tQ4=" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
     <style type="text/css">
-    .conversation-row, .message-row { border-bottom: 1px solid #EEE; }
-    .conversation-row:last-child, .message-row:last-child { border: 0; }
+    aside { flex: 0 0 340px; min-height: calc(100vh - 56px); border-right: 1px solid #E0E0E0; }
+    aside a { color: #292B2C; }
+    aside a:hover { color: #292B2C; text-decoration: none; }
+    .conversation-row { line-height: 1.4; }
+    .conversation-row.active, .conversation-row:hover { background-color: #EEE; }
+    #conversations-displayname { flex: 100%; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+    #conversations-datetime { flex: 0 0 104px; text-align: right; }
+    #conversations-message { display: block; width: 242px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+    #conversation-titlebar { height: 65px; border-bottom: 1px solid #E0E0E0; }
+    #container-messages { flex: calc(100vh - 178px); overflow-y: auto; }
+    .message-row { border-bottom: 1px solid #E0E0E0; }
+    .message-row:last-child { border: 0; }
     </style>
 </head>
 <body>
@@ -154,75 +164,22 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'sendmessage' && $isSelecte
     require_once('../system/inc/messages.php');
     ?>
 
-    <div class="container">
-        <?php
-        // Show selected conversation messages.
-        if ($isSelected) {
-        ?>
-        <section class="my-5">
-            <h3>Your chatting with: <?php echo $user['display_name']; ?> <small>(@<?php echo $user['username']; ?>)</small></h3>
-            <p>Last seen: <?php echo $lastOnline; ?></p>
-        </section>
-        <section class="my-5">
-            <?php
-            // Get messages from conversation.
-            $messages = $o_message->getMessages($conversationID);
-
-            // List messages from user here.
-            foreach ($messages as $message) {
-            ?>
-
-            <div class="message-row py-3">
-                <div class="d-flex align-items-center">
-                    <div class="pr-3">
-                        <img src="../media/avatars/<?php echo $message['avatar']; ?>/64.jpg" class="rounded" />
-                    </div>
-                    <div style="width: 100%;">
-                        <div class="d-flex justify-content-start mb-2">
-                            <?php if (!$message['current_sent']) { ?>
-                            <div class="font-weight-bold"><a href="profile.php?u=<?php echo $message['user_id']; ?>"><?php echo $message['display_name']; ?></a></div>
-                            <?php } else { ?>
-                            <div class="font-weight-bold">You</div>
-                            <?php } ?>
-                            <div class="ml-auto text-muted"><small style="cursor: help;" data-toggle="tooltip" data-placement="top" title="<?php echo $message['datetime']; ?> (UTC)"><?php echo $message['send_interval']; ?> <i class="fa fa-clock-o"></i></small></div>
-                        </div>
-                        <div>
-                            <?php echo htmlspecialchars($message['message']); ?>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <?php
-            } // foreach
-            ?>
-        </section>
-        <section class="my-5">
-            <form method="post">
-                <div class="form-group">
-                    <textarea class="form-control" name="message" placeholder="Write a message here..." required autofocus></textarea>
-                </div>
-                <div class="form-group">
-                    <button type="submit" name="submit" value="sendmessage" class="btn btn-outline-primary" role="button">Send</button>
-                </div>
-            </form>
-        </section>
-        <?php
-        } // if
-        // Show list of recent conversations.
-        else {
-        ?>
-
-        <h1 class="text-center my-5">Messages</h1>
-        <section class="my-5">
-            <h2 class="pb-4">Last conversations</h2>
-            <?php
-            // Show last conversations list if user has verified his e-mail address.
-            if ($emailVerified) {
+    <div class="d-flex">
+        <aside class="d-flex flex-column">
+            <div style="flex: calc(100vh - 56px); overflow-y: auto;">
+                <?php
+                // Show last conversations list.
                 $conversations = $o_message->getConversations();
 
                 // Display each conversation.
                 foreach ($conversations as $conversation) {
+                    // Check if conversation is a current conversation.
+                    if ($conversation['id'] == ($_GET['u'] ?? 0)) {
+                        $isCurrent = true;
+                    } else {
+                        $isCurrent = false;
+                    }
+
                     // Display badge for administrators and moderators.
                     switch ($conversation['account_type']) {
                         case '9':
@@ -234,43 +191,109 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'sendmessage' && $isSelecte
                         default:
                             $userBadge = '';
                     }
-            ?>
+                ?>
 
-            <div class="conversation-row py-3">
-                <div class="d-flex align-items-center">
-                    <div class="pr-3">
-                        <img src="../media/avatars/<?php echo $conversation['avatar']; ?>/64.jpg" class="rounded" />
-                    </div>
-                    <div style="width: 100%;">
-                        <div class="d-flex justify-content-start mb-1">
-                            <div class="pr-2 font-weight-bold"><a href="messages.php?u=<?php echo $conversation['id']; ?>"><?php echo $conversation['display_name']; ?></a></div>
-                            <div class="pr-2"><small class="text-muted">(@<?php echo $conversation['username']; ?>)</small></div>
-                            <div class="pr-2"><?php echo $userBadge; ?><?php echo $conversation['user_online'] ? ' <span class="badge badge-success">Online</span>' : ''; ?></div>
-                            <div class="ml-auto text-muted"><small style="cursor: help;" data-toggle="tooltip" data-placement="top" title="<?php echo $conversation['datetime']; ?> (UTC)"><?php echo $conversation['send_interval']; ?> <i class="fa fa-clock-o"></i></small></div>
+
+                <div class="conversation-row<?php echo $isCurrent ? ' active' : '' ?>">
+                    <a href="messages.php?u=<?php echo $conversation['id']; ?>">
+                        <div class="d-flex align-items-center px-3 py-2" style="border-bottom: 1px solid #E0E0E0; overflow: hidden;">
+                            <div class="pr-3">
+                                <img src="../media/avatars/<?php echo $conversation['avatar']; ?>/64.jpg" class="rounded" style="width: 48px; height: 48px;" />
+                            </div>
+                            <div class="d-flex flex-column" style="flex: 100%">
+                                <div class="d-flex" style="margin-bottom: 3px;">
+                                    <!-- <span class="pr-2"><?php echo $userBadge; ?><?php echo $conversation['user_online'] ? ' <span class="badge badge-success">Online</span>' : ''; ?></span> -->
+                                    <span id="conversations-displayname"><?php echo $conversation['display_name']; ?></span>
+                                    <span class="text-muted" id="conversations-datetime"><small style="cursor: help;" data-toggle="tooltip" data-placement="top" title="<?php echo $conversation['datetime']; ?> (UTC)"><?php echo $conversation['send_interval']; ?> <i class="fa fa-clock-o"></i></small></span>
+                                </div>
+                                <div>
+                                    <small class="text-muted pr-1" id="conversations-message">
+                                        <?php echo $conversation['current_sent'] ? 'You: ' : ''; ?>
+                                        <?php echo htmlspecialchars($conversation['message']); ?>
+                                    </small>
+                                </div>
+                            </div>
                         </div>
-                        <div style="color: #424242;">
-                            <?php echo $conversation['current_sent'] ? '<small class="text-muted pr-1">You: </small>' : ''; ?>
-                            <?php echo htmlspecialchars($conversation['message']); ?>
+                    </a>
+                </div>
+
+                <?php
+                } // foreach
+                ?>
+            </div>
+        </aside>
+
+        <?php
+        // Display conversation messages if conversation has been selected.
+        if ($isSelected) {
+            // Display badge for administrators and moderators.
+            switch ($user['account_type']) {
+                case '9':
+                    $userBadge = '<small class="badge badge-danger mr-1" style="vertical-align: top;">Admin</small>';
+                    break;
+                case '8':
+                    $userBadge = '<small class="badge badge-info mr-1" style="vertical-align: top;">Mod</small>';
+                    break;
+                default:
+                    $userBadge = '';
+            }
+        ?>
+
+        <div class="d-flex flex-column" style="flex: 100%;">
+            <div class="py-2 text-center" id="conversation-titlebar">
+                <h6 class="mb-0" style="margin-top: 5px;"><?php echo $user['display_name']; // Badge here ?> <small class="text-muted">(@<?php echo $user['username']; ?>)</small></h6>
+                <p class="mb-0" style="margin-top: 2px;"><small class="text-muted">Active <?php echo $lastOnline; ?></small></p>
+            </div>
+
+            <div id="container-messages">
+                <?php
+                // Get messages from conversation.
+                $messages = $o_message->getMessages($conversationID);
+
+                // List messages from user here.
+                foreach ($messages as $message) {
+                ?>
+
+                <div class="message-row py-2">
+                    <div class="d-flex mx-3">
+                        <div class="pr-3">
+                            <img src="../media/avatars/<?php echo $message['avatar']; ?>/64.jpg" class="rounded" style="width: 48px; height: 48px;" />
+                        </div>
+                        <div style="width: 100%; line-height: 1.3;">
+                            <div class="d-flex justify-content-start mb-2">
+                                <?php if (!$message['current_sent']) { ?>
+                                <div><small class="font-weight-bold"><a href="profile.php?u=<?php echo $message['user_id']; ?>"><?php echo $message['display_name']; ?></a></small></div>
+                                <?php } else { ?>
+                                <div><small class="font-weight-bold">You</small></div>
+                                <?php } ?>
+                                <div class="ml-auto text-muted"><small style="cursor: help;" data-toggle="tooltip" data-placement="top" title="<?php echo $message['datetime']; ?> (UTC)"><?php echo $message['send_interval']; ?> <i class="fa fa-clock-o"></i></small></div>
+                            </div>
+                            <div>
+                                <?php echo htmlspecialchars($message['message']); ?>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <?php
+                } // foreach
+                ?>
             </div>
 
-            <?php
-                } // foreach
-            } // if
-            // Show warning about required e-mail verification if user has not verified it.
-            else {
-            ?>
+            <div style="border-top: 1px solid #E0E0E0;">
+                <form class="d-flex align-items-center" method="post">
+                    <div class="form-group mb-0 mr-2" style="flex: 100%;">
+                        <textarea class="form-control rounded-0" name="message" placeholder="Write a message..." style="border: 0;" required autofocus></textarea>
+                    </div>
+                    <div class="form-group mb-0 mr-2">
+                        <button type="submit" name="submit" value="sendmessage" class="btn btn-outline-primary" role="button">Send</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
-            <p class="text-danger"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> You need to verify your e-mail address before you'll be able to use private messages!</p>
-
-            <?php
-            } // else
-            ?>
-        </section>
         <?php
-        } // else
+        } // if
         ?>
     </div>
 
@@ -278,5 +301,9 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'sendmessage' && $isSelecte
     // Require footer for social pages.
     require_once('inc/footer.php');
     ?>
+
+    <script type="text/javascript">
+    $('#container-messages').scrollTop($('#container-messages')[0].scrollHeight);
+    </script>
 </body>
 </html>
