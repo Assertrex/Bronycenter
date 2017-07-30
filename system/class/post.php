@@ -454,16 +454,32 @@ class Post
 
         // Get details about existing and not removed standard post.
         $post = $this->database->read(
-            'id',
+            'id, user_id',
             'posts',
             'WHERE id = ? AND type = 1 AND status != 9',
-            [$postID]
+            [intval($postID)]
         );
 
         // Check if post has been found.
         if (count($post) != 1) {
             // TODO Error if post doesn't exist, has been removed or is not of a standard type.
             return false;
+        }
+
+        // Check if user is allowed to delete a post.
+        if ($post[0]['user_id'] != $_SESSION['account']['id']) {
+            // Check if user is a moderator.
+            $moderator = $this->database->read(
+                'account_type',
+                'users',
+                'WHERE id = ?',
+                [$_SESSION['account']['id']]
+            );
+
+            // Check if user is allowed to delete post.
+            if ($moderator[0]['account_type'] != 8 && $moderator[0]['account_type'] != 9) {
+                return false;
+            }
         }
 
         // Change post status to removed.

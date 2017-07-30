@@ -88,13 +88,28 @@ foreach ($posts as $post) {
                     </button>
                     <?php } ?>
                     <button type="button" class="btn btn-outline-primary btn-sm btn-postcommentswitch" role="button" data-active="false"><i class="fa fa-comment-o" aria-hidden="true"></i> Comment</button>
-                    <button type="button" class="btn btn-outline-primary btn-sm disabled" role="button"><i class="fa fa-retweet" aria-hidden="true"></i> Share</button>
-                    <button type="button" class="btn btn-outline-danger btn-sm disabled" role="button"><i class="fa fa-flag-o" aria-hidden="true"></i> Report</button>
-                    <?php if ($post['user_id'] == $_SESSION['account']['id'] && $post['type'] == 1) { ?>
-                        <button type="button" class="btn btn-outline-danger btn-sm btn-postdelete" role="button">
-                            <i class="fa fa-trash-o" aria-hidden="true"></i> Delete
+                    <div class="d-inline-block dropdown">
+                        <button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            More
                         </button>
-                    <?php } ?>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <button class="dropdown-item disabled" type="button" role="button">
+                                <i class="fa fa-exclamation-triangle" aria-hidden="true" style="width: 20px; vertical-align: middle;"></i>
+                                <span style="vertical-align: middle;">Report</span>
+                            </button>
+                            <?php if ($post['user_id'] == $_SESSION['account']['id'] && $post['type'] == 1) { ?>
+                                <button class="dropdown-item btn-deletepost" type="button" role="button" style="color: #F44336;" data-postid="<?php echo $post['id']; ?>">
+                                    <i class="fa fa-trash-o" aria-hidden="true" style="width: 20px; vertical-align: middle;"></i>
+                                    <span style="vertical-align: middle;">Delete</span>
+                                </button>
+                            <?php } else if ($_SESSION['account']['type'] == 8 || $_SESSION['account']['type'] == 9) { ?>
+                                <button class="dropdown-item btn-moddeletepost" type="button" role="button" style="color: #F44336;" data-postid="<?php echo $post['id']; ?>">
+                                    <i class="fa fa-ban" aria-hidden="true" style="width: 20px; vertical-align: middle;"></i>
+                                    <span style="vertical-align: middle;">Delete as Mod</span>
+                                </button>
+                            <?php }?>
+                        </div>
+                    </div>
                 <?php
                 } // if
                 // Show warning about required e-mail verification if user has not verified it.
@@ -181,6 +196,9 @@ foreach ($posts as $post) {
             <small class="text-muted" style="cursor: help;" data-toggle="tooltip" data-placement="top" title="<?php echo $post['datetime']; ?> (UTC)">
                 <?php echo $publishInterval; ?> <i class="fa fa-clock-o"></i>
             </small>
+            <!-- <span class="text-muted pl-2" style="cursor: pointer;">
+                <i class="fa fa-ellipsis-v" aria-hidden="true" style="vertical-align: middle;"></i>
+            </span> -->
             <div style="padding-top: 1px;"><?php echo $isOnline ? '<span class="badge badge-success">Online</span>' : ''; ?></div>
         </div>
     </div>

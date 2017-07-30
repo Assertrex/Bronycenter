@@ -74,8 +74,11 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'createpost') {
         // Call a more comments loader function on button click.
         $(".btn-loadmorecomments").click(loadMoreComments);
 
-        // Call a post delete function on button click.
-        $(".btn-postdelete").click(deletePost);
+        // Call an own post delete function on button click.
+        $(".btn-deletepost").click(deletePost);
+
+        // Call a moderator post delete function on button click.
+        $(".btn-moddeletepost").click(modDeletePost);
 
         // Call a post update likes modal function on button click.
         $(".btn-postshowlikes").click(updateLikesModal);
@@ -258,11 +261,11 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'createpost') {
             });
         }
 
-        // Post delete function.
+        // Post delete function (own post).
         function deletePost(e) {
             // Store details in a variables.
-            let postID = e.currentTarget.parentNode.getAttribute('data-postid');
-            let articleElement = e.currentTarget.parentNode.parentNode.parentNode.parentNode;
+            let postID = e.currentTarget.getAttribute("data-postid");
+            let articleElement = $("#post-" + postID);
 
             // Stop removing if user has canceled action.
             // TODO Change it to a modal somehow.
@@ -270,10 +273,39 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'createpost') {
                 return false;
             }
 
-            // Make an AJAX call to like post code.
+            // Make an AJAX call to delete post code.
             $.post(
                 "ajax/deletePost.php",
                 { id: postID },
+                function(json) {
+                    // TODO Display status from JSON here.
+                    // TODO Check if post was successfully removed first.
+
+                    // Hide a deleted post from DOM.
+                    $(articleElement).hide();
+                }
+            );
+        }
+
+        // Post delete function (moderating posts).
+        function modDeletePost(e) {
+            // Store details in a variables.
+            let postID = e.currentTarget.getAttribute("data-postid");
+            let articleElement = $("#post-" + postID);
+
+            // Get a reason for removing post.
+            // TODO Change it to a modal somehow.
+            let removeReason = prompt("Why do you want to remove someone's post?");
+
+            // End function if user has not provided reason.
+            if (!removeReason) {
+                return false;
+            }
+
+            // Make an AJAX call to like post code.
+            $.post(
+                "ajax/deletePost.php",
+                { id: postID, reason: removeReason },
                 function(json) {
                     // TODO Display status from JSON here.
                     // TODO Check if post was successfully removed first.
