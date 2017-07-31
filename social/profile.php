@@ -62,6 +62,9 @@ if (!empty($_GET['u']) || !empty($_SESSION['account']['id'])) {
     // Set user's avatar or get the default one if not existing.
     $user['avatar'] = $user['avatar'] ?? 'default';
 
+    // Store country name.
+    $user['country_name'] = $o_user->getCountryName($user['country_code']) ?? 'Unknown';
+
     // Format activity datetimes.
     $registeredAt = $o_system->getDateIntervalString($o_system->countDateInterval($user['registration_datetime']));
     $lastOnlineAt = $o_system->getDateIntervalString($o_system->countDateInterval($user['last_online']));
@@ -130,7 +133,7 @@ if (!empty($_GET['u']) || !empty($_SESSION['account']['id'])) {
                             <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="Location">
                                 <i class="fa fa-map-marker text-primary" aria-hidden="true"></i>
                             </span>
-                            <?php echo htmlspecialchars(($user['city'] ? $user['city'] . ', ' : '') . ($user['country_code'] ?? 'Unknown')); ?>
+                            <?php echo htmlspecialchars($user['city'] ? $user['city'] . ', ' : '') . $user['country_name']; ?>
                         </p>
                         <p class="mb-0">
                             <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="Gender">
