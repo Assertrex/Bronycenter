@@ -39,7 +39,7 @@ if (!empty($_GET['u']) || !empty($_SESSION['account']['id'])) {
     // Display badge for administrators and moderators.
     switch ($user['account_type']) {
         case '0':
-            $userBadge = '<span class="badge badge-primary">Unverified</span>';
+            $userBadge = '<span class="badge badge-default">Unverified</span>';
             break;
         case '9':
             $userBadge = '<span class="badge badge-danger">Admin</span>';
