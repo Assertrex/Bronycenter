@@ -88,6 +88,7 @@ foreach ($posts as $post) {
                     </button>
                     <?php } ?>
                     <button type="button" class="btn btn-outline-primary btn-sm btn-postcommentswitch" role="button" data-active="false"><i class="fa fa-comment-o" aria-hidden="true"></i> Comment</button>
+                    <?php if ($post['type'] == 1) { ?>
                     <div class="d-inline-block dropdown">
                         <button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             More
@@ -97,6 +98,7 @@ foreach ($posts as $post) {
                                 <i class="fa fa-exclamation-triangle" aria-hidden="true" style="width: 20px; vertical-align: middle;"></i>
                                 <span style="vertical-align: middle;">Report</span>
                             </button>
+
                             <?php if ($post['user_id'] == $_SESSION['account']['id'] && $post['type'] == 1) { ?>
                                 <button class="dropdown-item btn-deletepost" type="button" role="button" style="color: #F44336;" data-postid="<?php echo $post['id']; ?>">
                                     <i class="fa fa-trash-o" aria-hidden="true" style="width: 20px; vertical-align: middle;"></i>
@@ -110,6 +112,7 @@ foreach ($posts as $post) {
                             <?php }?>
                         </div>
                     </div>
+                    <?php } ?>
                 <?php
                 } // if
                 // Show warning about required e-mail verification if user has not verified it.
