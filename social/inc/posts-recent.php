@@ -187,7 +187,7 @@ foreach ($posts as $post) {
                         <img src="../media/avatars/<?php echo $_SESSION['user']['avatar']; ?>/64.jpg" class="rounded" style="display: block; width: 27px; height: 27px;" />
                     </div>
                     <div class="pr-2" style="flex: 100%;">
-                        <input type="text" class="form-control form-control-sm post-comment-input" placeholder="Write a comment..." maxlength="300" />
+                        <input type="text" class="form-control form-control-sm post-comment-input" placeholder="Write a comment..." maxlength="250" />
                     </div>
                     <div style="flex: 100%;">
                         <button type="button" class="btn btn-outline-primary btn-sm btn-postcommentsend" role="button"><i class="fa fa-paper-plane-o" aria-hidden="true"></i> Send</button>

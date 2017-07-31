@@ -78,6 +78,17 @@ class Message
             return false;
         }
 
+        // Check if message content is not too long.
+        if (count($message) > 1000) {
+            // Show a failed system message if message is too long.
+            $this->system->setMessage(
+                'error',
+                'Message can\'t contain more than 1000 characters!'
+            );
+
+            return false;
+        }
+
         // Store required variables.
         $userID = $_SESSION['account']['id'];
         $datetime = $this->system->getDatetime();
@@ -95,7 +106,7 @@ class Message
             // Show a failed system message if message couldn't be added.
             $this->system->setMessage(
                 'error',
-                'Message can\'t be empty!'
+                'Message has not been added somehow...'
             );
 
             return false;

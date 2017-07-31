@@ -283,7 +283,7 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'sendmessage' && $isSelecte
             <div style="border-top: 1px solid #E0E0E0;">
                 <form class="d-flex align-items-center" method="post">
                     <div class="form-group mb-0 mr-2" style="flex: 100%;">
-                        <textarea class="form-control rounded-0" name="message" placeholder="Write a message..." style="border: 0;" required autofocus></textarea>
+                        <textarea class="form-control rounded-0" name="message" placeholder="Write a message..." style="border: 0;" maxlength="1000" required autofocus></textarea>
                     </div>
                     <div class="form-group mb-0 mr-2">
                         <button type="submit" name="submit" value="sendmessage" class="btn btn-outline-primary" role="button">Send</button>

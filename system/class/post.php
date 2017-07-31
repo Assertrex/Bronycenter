@@ -426,6 +426,16 @@ class Post
 			return false;
 		}
 
+        // Make sure that standard post doesn't contain more than 1000 characters.
+		if ($postType === 1 && strlen($postContent) < 3) {
+            $this->system->setMessage(
+                'error',
+                'Post can\'t contain more than 1000 characters.'
+            );
+
+			return false;
+		}
+
         // Insert post into database.
 		$this->database->create(
 			'user_id, ip, datetime, content, type',

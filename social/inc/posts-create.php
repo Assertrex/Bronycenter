@@ -6,7 +6,7 @@ if ($emailVerified) {
 ?>
 <form method="post" action="index.php">
     <div class="form-group">
-        <textarea name="message" class="form-control" placeholder="Deer Princess Celestia..." required autofocus></textarea>
+        <textarea name="message" class="form-control" placeholder="Deer Princess Celestia..." maxlength="1000" required autofocus></textarea>
     </div>
     <div class="form-group">
         <button type="submit" name="submit" value="createpost" class="btn btn-outline-primary" role="button">Send to Princess</button>
