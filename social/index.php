@@ -65,6 +65,18 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'createpost') {
     <script type="text/javascript">
     // First check if document is ready.
     $(document).ready(function() {
+        // Count amount of characters used in new post.
+        $("#createpost-content").on("input", function() {
+            let amount = $("#createpost-content").val().length;
+            $("#createpost-characters-counter").text(amount);
+        });
+
+        // Count amount of characters used in comments.
+        $(".post-comment-input").on("input", function(e) {
+            let amount = $(this).val().length;
+            $(e.currentTarget.nextElementSibling.firstChild).text(amount);
+        });
+
         // Call a post like function on button click.
         $(".btn-postlike").click(likePost);
 

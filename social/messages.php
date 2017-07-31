@@ -282,8 +282,11 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'sendmessage' && $isSelecte
 
             <div style="border-top: 1px solid #E0E0E0;">
                 <form class="d-flex align-items-center" method="post">
-                    <div class="form-group mb-0 mr-2" style="flex: 100%;">
-                        <textarea class="form-control rounded-0" name="message" placeholder="Write a message..." style="border: 0;" maxlength="1000" required autofocus></textarea>
+                    <div class="form-group mb-0 mr-2" style="position: relative; flex: 100%;">
+                        <textarea class="form-control rounded-0" id="message-content" name="message" placeholder="Write a message..." style="border: 0;" maxlength="1000" required autofocus></textarea>
+                        <div class="text-center" style="position: absolute; bottom: 2px; right: 16px;">
+                            <small class="text-muted"><span id="message-characters-counter">0</span> / 1000</small>
+                        </div>
                     </div>
                     <div class="form-group mb-0 mr-2">
                         <button type="submit" name="submit" value="sendmessage" class="btn btn-outline-primary" role="button">Send</button>
@@ -303,7 +306,14 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'sendmessage' && $isSelecte
     ?>
 
     <script type="text/javascript">
+    // Scroll to the newest messages on page load.
     $('#container-messages').scrollTop($('#container-messages')[0].scrollHeight);
+
+    // Count amount of characters used in a message.
+    $("#message-content").on("input", function() {
+        let amount = $("#message-content").val().length;
+        $("#message-characters-counter").text(amount);
+    });
     </script>
 </body>
 </html>

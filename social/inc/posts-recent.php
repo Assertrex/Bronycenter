@@ -188,6 +188,7 @@ foreach ($posts as $post) {
                     </div>
                     <div class="pr-2" style="flex: 100%;">
                         <input type="text" class="form-control form-control-sm post-comment-input" placeholder="Write a comment..." maxlength="250" />
+                        <small class="text-muted"><span>0</span> / 250</small>
                     </div>
                     <div style="flex: 100%;">
                         <button type="button" class="btn btn-outline-primary btn-sm btn-postcommentsend" role="button"><i class="fa fa-paper-plane-o" aria-hidden="true"></i> Send</button>
