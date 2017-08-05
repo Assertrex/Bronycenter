@@ -5,14 +5,14 @@ CREATE TABLE IF NOT EXISTS `conversations` (
   `members_count` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
   `messages_count` int(10) UNSIGNED NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `conversations_members` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `conversation_id` int(10) UNSIGNED NOT NULL,
   `user_id` int(10) UNSIGNED NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `conversations_messages` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS `conversations_messages` (
   `datetime` datetime NOT NULL,
   `message` varchar(500) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `key_email` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS `key_email` (
   `used_datetime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `hash` (`hash`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `log_logins` (
   `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS `log_logins` (
   `datetime` datetime NOT NULL,
   `agent` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=66 DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `posts` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS `posts` (
   `delete_datetime` datetime DEFAULT NULL,
   `delete_reason` varchar(64) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `posts_comments` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `posts_comments` (
   `content` varchar(300) NOT NULL,
   `active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=74 DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `posts_likes` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS `posts_likes` (
   `user_id` int(10) UNSIGNED NOT NULL,
   `active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `users` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -102,7 +102,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   UNIQUE KEY `displayName` (`display_name`),
   UNIQUE KEY `email` (`email`),
   UNIQUE KEY `avatar` (`avatar`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `users_details` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -110,7 +110,11 @@ CREATE TABLE IF NOT EXISTS `users_details` (
   `birthdate` date DEFAULT NULL,
   `gender` tinyint(3) UNSIGNED DEFAULT NULL,
   `city` varchar(58) DEFAULT NULL,
-  `description` mediumtext,
+  `short_description` varchar(255) DEFAULT NULL,
+  `interests_description` tinytext,
+  `bronyinterval_description` tinytext,
+  `favpony_description` tinytext,
+  `full_description` text,
   PRIMARY KEY (`id`),
   UNIQUE KEY `userId` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;

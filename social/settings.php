@@ -23,8 +23,20 @@ if (!empty($_POST['submit'])) {
         case 'changecity':
             $o_user->changeCity($_SESSION['account']['id'], $_POST['city']);
             break;
-        case 'changedescription':
-            $o_user->changeDescription($_SESSION['account']['id'], $_POST['description']);
+        case 'changeshortdescription':
+            $o_user->changeProfileDescription($_SESSION['account']['id'], $_POST['shortdescription'], 'shortdescription');
+            break;
+        case 'changeinterestsdescription':
+            $o_user->changeProfileDescription($_SESSION['account']['id'], $_POST['interestsdescription'], 'interestsdescription');
+            break;
+        case 'changefulldescription':
+            $o_user->changeProfileDescription($_SESSION['account']['id'], $_POST['fulldescription'], 'fulldescription');
+            break;
+        case 'changebronyintervaldescription':
+            $o_user->changeProfileDescription($_SESSION['account']['id'], $_POST['bronyintervaldescription'], 'bronyintervaldescription');
+            break;
+        case 'changefavponydescription':
+            $o_user->changeProfileDescription($_SESSION['account']['id'], $_POST['favponydescription'], 'favponydescription');
             break;
         case 'changeavatar':
             // Require Image class for image manipulation.
@@ -38,6 +50,15 @@ if (!empty($_POST['submit'])) {
 
 // Get details about current user.
 $user = $o_user->getDetails($_SESSION['account']['id']);
+
+// Get current user descriptions.
+$tmp_user_descriptions = $o_user->getDescriptions($_SESSION['account']['id']);
+
+// Merge both arrays.
+$user = array_merge($user, $tmp_user_descriptions);
+
+// Unset temporiary array with user descriptions.
+unset($tmp_user_descriptions);
 
 // Store birthdate as day, month and year variables if set up.
 if (!is_null($user['birthdate'])) {
@@ -53,6 +74,9 @@ if (!is_null($user['birthdate'])) {
 
 // Get current avatar of user or show the default one.
 $avatarName = $_SESSION['user']['avatar'] ?? 'default';
+
+// Store country name.
+$user['country_name'] = $o_user->getCountryName($user['country_code']) ?? 'Unknown';
 ?>
 
 <!DOCTYPE html>
@@ -220,13 +244,68 @@ $avatarName = $_SESSION['user']['avatar'] ?? 'default';
 
                     <div id="collapseProfileDetails" class="collapse" role="tabpanel" aria-labelledby="headingProfileDetails">
                         <div class="card-block">
-                            <form method="post" action="settings.php" class="pb-2">
-                                <h5 class="pb-2">Write something about you</h5>
-                                <div class="form-group">
-                                    <textarea name="description" placeholder="Your new description" class="form-control"><?php echo $user['description']; ?></textarea>
+                            <form method="post" action="settings.php" class="pb-3">
+                                <h6 class="pb-2">Write a short description about you.</h6>
+                                <div class="form-group row mb-0">
+                                    <div class="col-md-10 text-right">
+                                        <input type="text" id="shortdescription-value" class="form-control" name="shortdescription" placeholder="e.g.: I am a cute little pony that loves to hug everypony!" value="<?php echo $user['short_description']; ?>" maxlength="255" />
+                                        <small class="text-muted ml-2"><span id="shortdescription-counter"><?php echo strlen($user['short_description']); ?></span> / 255</small>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="submit" name="submit" value="changeshortdescription" class="btn btn-outline-primary" role="button">Update</button>
+                                    </div>
                                 </div>
-                                <div class="form-group mb-0">
-                                    <button type="submit" name="submit" value="changedescription" class="btn btn-outline-primary" role="button">Change description</button>
+                            </form>
+
+                            <form method="post" action="settings.php" class="pb-3">
+                                <h6 class="pb-2">What do you like to do?</h6>
+                                <div class="form-group row mb-0">
+                                    <div class="col-md-10 text-right">
+                                        <input type="text" id="interestsdescription-value" class="form-control" name="interestsdescription" placeholder="e.g.: I love to play video games. Sometimes I make trance pony music." value="<?php echo $user['interests_description']; ?>" maxlength="255" />
+                                        <small class="text-muted ml-2"><span id="interestsdescription-counter"><?php echo strlen($user['interests_description']); ?></span> / 255</small>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="submit" name="submit" value="changeinterestsdescription" class="btn btn-outline-primary" role="button">Update</button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <form method="post" action="settings.php" class="pb-3">
+                                <h6 class="pb-2">Tell us anything else you want about yourself.</h6>
+                                <div class="form-group row mb-0">
+                                    <div class="col-md-10 text-right">
+                                        <textarea id="fulldescription-value" class="form-control" name="fulldescription" placeholder="e.g.: My name is Pony and I'm usually a quiet and shy person looking for somepony that will talk to me." maxlength="1000"><?php echo $user['full_description']; ?></textarea>
+                                        <small class="text-muted ml-2"><span id="fulldescription-counter"><?php echo strlen($user['full_description']); ?></span> / 1000</small>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="submit" name="submit" value="changefulldescription" class="btn btn-outline-primary" role="button">Update</button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <form method="post" action="settings.php" class="pb-3">
+                                <h6 class="pb-2">When you've became a brony/pegasister?</h6>
+                                <div class="form-group row mb-0">
+                                    <div class="col-md-10 text-right">
+                                        <input type="text" id="bronyintervaldescription-value" class="form-control" name="bronyintervaldescription" placeholder="e.g.: January 2012" value="<?php echo $user['bronyinterval_description']; ?>" maxlength="64" />
+                                        <small class="text-muted ml-2"><span id="bronyintervaldescription-counter"><?php echo strlen($user['bronyinterval_description']); ?></span> / 64</small>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="submit" name="submit" value="changebronyintervaldescription" class="btn btn-outline-primary" role="button">Update</button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <form method="post" action="settings.php">
+                                <h6 class="pb-2">What is your favourite pony and why?</h6>
+                                <div class="form-group row mb-0">
+                                    <div class="col-md-10 text-right">
+                                        <input type="text" id="favponydescription-value" class="form-control" name="favponydescription" placeholder="e.g.: Fluttershy, because she is so cute!" value="<?php echo $user['favpony_description']; ?>" maxlength="64" />
+                                        <small class="text-muted ml-2"><span id="favponydescription-counter"><?php echo strlen($user['favpony_description']); ?></span> / 64</small>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="submit" name="submit" value="changefavponydescription" class="btn btn-outline-primary" role="button">Update</button>
+                                    </div>
                                 </div>
                             </form>
                         </div>
@@ -247,18 +326,19 @@ $avatarName = $_SESSION['user']['avatar'] ?? 'default';
                         <div class="card-block">
                             <form method="post" action="settings.php">
                                 <div class="form-group">
-                                    <input type="text" name="country" value="<?php echo $user['country_code']; ?>" placeholder="Your country" class="form-control" aria-describedby="countryHelp" disabled />
+                                    <input type="text" name="country" value="<?php echo $user['country_name']; ?>" placeholder="Your country" class="form-control" aria-describedby="countryHelp" disabled />
                                     <small id="countryHelp" class="form-text text-muted">Change of country is not available yet. It depends on your IP localization when registering.</small>
                                 </div>
                             </form>
 
                             <form method="post" action="settings.php">
                                 <div class="form-group row mb-0">
-                                    <div class="col-md-7 mb-3 mb-md-0">
-                                        <input type="text" name="city" value="<?php echo $user['city']; ?>" placeholder="Your city" class="form-control" />
+                                    <div class="col-md-10 text-right">
+                                        <input type="text" class="form-control" id="city-value" name="city" placeholder="Your city" value="<?php echo $user['city']; ?>" maxlength="58" />
+                                        <small class="text-muted ml-2"><span id="city-counter"><?php echo strlen($user['city']); ?></span> / 58</small>
                                     </div>
-                                    <div class="col-md-5 mb-0">
-                                        <button type="submit" name="submit" value="changecity" class="btn btn-outline-primary" role="button">Change city</button>
+                                    <div class="col-md-2">
+                                        <button type="submit" name="submit" value="changecity" class="btn btn-outline-primary" role="button">Change</button>
                                     </div>
                                 </div>
                             </form>
@@ -284,5 +364,46 @@ $avatarName = $_SESSION['user']['avatar'] ?? 'default';
     // Require footer for social pages.
     require_once('inc/footer.php');
     ?>
+
+    <script type="text/javascript">
+    // First check if document is ready.
+    $(document).ready(function() {
+        // Count amount of characters used in an description input.
+        $("#shortdescription-value").on("input", function() {
+            let amount = $("#shortdescription-value").val().length;
+            $("#shortdescription-counter").text(amount);
+        });
+
+        // Count amount of characters used in an description input.
+        $("#interestsdescription-value").on("input", function() {
+            let amount = $("#interestsdescription-value").val().length;
+            $("#interestsdescription-counter").text(amount);
+        });
+
+        // Count amount of characters used in an description input.
+        $("#fulldescription-value").on("input", function() {
+            let amount = $("#fulldescription-value").val().length;
+            $("#fulldescription-counter").text(amount);
+        });
+
+        // Count amount of characters used in an description input.
+        $("#bronyintervaldescription-value").on("input", function() {
+            let amount = $("#bronyintervaldescription-value").val().length;
+            $("#bronyintervaldescription-counter").text(amount);
+        });
+
+        // Count amount of characters used in an description input.
+        $("#favponydescription-value").on("input", function() {
+            let amount = $("#favponydescription-value").val().length;
+            $("#favponydescription-counter").text(amount);
+        });
+
+        // Count amount of characters used in a city name input.
+        $("#city-value").on("input", function() {
+            let amount = $("#city-value").val().length;
+            $("#city-counter").text(amount);
+        });
+    });
+    </script>
 </body>
 </html>

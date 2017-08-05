@@ -85,13 +85,13 @@ class User
      * Get details about selected user.
      *
      * @since 0.1.0
-     * @var integer $id ID of the selected user.
+     * @var integer $id ID of a selected user.
      * @return boolean|array Details about user or false if user is not existing.
      */
     public function getDetails($id) {
         // Get details about user from database.
         $user = $this->database->read(
-			'u.id, u.display_name, u.username, u.email, u.registration_ip, u.registration_datetime, u.login_ip, u.login_datetime, u.login_count, u.last_online, u.country_code, u.timezone, u.avatar, u.account_type, u.account_standing, d.birthdate, d.gender, d.city, d.description',
+			'u.id, u.display_name, u.username, u.email, u.registration_ip, u.registration_datetime, u.login_ip, u.login_datetime, u.login_count, u.last_online, u.country_code, u.timezone, u.avatar, u.account_type, u.account_standing, d.birthdate, d.gender, d.city, d.short_description',
 			'users u',
 			'INNER JOIN users_details d ON u.id = d.user_id WHERE u.id = ?',
 			[$id]
@@ -103,6 +103,31 @@ class User
         }
 
         // Return details about selected user.
+        return $user[0];
+    }
+
+    /**
+     * Get descriptions about selected user.
+     *
+     * @since 0.1.0
+     * @var integer $id ID of a selected user.
+     * @return boolean|array User's descriptions or false if user is not existing.
+     */
+    public function getDescriptions($id) {
+        // Get user descriptions from database.
+        $user = $this->database->read(
+			'short_description, interests_description, bronyinterval_description, favpony_description, full_description',
+			'users_details',
+			'WHERE user_id = ?',
+			[$id]
+		);
+
+        // Return false if user has not been found.
+        if (count($user) != 1) {
+            return false;
+        }
+
+        // Return selected user descriptions.
         return $user[0];
     }
 
@@ -426,32 +451,61 @@ class User
       }
 
      /**
-      * Change user's profile page description.
+      * Change user's profile descriptions.
       *
       * @since 0.1.0
       * @var integer $id ID of user.
-      * @var string $description New profile description.
+      * @var string $description New description.
+      * @var string $type Name of input field.
       * @return boolean Result of this method.
       */
-      public function changeDescription($id, $description) {
-          // Check if new description contains more than 500 characters.
-          if (strlen($description) >= 500) {
+      public function changeProfileDescription($id, $description, $type) {
+          // Define default values.
+          $maxlength = 0;
+          $dbcolumn = '';
+
+          // Update values with current field settings.
+          switch ($type) {
+              case 'shortdescription':
+                  $maxlength = 255;
+                  $dbcolumn = 'short_description';
+                  break;
+              case 'interestsdescription':
+                  $maxlength = 255;
+                  $dbcolumn = 'interests_description';
+                  break;
+              case 'fulldescription':
+                  $maxlength = 1000;
+                  $dbcolumn = 'full_description';
+                  break;
+              case 'bronyintervaldescription':
+                  $maxlength = 64;
+                  $dbcolumn = 'bronyinterval_description';
+                  break;
+              case 'favponydescription':
+                  $maxlength = 64;
+                  $dbcolumn = 'favpony_description';
+                  break;
+          }
+
+          // Check if new description is not too long.
+          if (strlen($description) > $maxlength) {
               $this->system->setMessage(
                   'error',
-                  'Profile description can\'t contain more than 500 characters'
+                  'This description field can\'t contain more than ' . $maxlength . ' characters!'
               );
 
               return false;
           }
 
-          // Set null if new description value is empty.
+          // Set description to null if empty.
           if (strlen($description) === 0) {
-              $description = NULL;
+              $description = null;
           }
 
-          // Change user's description in database.
+          // Set new description in database.
           $update = $this->database->update(
-              'description',
+              "$dbcolumn",
               'users_details',
               'WHERE user_id = ?',
               [$description, $id]
@@ -461,16 +515,16 @@ class User
           if ($update != 1) {
               $this->system->setMessage(
                   'error',
-                  'System couldn\'t change your description, please try again!'
+                  'System couldn\'t change your description or it\'s the same!'
               );
 
               return false;
           }
 
-          // Show successful system message on changed profile descrition.
+          // Show successful system message on changed profile description.
           $this->system->setMessage(
               'success',
-              'Your profile description has been changed successfully!'
+              'Your description has been changed successfully!'
           );
 
           return true;

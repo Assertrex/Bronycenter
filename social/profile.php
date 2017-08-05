@@ -120,9 +120,16 @@ if (!empty($_GET['u']) || !empty($_SESSION['account']['id'])) {
 
                     <h5 class="mb-0"><?php echo $user['display_name']; ?></h5>
                     <p class="mb-0 text-muted" style="margin-top: -2px;"><small>@<?php echo $user['username']; ?></small></p>
-                    <p><?php echo $userBadge; ?> <?php echo $isOnline ? '<span class="badge badge-success">Online</span>' : '<span class="badge badge-danger">Offline</span>'; ?></p>
+                    <p class="mb-0"><?php echo $userBadge; ?> <?php echo $isOnline ? '<span class="badge badge-success">Online</span>' : '<span class="badge badge-danger">Offline</span>'; ?></p>
 
-                    <p class="mb-0" style="line-height: 1.2;"><small><?php echo htmlspecialchars($user['description'] ?? 'No description'); ?></small></p>
+                    <?php
+                    // Display description only if available.
+                    if (!is_null($user['short_description'])) {
+                    ?>
+                    <p class="mt-3 mb-0" style="line-height: 1.2;"><small><?php echo htmlspecialchars($user['short_description']); ?></small></p>
+                    <?php
+                    }
+                    ?>
                 </div>
 
                 <div class="rounded mb-3" style="border: 1px solid #E0E0E0;">
