@@ -53,11 +53,15 @@ class Post
      * TODO Fix offset somehow when new posts have been added (probably get from last id).
      *
      * @since 0.1.0
-     * @var integer $amount Amount of posts.
+     * @var null|integer $amount Amount of posts.
+     * @var null|integer $page Number of requested page.
      * @return array Array of selected posts.
      */
-	public function get($amount = 10)
+	public function get($amount = 10, $page = 1)
 	{
+        // Remember page offset.
+        $pageOffset = ($page - 1) * $amount;
+
         // Get an array of matching posts.
 		$posts = $this->database->read(
 			'p.id, p.user_id, p.datetime, p.content, p.like_count, p.comment_count, p.type, u.display_name, u.last_online, u.country_code, u.avatar, u.account_type, d.birthdate, d.gender, l.user_id AS ownlike_id',
@@ -65,8 +69,8 @@ class Post
 			'INNER JOIN users u ON p.user_id = u.id
              INNER JOIN users_details d ON d.user_id = u.id
              LEFT JOIN (SELECT id, post_id, user_id FROM posts_likes WHERE user_id = ? AND active = 1) AS l ON p.id = l.post_id
-             WHERE status != 9 ORDER BY id DESC LIMIT ?',
-			[$_SESSION['account']['id'], $amount]
+             WHERE status != 9 ORDER BY id DESC LIMIT ? OFFSET ?',
+			[$_SESSION['account']['id'], $amount, $pageOffset]
 		);
 
         // Add more elements to an array if any post has been found.
@@ -94,11 +98,12 @@ class Post
      *
      * @since 0.1.0
      * @var null|integer $amount Amount of recent posts to get.
+     * @var null|integer $page Number of requested page.
      * @return array Array of recent posts.
      */
-    public function getRecent($amount = 25)
+    public function getRecent($amount = 10, $page = 1)
 	{
-		return $this->get($amount);
+		return $this->get($amount, $page);
 	}
 
     /**

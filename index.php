@@ -69,7 +69,7 @@ require_once('system/inc/init.php');
 
                     <ul class="list-group text-right" style="list-style: none;">
                         <li>Server status: <b class="text-success">Open</b></li>
-                        <li class="text-muted">Last update: <b>05.08.2017</b></li>
+                        <li class="text-muted">Last update: <b>08.08.2017</b></li>
                         <li class="text-muted">Suggestions: <b>0</b> (of <b>0</b>)</li>
                         <br />
                         <li>Online now: <b><?php echo $o_user->getOnlineUsersCount(); ?></b></li>

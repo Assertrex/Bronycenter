@@ -1,8 +1,15 @@
 <h2 class="text-center mb-4">Recent posts</h2>
 
 <?php
+// Get a page number.
+if (!empty($_GET['p']) && intval($_GET['p']) != 0) {
+    $pageNumber = intval($_GET['p']);
+} else {
+    $pageNumber = 1;
+}
+
 // Get list of recent posts.
-$posts = $o_post->getRecent();
+$posts = $o_post->getRecent(10, $pageNumber);
 
 // Display each post.
 foreach ($posts as $post) {

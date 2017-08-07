@@ -27,7 +27,7 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'createpost') {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
     <style type="text/css">
     .post-row { border-bottom: 1px solid #EEE; }
-    .post-row:last-child { border: 0; }
+    .post-row:last-of-type { border: 0; }
     .btn-postshowlikes, .btn-loadmorecomments { color: #0275d8; cursor: pointer; }
     .btn-postshowlikes:hover, .btn-loadmorecomments:hover { color: #014c8c; text-decoration: underline; }
     </style>
@@ -53,6 +53,9 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'createpost') {
             <?php
             // Require HTML containing recent posts.
             require_once('inc/posts-recent.php');
+
+            // Require HTML containing recent posts pagination.
+            require_once('inc/posts-recent-pagination.php');
             ?>
         </section>
     </div>
