@@ -29,8 +29,8 @@
             // Show buttons for logged users.
             if ($isLogged) {
             ?>
-            <a href="social/"><button class="btn btn-outline-warning" role="button">Social</button></a>
-            <a href="logout.php" class="ml-3"><button class="btn btn-outline-warning" role="button">Logout</button></a>
+            <a href="social/"><button class="btn" role="button">Social</button></a>
+            <a href="logout.php" class="ml-3"><button class="btn" role="button">Logout</button></a>
             <?php
             } // if
             // Show login form for guests.

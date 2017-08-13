@@ -88,8 +88,10 @@ $user['country_name'] = $o_user->getCountryName($user['country_code']) ?? 'Unkno
 
     <title>Settings :: BronyCenter</title>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha256-rr9hHBQ43H7HSOmmNkxzQGazS/Khx+L8ZRHteEY1tQ4=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="../resources/css/style.css?v=32" />
+
     <style type="text/css">
     @media (max-width: 767px) {
         #birthdateGrid { text-align: left !important; }
@@ -106,14 +108,15 @@ $user['country_name'] = $o_user->getCountryName($user['country_code']) ?? 'Unkno
     ?>
 
     <div class="container">
-        <h1 class="text-center my-5">Settings</h1>
+        <section>
+            <h1>Settings</h1>
 
-        <?php
-        // Show forms for changing settings if user has verified his e-mail address.
-        if ($emailVerified) {
-        ?>
-        <section class="my-5">
-            <div id="accordion" role="tablist" aria-multiselectable="true">
+            <?php
+            // Show forms for changing settings if user has verified his e-mail address.
+            if ($emailVerified) {
+            ?>
+
+            <div id="accordion" role="tablist">
                 <!-- Change account settings card -->
                 <div class="card">
                     <div class="card-header" role="tab" id="headingAccountSettings">
@@ -125,7 +128,7 @@ $user['country_name'] = $o_user->getCountryName($user['country_code']) ?? 'Unkno
                     </div>
 
                     <div id="collapseAccountSettings" class="collapse" role="tabpanel" aria-labelledby="headingAccountSettings">
-                        <div class="card-block">
+                        <div class="card-body">
                             <form method="post" action="settings.php" class="pb-2">
                                 <h6 class="pb-2">Username</h6>
                                 <div class="form-group">
@@ -174,7 +177,7 @@ $user['country_name'] = $o_user->getCountryName($user['country_code']) ?? 'Unkno
                     </div>
 
                     <div id="collapseProfileSettings" class="collapse" role="tabpanel" aria-labelledby="headingProfileSettings">
-                        <div class="card-block">
+                        <div class="card-body">
                             <h6 class="pb-2">Display name</h6>
                             <form method="post" action="settings.php" class="pb-2">
                                 <div class="form-group row">
@@ -243,7 +246,7 @@ $user['country_name'] = $o_user->getCountryName($user['country_code']) ?? 'Unkno
                     </div>
 
                     <div id="collapseProfileDetails" class="collapse" role="tabpanel" aria-labelledby="headingProfileDetails">
-                        <div class="card-block">
+                        <div class="card-body">
                             <form method="post" action="settings.php" class="pb-3">
                                 <h6 class="pb-2">Write a short description about you.</h6>
                                 <div class="form-group row mb-0">
@@ -323,7 +326,7 @@ $user['country_name'] = $o_user->getCountryName($user['country_code']) ?? 'Unkno
                     </div>
 
                     <div id="collapseLocalization" class="collapse" role="tabpanel" aria-labelledby="headingLocalization">
-                        <div class="card-block">
+                        <div class="card-body">
                             <form method="post" action="settings.php">
                                 <div class="form-group">
                                     <input type="text" name="country" value="<?php echo $user['country_name']; ?>" placeholder="Your country" class="form-control" aria-describedby="countryHelp" disabled />
@@ -346,18 +349,17 @@ $user['country_name'] = $o_user->getCountryName($user['country_code']) ?? 'Unkno
                     </div>
                 </div>
             </div>
-        </section>
-        <?php
-        } // if
-        // Show warning about required e-mail verification if user has not verified it.
-        else {
-        ?>
-        <section class="my-5">
+
+            <?php
+            } // if
+            // Show warning about required e-mail verification if user has not verified it.
+            else {
+            ?>
             <p class="text-danger"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> You need to verify your e-mail address before you'll be able to make changes to your account!</p>
+            <?php
+            } // else
+            ?>
         </section>
-        <?php
-        } // else
-        ?>
     </div>
 
     <?php

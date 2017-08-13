@@ -1,5 +1,3 @@
-<h2 class="text-center mb-4">Recent posts</h2>
-
 <?php
 // Get a page number.
 if (!empty($_GET['p']) && intval($_GET['p']) != 0) {
@@ -54,31 +52,33 @@ foreach ($posts as $post) {
         <div class="d-flex flex-column pr-3">
             <div><img src="../media/avatars/<?php echo $post['avatar']; ?>/64.jpg" class="rounded" /></div>
             <div><?php echo $userBadge; ?></div>
+            <?php echo $isOnline ? '<div class="d-block d-md-none"><span class="d-block badge badge-success mt-1">Online</span></div>' : ''; ?>
         </div>
         <div class="d-flex flex-column" style="flex: 100%;">
-            <div style="margin-top: -5px;">
-                <?php if ($post['type'] == 1) { // Standard post ?>
+            <?php if ($post['type'] == 1) { // Standard post ?>
 
-                <div>
-                    <div class="font-weight-bold mb-1"><a href="profile.php?u=<?php echo $post['user_id']; ?>"><?php echo $post['display_name']; ?></a></div>
-                    <div><?php echo htmlspecialchars($post['content']); ?></div>
+            <div style="margin-top: -4px;">
+                <div class="font-weight-bold mb-2 mb-md-1">
+                    <a href="profile.php?u=<?php echo $post['user_id']; ?>"><?php echo $post['display_name']; ?></a>
+                    <small class="d-block d-md-none text-muted"><?php echo $publishInterval; ?></small>
                 </div>
-
-                <?php } else if ($post['type'] == 10) { // Join post ?>
-
-                <div>
-                    <div class="mb-1"><a class="font-weight-bold" href="profile.php?u=<?php echo $post['user_id']; ?>"><?php echo $post['display_name']; ?></a> has joined BronyCenter.</div>
-                    <div>Welcome our new member!</div>
-                </div>
-
-                <?php } else if ($post['type'] == 11) { // Changed username post ?>
-
-                <div>
-                    <a class="font-weight-bold" href="profile.php?u=<?php echo $post['user_id']; ?>"><?php echo $post['display_name']; ?></a> has changed display name.
-                </div>
-
-                <?php } ?>
+                <div><?php echo htmlspecialchars($post['content']); ?></div>
             </div>
+
+            <?php } else if ($post['type'] == 10) { // Join post ?>
+
+            <div style="margin-top: -4px;">
+                <div class="mb-1"><a class="font-weight-bold" href="profile.php?u=<?php echo $post['user_id']; ?>"><?php echo $post['display_name']; ?></a> has joined BronyCenter.</div>
+                <div>Welcome our new member!</div>
+            </div>
+
+            <?php } else if ($post['type'] == 11) { // Changed username post ?>
+
+            <div style="margin-top: -4px;">
+                <a class="font-weight-bold" href="profile.php?u=<?php echo $post['user_id']; ?>"><?php echo $post['display_name']; ?></a> has changed display name.
+            </div>
+
+            <?php } ?>
 
             <div class="pt-3" data-postid="<?php echo $post['id']; ?>">
                 <?php
@@ -203,14 +203,14 @@ foreach ($posts as $post) {
                 </div>
             </div>
         </div>
-        <div class="pl-3" style="flex: 150px; text-align: right;">
+
+        <div class="d-none d-md-flex flex-column pl-3 post-details" style="flex: 156px; text-align: right;">
             <small class="text-muted" style="cursor: help;" data-toggle="tooltip" data-placement="top" title="<?php echo $post['datetime']; ?> (UTC)">
-                <?php echo $publishInterval; ?> <i class="fa fa-clock-o"></i>
+                <?php echo $publishInterval; ?> <i class="fa fa-clock-o pl-1"></i>
             </small>
-            <!-- <span class="text-muted pl-2" style="cursor: pointer;">
-                <i class="fa fa-ellipsis-v" aria-hidden="true" style="vertical-align: middle;"></i>
-            </span> -->
-            <div style="padding-top: 1px;"><?php echo $isOnline ? '<span class="badge badge-success">Online</span>' : ''; ?></div>
+            <div class="pt-1">
+                <?php echo $isOnline ? '<span class="badge badge-success">Online</span>' : ''; ?>
+            </div>
         </div>
     </div>
 </article>

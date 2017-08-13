@@ -8,10 +8,10 @@ $bannedMembers = $o_database->read(
 );
 ?>
 
-<h1 class="text-center my-5">Muted &amp; banned members</h1>
+<h1>Muted &amp; banned members</h1>
 
 <table class="table table-striped table-hover table-sm">
-    <thead>
+    <thead class="thead-inverse">
         <tr>
             <th class="text-center" style="width: 60px;">ID</th>
             <th>Display name &amp; username</th>
@@ -27,7 +27,7 @@ $bannedMembers = $o_database->read(
             // Display badge for administrators and moderators.
             switch ($member['account_type']) {
                 case '0':
-                    $userBadge = '<span class="d-inline-block badge badge-default mr-1" style="width: 70px;">Unverified</span>';
+                    $userBadge = '<span class="d-inline-block badge badge-secondary mr-1" style="width: 70px;">Unverified</span>';
                     break;
                 case '9':
                     $userBadge = '<span class="d-inline-block badge badge-danger mr-1" style="width: 70px;">Admin</span>';

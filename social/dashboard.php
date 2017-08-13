@@ -22,8 +22,10 @@ if ($_SESSION['account']['type'] !== 9 && $_SESSION['account']['type'] !== 8) {
 
     <title>Manage :: BronyCenter</title>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha256-rr9hHBQ43H7HSOmmNkxzQGazS/Khx+L8ZRHteEY1tQ4=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="../resources/css/style.css?v=32" />
+
     <style type="text/css">
     aside { min-height: calc(100vh - 56px); }
     aside nav h5 { color: #FFF; border-bottom: 1px solid rgba(255, 255, 255, .25); }
@@ -48,7 +50,7 @@ if ($_SESSION['account']['type'] !== 9 && $_SESSION['account']['type'] !== 8) {
 
     <div class="container-fluid d-flex flex-column px-0" id="main-container">
         <div class="d-flex">
-            <aside class="bg-inverse" style="flex: 0 0 240px;">
+            <aside class="bg-dark" style="flex: 0 0 240px;">
                 <nav>
                     <h5 class="text-center mb-0 pt-3 pb-3">Navigation</h5>
                     <ul class="pl-0">

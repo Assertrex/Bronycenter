@@ -23,8 +23,10 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'createpost') {
 
     <title>Social :: BronyCenter</title>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha256-rr9hHBQ43H7HSOmmNkxzQGazS/Khx+L8ZRHteEY1tQ4=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="../resources/css/style.css?v=32" />
+
     <style type="text/css">
     .post-row { border-bottom: 1px solid #EEE; }
     .post-row:last-of-type { border: 0; }
@@ -42,14 +44,14 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'createpost') {
     ?>
 
     <div class="container">
-        <section class="my-5">
+        <section>
             <?php
             // Require HTML containing form for post creating.
             require_once('inc/posts-create.php');
             ?>
         </section>
 
-        <section class="mb-5">
+        <section>
             <?php
             // Require HTML containing recent posts.
             require_once('inc/posts-recent.php');

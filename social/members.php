@@ -20,8 +20,10 @@ $members = $o_database->read(
 
     <title>Members :: BronyCenter</title>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha256-rr9hHBQ43H7HSOmmNkxzQGazS/Khx+L8ZRHteEY1tQ4=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="../resources/css/style.css?v=32" />
+
     <style type="text/css">
     .member-col:hover { text-decoration: none; }
     .member-col .member-col-wrap { width: 265px; border: 1px solid #E0E0E0; }
@@ -40,9 +42,9 @@ $members = $o_database->read(
     ?>
 
     <div class="container">
-        <h1 class="text-center my-5">Members</h1>
+        <section>
+            <h1>Members</h1>
 
-        <section class="my-5">
             <div class="d-flex flex-row flex-wrap justify-content-center">
                 <?php
                 // Display each member.

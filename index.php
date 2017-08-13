@@ -13,7 +13,7 @@ require_once('system/inc/init.php');
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
-    <link rel="stylesheet" href="resources/css/style.css?v=31" />
+    <link rel="stylesheet" href="resources/css/style.css?v=32" />
 </head>
 <body>
     <?php
@@ -82,7 +82,7 @@ require_once('system/inc/init.php');
         </section>
 
         <section id="scn-register">
-            <h2 class="text-center">Join us</h2>
+            <h2 class="mb-3 text-center">Join us</h2>
 
             <form method="post" action="register.php">
                 <div class="form-group">

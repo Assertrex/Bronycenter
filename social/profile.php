@@ -39,7 +39,7 @@ if (!empty($_GET['u']) || !empty($_SESSION['account']['id'])) {
     // Display badge for administrators and moderators.
     switch ($user['account_type']) {
         case '0':
-            $userBadge = '<span class="badge badge-default">Unverified</span>';
+            $userBadge = '<span class="badge badge-secondary">Unverified</span>';
             break;
         case '9':
             $userBadge = '<span class="badge badge-danger">Admin</span>';
@@ -86,8 +86,10 @@ if (!empty($_GET['u']) || !empty($_SESSION['account']['id'])) {
 
     <title>Profile :: BronyCenter</title>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha256-rr9hHBQ43H7HSOmmNkxzQGazS/Khx+L8ZRHteEY1tQ4=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="../resources/css/style.css?v=32" />
+
     <style type="text/css">
     #aside-details { flex: 0 0 25%; }
     #aside-posts { flex: 0 0 75%; }
@@ -113,7 +115,7 @@ if (!empty($_GET['u']) || !empty($_SESSION['account']['id'])) {
     ?>
 
     <div class="container">
-        <section class="d-flex flex-column flex-md-row my-4">
+        <section class="d-flex flex-column flex-md-row">
             <div class="py-2 pr-0 pr-md-3" id="aside-details">
                 <div class="rounded p-3 mb-3 text-center" style="border: 1px solid #E0E0E0;">
                     <img src="../media/avatars/<?php echo $user['avatar']; ?>/128.jpg" class="rounded mb-3" style="border: 2px solid #E0E0E0;" />
