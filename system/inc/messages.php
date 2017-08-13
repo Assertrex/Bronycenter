@@ -8,12 +8,12 @@ $o_system->clearMessages();
 if (count($systemMessages) !== 0) {
 ?>
 
-<div class="container my-5" id="system_messages">
+<div class="container" id="system_messages">
     <?php
     // Display every system message.
     foreach ($systemMessages as $message) {
     ?>
-    <div class="alert <?php echo $message['alert-class']; ?> alert-dismissible fade show" role="alert">
+    <div class="mt-3 alert <?php echo $message['alert-class']; ?> alert-dismissible fade show" role="alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close" role="button">
             <span aria-hidden="true">&times;</span>
         </button>

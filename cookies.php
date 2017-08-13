@@ -11,9 +11,9 @@ require_once('system/inc/init.php');
 
     <title>Cookie Use :: BronyCenter</title>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha256-rr9hHBQ43H7HSOmmNkxzQGazS/Khx+L8ZRHteEY1tQ4=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
-</head>
+    <link rel="stylesheet" href="resources/css/style.css?v=31" /></head>
 <body>
     <?php
     // Require HTML of header for not social pages.
@@ -24,8 +24,8 @@ require_once('system/inc/init.php');
     ?>
 
     <div class="container" id="main_content">
-        <section class="my-5">
-            <h1 class="text-center mb-5">Cookie Use</h1>
+        <section>
+            <h1>Cookie Use</h1>
             <p>Last update: <b>17.07.2017</b></p>
 
             <p>

@@ -11,8 +11,9 @@ require_once('system/inc/init.php');
 
     <title>Welcome to BronyCenter! Social network designed to share love and tolerance.</title>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha256-rr9hHBQ43H7HSOmmNkxzQGazS/Khx+L8ZRHteEY1tQ4=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="resources/css/style.css?v=31" />
 </head>
 <body>
     <?php
@@ -20,7 +21,7 @@ require_once('system/inc/init.php');
     require_once('system/inc/header.php');
     ?>
 
-    <div class="jumbotron bg-faded mb-0">
+    <div class="jumbotron text-light mb-0">
         <div class="container">
             <h1 class="display-4">Welcome to the BronyCenter</h1>
             <p class="lead">
@@ -36,58 +37,56 @@ require_once('system/inc/init.php');
     ?>
 
     <div class="container">
-        <section class="my-5">
+        <section id="scn-description">
             <div class="row">
-                <div class="col-lg">
-                    <h3 class="pb-3 text-left">Progress</h3>
+                <div class="col-lg d-none d-lg-block">
+                    <h4 class="pb-3 text-left">Upcoming features</h4>
 
                     <ul class="list-group" style="list-style: none;">
-                        <li class="text-muted"><b style="color: #4CAF50;">&#x2713;</b> Posts comments</li>
-                        <li class="ml-3" style="padding-left: 1px;"><b style="display: none; color: #4CAF50;">&#x2713;</b> Profile posts</li>
-                        <li class="ml-3" style="padding-left: 1px;"><b style="display: none; color: #4CAF50;">&#x2713;</b> Administration panel</li>
-                        <li class="ml-3" style="padding-left: 1px;"><b style="display: none; color: #4CAF50;">&#x2713;</b> Suggestions page</li>
-                        <li class="ml-3" style="padding-left: 1px;"><b style="display: none; color: #4CAF50;">&#x2713;</b> Notifications</li>
-                        <li class="ml-3" style="padding-left: 1px;"><b style="display: none; color: #4CAF50;">&#x2713;</b> Better messages</li>
-                        <li class="ml-3" style="padding-left: 1px;"><b style="display: none; color: #4CAF50;">&#x2713;</b> Chatrooms</li>
-                        <li class="ml-3" style="padding-left: 1px;"><b style="display: none; color: #4CAF50;">&#x2713;</b> Actions (hugs etc.)</li>
-                        <li class="ml-3" style="padding-left: 1px;"><b style="display: none; color: #4CAF50;">&#x2713;</b> Photo posts</li>
+                        <li>Profile posts</li>
+                        <li>Administration panel</li>
+                        <li>Suggestions page</li>
+                        <li>Notifications</li>
+                        <li>Better messages</li>
+                        <li>Chatrooms</li>
+                        <li>Actions (hugs etc.)</li>
+                        <li>Photo posts</li>
                     </ul>
                 </div>
 
                 <div class="col-lg-6">
                     <h3 class="pb-3 text-center">What is this place?</h3>
 
-                    <p class="text-center">
+                    <p class="text-center mb-0">
                         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus id urna ut massa lobortis sagittis sed et neque.
                         Praesent at velit vel orci faucibus tempor. Morbi eget justo at sapien tincidunt efficitur vitae porta nunc.
                         Vestibulum ex neque, egestas vel sem vel, lacinia tempor magna. Mauris maximus urna et nunc pretium porttitor.
                     </p>
                 </div>
 
-                <div class="col-lg">
-                    <h3 class="pb-3 text-right">Statistics</h3>
+                <div class="col-lg d-none d-lg-block">
+                    <h4 class="pb-3 text-right">Website statistics</h4>
 
-                    <ul class="list-group text-right" style="list-style: none;">
+                    <ul class="list-group text-center text-md-right" style="list-style: none;">
                         <li>Server status: <b class="text-success">Open</b></li>
-                        <li class="text-muted">Last update: <b>08.08.2017</b></li>
-                        <li class="text-muted">Suggestions: <b>0</b> (of <b>0</b>)</li>
+                        <li>Last update: <b>13.08.2017</b></li>
                         <br />
                         <li>Online now: <b><?php echo $o_user->getOnlineUsersCount(); ?></b></li>
                         <li>Accounts created: <b><?php echo $o_user->getUsersCount(); ?></b></li>
                         <li>Posts published: <b><?php echo $o_post->getPostsCount(); ?></b></li>
                         <li class="text-muted">Photos uploaded: <b>0</b></li>
-                        <li class="text-muted">Sent hugs: <b>0</b></li>
+                        <li class="text-muted">Sent actions: <b>0</b></li>
                     </ul>
                 </div>
             </div>
         </section>
 
-        <section class="mb-5">
-            <h2 class="text-center">Join now!</h2>
+        <section id="scn-register">
+            <h2 class="text-center">Join us</h2>
 
             <form method="post" action="register.php">
                 <div class="form-group">
-                    <label for="register-input-displayname">Display name</label>
+                    <label for="register-input-displayname">Display name:</label>
                     <input type="text" name="displayname" class="form-control" id="register-input-displayname" aria-describedby="displayname-help" placeholder="Example Pony" required />
                     <small id="displayname-help" class="form-text text-muted">
                         Choose how do you want to be seen by everyone. It can be changed later in your account's settings.<br />
@@ -96,7 +95,7 @@ require_once('system/inc/init.php');
                 </div>
 
                 <div class="form-group">
-                    <label for="register-input-username">Username</label>
+                    <label for="register-input-username">Username:</label>
                     <input type="text" name="username" class="form-control" id="register-input-username" aria-describedby="username-help" placeholder="examplepony2017" required />
                     <small id="username-help" class="form-text text-muted">
                         Choose your name for login and for the link to your profile. Everyone will be able to see it. This can't be changed later.<br />
@@ -105,7 +104,7 @@ require_once('system/inc/init.php');
                 </div>
 
                 <div class="form-group">
-                    <label for="register-input-email">E-mail address</label>
+                    <label for="register-input-email">E-mail address:</label>
                     <input type="text" name="email" class="form-control" id="register-input-email" aria-describedby="email-help" placeholder="epony@poniland.com" required />
                     <small id="email-help" class="form-text text-muted">
                         We won't share it with anyone. It is needed for many reasons like password recovery or to prevent trolls from making multiaccounts.<br />
@@ -116,11 +115,11 @@ require_once('system/inc/init.php');
                 <div class="form-group">
                     <div class="row">
                         <div class="col-6">
-                            <label for="register-input-password">Password</label>
+                            <label for="register-input-password">Password:</label>
                             <input type="password" name="password" class="form-control" id="register-input-password" aria-describedby="password-help" placeholder="$ecretPass987" required />
                         </div>
                         <div class="col-6">
-                            <label for="register-input-passwordrepeat">Repeat password</label>
+                            <label for="register-input-passwordrepeat">Repeat password:</label>
                             <input type="password" name="passwordrepeat" class="form-control" id="register-input-passwordrepeat" placeholder="$ecretPass987" required />
                         </div>
                     </div>

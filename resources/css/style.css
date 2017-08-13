@@ -1,0 +1,25 @@
+.btn { padding: .5rem 1rem; cursor: pointer; }
+.form-text { margin-top: .375rem; }
+
+.navbar { background-color: #0277BD; }
+.navbar .navbar-brand { padding-top: 0; }
+.navbar .form-inline input { background: none; color: rgba(255, 255, 255, .75); border-color: rgba(255, 255, 255, .5); }
+.navbar .form-inline input:focus { border-color: rgba(255, 255, 255, .75); }
+.navbar .form-inline input::-webkit-input-placeholder { color: rgba(255, 255, 255, .25); }
+.navbar .btn { background-color: #03A9F4; color: rgba(255, 255, 255, .75); }
+.navbar .btn:hover { background-color: #29B6F6; color: #FFF; }
+.jumbotron { background-color: #0277BD; border-radius: 0; }
+.jumbotron .lead { color: rgba(255, 255, 255, .75); }
+
+section { padding: 2.25rem 0; margin-top: 0 !important; margin-bottom: 0 !important; border-bottom: 1px solid #E0E0E0; }
+section h1 { margin-bottom: 1.5rem; text-align: center; }
+
+footer ul { padding: 0; list-style: none; }
+
+/* Media query for small and medium devices (<=991px) */
+@media (max-width: 991px) {
+    body { font-size: 15px; }
+    .jumbotron { padding: 1.5rem 1rem; }
+    .jumbotron .display-4 { margin-bottom: 1rem; font-size: 2rem; text-align: center; }
+    .jumbotron .lead { font-size: 1.125rem; text-align: center; }
+}

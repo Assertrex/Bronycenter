@@ -11,9 +11,9 @@ require_once('system/inc/init.php');
 
     <title>Privacy Policy :: BronyCenter</title>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha256-rr9hHBQ43H7HSOmmNkxzQGazS/Khx+L8ZRHteEY1tQ4=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
-</head>
+    <link rel="stylesheet" href="resources/css/style.css?v=31" /></head>
 <body>
     <?php
     // Require HTML of header for not social pages.
@@ -24,9 +24,9 @@ require_once('system/inc/init.php');
     ?>
 
     <div class="container" id="main_content">
-        <section class="my-5">
-            <h1 class="text-center mb-5">Privacy Policy</h1>
-            <p>Last update: <b>17.07.2017</b></p>
+        <section>
+            <h1>Privacy Policy</h1>
+            <p>Last update: <b>13.08.2017</b></p>
 
             <p>
                 We care about your privacy and anonymity. You can learn here
@@ -37,12 +37,13 @@ require_once('system/inc/init.php');
             </p>
             <p>
                 Remember, that <b>we're not responsible</b> for any sensitive details,
-                that you will share or send in a private message, in case of us
+                that you will share or send in a private messages, in case of us
                 being hacked. We're in an early development stage and even
                 the biggest ones (Dropbox, Adobe, MySpace) have been hacked in
-                the past. But we promise to notify you about that as soon as
-                we'll find out. Check out below to get more details about what
-                informations, how and why we store about you.
+                the past. We promise to do everything that we can to prevent it,
+                but in case of being hacked, we'll notify you about that as soon
+                as we'll find that out. Check out below to get more details about
+                what informations, how and why we store about you.
             </p>
 
             <h4 class="my-5">Informations that we collect about you.</h4>
@@ -118,7 +119,7 @@ require_once('system/inc/init.php');
             <p>
                 <b>Everyone (even not logged) can see your:</b> display name, username,
                 registraton datetime, last online datetime, country, timezone, age,
-                avatar, account type, gender, city, description, posts, likes and comments.
+                avatar, account type, gender, city, description, your posts, likes and comments.
             </p>
             <p>
                 <b>Members can't see anything more yet.</b>
@@ -192,7 +193,7 @@ require_once('system/inc/init.php');
             <h4 class="my-5">Individuals' rights</h4>
             <p>
                 We don't know if we need to write this privacy policy, as we're
-                not an organisation or a company. But it's better to give you
+                not an organisation or a company, but it's better to give you
                 as much as we can. Below we've decribed your rights based on a
                 <a href="https://ico.org.uk/for-organisations/data-protection-reform/overview-of-the-gdpr/individuals-rights/" target="_blank">GDPR</a>.
                 It's a new EU regulation about data protection that will come live
@@ -246,8 +247,8 @@ require_once('system/inc/init.php');
                             contact with an administrator by a private message
                             after logging in here, or with one of contact options
                             listed on contact page. Note, that we don't have the
-                            ability to modify what web search/archive engines
-                            contains about you.
+                            ability to modify or remove what web search/archive
+                            engines has stored about you.
                         </li>
                     </ul>
                 </li>

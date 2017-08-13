@@ -33,9 +33,9 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'register') {
 
     <title>Register :: BronyCenter</title>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha256-rr9hHBQ43H7HSOmmNkxzQGazS/Khx+L8ZRHteEY1tQ4=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
-</head>
+    <link rel="stylesheet" href="resources/css/style.css?v=31" /></head></head>
 <body>
     <?php
     // Require HTML of header for not social pages.
@@ -45,9 +45,9 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'register') {
     require_once('system/inc/messages.php');
     ?>
 
-    <div class="container mb-5">
-        <section class="mb-5">
-            <h1 class="mb-3 text-center">Register</h1>
+    <div class="container">
+        <section id="scn-register">
+            <h1>Register</h1>
 
             <form method="post" action="register.php">
                 <div class="form-group">
