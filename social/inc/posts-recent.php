@@ -26,6 +26,9 @@ foreach ($posts as $post) {
             $userBadge = '';
     }
 
+    // Check if current user is an author of a post.
+    $post['ownComment'] = $post['user_id'] == $_SESSION['account']['id'];
+
     // Set user's avatar or get the default one if not existing.
     $post['avatar'] = $post['avatar'] ?? 'default';
 
@@ -101,22 +104,33 @@ foreach ($posts as $post) {
                             More
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <h6 class="dropdown-header">Actions</h6>
+
+                            <?php if ($post['ownComment'] && $post['type'] == 1) { ?>
+                            <button class="dropdown-item disabled" type="button" role="button">
+                                <i class="fa fa-pencil-square-o" aria-hidden="true" style="width: 20px; vertical-align: middle;"></i>
+                                <span style="vertical-align: middle;">Edit</span>
+                            </button>
+
+                            <button class="dropdown-item btn-deletepost" type="button" role="button" style="color: #F44336;" data-postid="<?php echo $post['id']; ?>">
+                                <i class="fa fa-trash-o" aria-hidden="true" style="width: 20px; vertical-align: middle;"></i>
+                                <span style="vertical-align: middle;">Delete</span>
+                            </button>
+                            <?php } else { ?>
                             <button class="dropdown-item disabled" type="button" role="button">
                                 <i class="fa fa-exclamation-triangle" aria-hidden="true" style="width: 20px; vertical-align: middle;"></i>
                                 <span style="vertical-align: middle;">Report</span>
                             </button>
+                            <?php } ?>
 
-                            <?php if ($post['user_id'] == $_SESSION['account']['id'] && $post['type'] == 1) { ?>
-                                <button class="dropdown-item btn-deletepost" type="button" role="button" style="color: #F44336;" data-postid="<?php echo $post['id']; ?>">
-                                    <i class="fa fa-trash-o" aria-hidden="true" style="width: 20px; vertical-align: middle;"></i>
-                                    <span style="vertical-align: middle;">Delete</span>
-                                </button>
-                            <?php } else if ($_SESSION['account']['type'] == 8 || $_SESSION['account']['type'] == 9) { ?>
-                                <button class="dropdown-item btn-moddeletepost" type="button" role="button" style="color: #F44336;" data-postid="<?php echo $post['id']; ?>">
-                                    <i class="fa fa-ban" aria-hidden="true" style="width: 20px; vertical-align: middle;"></i>
-                                    <span style="vertical-align: middle;">Delete as Mod</span>
-                                </button>
-                            <?php }?>
+                            <?php if ($isModerator && !$post['ownComment'] && $post['type'] == 1) { ?>
+                            <h6 class="dropdown-header">Moderate</h6>
+
+                            <button class="dropdown-item btn-moddeletepost" type="button" role="button" style="color: #F44336;" data-postid="<?php echo $post['id']; ?>">
+                                <i class="fa fa-ban" aria-hidden="true" style="width: 20px; vertical-align: middle;"></i>
+                                <span style="vertical-align: middle;">Delete</span>
+                            </button>
+                            <?php } ?>
                         </div>
                     </div>
                     <?php } ?>
