@@ -33,6 +33,9 @@ $o_user = new User($o_system, $o_database, $o_session, $o_validate);
 require_once(__DIR__ . '/../class/post.php');
 $o_post = new Post($o_system, $o_database, $o_validate);
 
+// Parse and store system version details.
+$systemVersion = parse_ini_file(__DIR__ . '/../../version.ini');
+
 // Check if user is logged in.
 if ($o_session->verify()) {
     $isLogged = true;
