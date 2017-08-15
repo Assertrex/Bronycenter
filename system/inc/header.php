@@ -29,7 +29,7 @@
             // Show buttons for logged users.
             if ($isLogged) {
             ?>
-            <div style="padding-top: .75rem; padding-bottom: .25rem;">
+            <div class="py-lg-0" style="padding-top: .75rem; padding-bottom: .25rem;">
                 <a href="social/"><button class="btn" role="button">Social</button></a>
                 <a href="logout.php" class="ml-3"><button class="btn" role="button">Logout</button></a>
             </div>
