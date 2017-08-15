@@ -29,14 +29,16 @@
             // Show buttons for logged users.
             if ($isLogged) {
             ?>
-            <a href="social/"><button class="btn" role="button">Social</button></a>
-            <a href="logout.php" class="ml-3"><button class="btn" role="button">Logout</button></a>
+            <div style="padding-top: .75rem; padding-bottom: .25rem;">
+                <a href="social/"><button class="btn" role="button">Social</button></a>
+                <a href="logout.php" class="ml-3"><button class="btn" role="button">Logout</button></a>
+            </div>
             <?php
             } // if
             // Show login form for guests.
             else {
             ?>
-            <form method="post" action="login.php" class="form-inline justify-content-end justify-content-sm-start py-2 py-lg-0">
+            <form method="post" action="login.php" class="form-inline justify-content-end justify-content-sm-center py-lg-0">
                 <input type="text" name="username" class="form-control mb-2 mb-sm-0" id="login-input-username" placeholder="Username or e-mail" required autofocus />
                 <input type="password" name="password" class="form-control mb-2 mb-sm-0 mx-sm-2" id="login-input-password" placeholder="Password" required />
                 <button type="submit" name="submit" class="btn" id="login-button-submit" value="login" role="button">Login</button>
