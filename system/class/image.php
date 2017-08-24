@@ -48,6 +48,7 @@ class Image
 
             // Create a folder for avatars with generated hash name.
             mkdir('../media/avatars/' . $hash . '/');
+            chmod('../media/avatars/' . $hash . '/', 0775);
 
             // Insert avatars into a created folder.
             file_put_contents('../media/avatars/' . $hash . '/256.jpg', $o_image_256);
