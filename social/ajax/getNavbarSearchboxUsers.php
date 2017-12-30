@@ -7,7 +7,7 @@ $loginRequired = true;
 require_once('../../system/partials/init.php');
 
 // Create an instance of a database class to use CRUD operations on database
-$database = AssertrexPHP\Database::getInstance();
+$database = BronyCenter\Database::getInstance();
 
 // Store LIKE question in a variable
 $likeQuestion = '%' . $_GET['name'] . '%';

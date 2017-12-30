@@ -8,8 +8,8 @@
 
 namespace BronyCenter;
 
-use AssertrexPHP\Database;
-use AssertrexPHP\Utilities;
+use BronyCenter\Database;
+use BronyCenter\Utilities;
 
 class Statistics
 {

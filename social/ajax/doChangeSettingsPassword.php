@@ -13,7 +13,7 @@ if ($_POST['newpassword'] != $_POST['repeatpassword']) {
 }
 
 // Try to change user's password
-$account = AssertrexPHP\Account::getInstance();
+$account = BronyCenter\Account::getInstance();
 $account->changePassword($_POST['oldpassword'], $_POST['newpassword']);
 
 // TODO Return error in JSON if not

@@ -4,7 +4,7 @@ require('system/partials/init.php');
 
 if (!empty($_POST['login-submit'])) {
     // Get stored flash messages from session
-    $account = AssertrexPHP\Account::getInstance();
+    $account = BronyCenter\Account::getInstance();
     $loginStatus = $account->login([
         'username' => $_POST['login-username'],
         'password' => $_POST['login-password']

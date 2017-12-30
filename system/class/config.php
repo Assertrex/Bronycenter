@@ -6,7 +6,7 @@
 * @since Release 0.1.0
 */
 
-namespace AssertrexPHP;
+namespace BronyCenter;
 
 class Config
 {
@@ -40,7 +40,7 @@ class Config
     {
         $this->flash = Flash::getInstance();
 
-        $this->configuration = parse_ini_file(__DIR__ . '/../../config/settings.ini', true);
+        $this->configuration = parse_ini_file(__DIR__ . '/../config/settings.ini', true);
     }
 
     /**
@@ -83,6 +83,6 @@ class Config
      */
     public function getVersion()
     {
-        return parse_ini_file(__DIR__ . '/../../../version.ini', false);
+        return parse_ini_file(__DIR__ . '/../../version.ini', false);
     }
 }

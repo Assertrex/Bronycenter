@@ -8,10 +8,10 @@
 
 namespace BronyCenter;
 
-use AssertrexPHP\Database;
-use AssertrexPHP\Flash;
-use AssertrexPHP\Utilities;
-use AssertrexPHP\Validator;
+use BronyCenter\Database;
+use BronyCenter\Flash;
+use BronyCenter\Utilities;
+use BronyCenter\Validator;
 
 class Post
 {

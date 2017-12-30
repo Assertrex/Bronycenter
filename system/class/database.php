@@ -7,7 +7,7 @@
 * @since Release 0.1.0
 */
 
-namespace AssertrexPHP;
+namespace BronyCenter;
 
 use PDO;
 use PDOException;

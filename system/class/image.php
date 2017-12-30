@@ -9,7 +9,7 @@
 namespace BronyCenter;
 
 use Imagick;
-use AssertrexPHP\Utilities;
+use BronyCenter\Utilities;
 
 class Image
 {

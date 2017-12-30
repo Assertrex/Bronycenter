@@ -9,25 +9,25 @@ error_reporting(E_ALL);
 session_start();
 
 // Require config class to read configuration of an application
-require(__DIR__ . '../../class/AssertrexPHP/config.php');
+require(__DIR__ . '../../class/config.php');
 
 // Require utilities class to share many commonly used functions
-require(__DIR__ . '../../class/AssertrexPHP/utilities.php');
+require(__DIR__ . '../../class/utilities.php');
 
 // Require database class to create a connection
-require(__DIR__ . '../../class/AssertrexPHP/database.php');
+require(__DIR__ . '../../class/database.php');
 
 // Require account class for managing user's account
-require(__DIR__ . '../../class/AssertrexPHP/account.php');
+require(__DIR__ . '../../class/account.php');
 
 // Require session class to manage user session
-require(__DIR__ . '../../class/AssertrexPHP/session.php');
+require(__DIR__ . '../../class/session.php');
 
 // Require flash class to use flash session messages
-require(__DIR__ . '../../class/AssertrexPHP/flash.php');
+require(__DIR__ . '../../class/flash.php');
 
 // Require validator class for validating user input
-require(__DIR__ . '../../class/AssertrexPHP/validator.php');
+require(__DIR__ . '../../class/validator.php');
 
 // Require post class for handling users details
 require(__DIR__ . '../../class/user.php');
@@ -39,20 +39,20 @@ require(__DIR__ . '../../class/post.php');
 require(__DIR__ . '../../class/statistics.php');
 
 // Create an instance of a config class to get details about website version
-$config = AssertrexPHP\Config::getInstance();
+$config = BronyCenter\Config::getInstance();
 
 // Create an instance of an utilities class to share common functions
-$utilities = AssertrexPHP\Utilities::getInstance();
+$utilities = BronyCenter\Utilities::getInstance();
 
 // Create an instance of a user class to share common functions
 $user = BronyCenter\User::getInstance();
 
 // Get stored flash messages from session
-$flash = AssertrexPHP\Flash::getInstance();
+$flash = BronyCenter\Flash::getInstance();
 $flashMessages = $flash->get();
 
 // Check if user is logged in and verify a session
-$session = AssertrexPHP\Session::getInstance();
+$session = BronyCenter\Session::getInstance();
 
 // Create an instance of a statistics class to count users actions
 $statistics = BronyCenter\Statistics::getInstance();
