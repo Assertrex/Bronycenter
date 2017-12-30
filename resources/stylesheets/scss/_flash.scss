@@ -1,0 +1,30 @@
+#flash-messages {
+    margin-bottom: 0;
+
+    :last-child {
+        margin-bottom: 1rem;
+    }
+}
+
+.alert {
+    strong {
+        display: block;
+        text-align: center;
+        margin-bottom: .5rem;
+    }
+
+    .alert-message {
+        font-size: 14px;
+        opacity: .75;
+    }
+
+    .close {
+        cursor: pointer;
+    }
+}
+
+@media (min-width: 992px) {
+    .alert .alert-message {
+        font-size: 15px;
+    }
+}

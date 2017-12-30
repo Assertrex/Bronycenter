@@ -1,40 +1,50 @@
 <?php
-// Require system initialization code.
-require_once('system/inc/init.php');
+// Include system initialization code
+require('system/partials/init.php');
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
     <title>Cookie Use :: BronyCenter</title>
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
-    <link rel="stylesheet" href="resources/css/style.css?v=<?php echo $systemVersion['commit']; ?>" /></head>
+    <?php
+    // Include stylesheets for all pages
+    require('system/partials/stylesheets.php');
+    ?>
+</head>
 <body>
     <?php
-    // Require HTML of header for not social pages.
-    require_once('system/inc/header.php');
-
-    // Require code to display system messages.
-    require_once('system/inc/messages.php');
+    // Include header for all pages
+    require('system/partials/header.php');
     ?>
 
-    <div class="container" id="main_content">
-        <section>
-            <h1>Cookie Use</h1>
-            <p>Last update: <b>17.07.2017</b></p>
+    <div class="container">
+        <?php
+        // Include system messages if any exists
+        require('system/partials/flash.php');
+        ?>
 
-            <p>
+        <section id="cookies" class="mb-4">
+            <h1 class="mb-2">Cookie Use</h1>
+
+            <p class="mb-4">
+                Last update: <b>30.12.2017</b>
+            </p>
+
+            <p class="mb-0">
                 The website uses cookies. By using the website and agreeing to
                 this policy, you consent to our use of cookies in accordance with
                 the terms of this policy.
             </p>
+        </section>
 
-            <h4 class="my-4">About cookies</h4>
+        <section id="about" class="mb-4">
+            <h5 class="mb-4">About cookies</h5>
+
             <p>
                 Cookies are files, often including unique identifiers, that are sent
                 by web servers to web browsers, and which may then be sent back to the
@@ -53,11 +63,17 @@ require_once('system/inc/init.php');
                 date). A session cookie, on the other hand, will expire at the end of
                 the user session, when the web browser is closed.
             </p>
+        </section>
 
-            <h4 class="my-4">Cookies on the website</h4>
+        <section id="which" class="mb-4">
+            <h5 class="mb-4">Cookies on the website</h5>
+
             <p>We use both session cookies and persistent cookies on the website.</p>
+        </section>
 
-            <h4 class="my-4">How we use cookies</h4>
+        <section id="usage" class="mb-4">
+            <h5 class="mb-4">How we use cookies</h5>
+
             <p>
                 Cookies do not contain any information that personally identifies you,
                 but personal information that we store about you may be linked, by us,
@@ -66,26 +82,28 @@ require_once('system/inc/init.php');
                 access and navigation and cookies that remember your choices
                 (functionality cookies).
             </p>
-
             <p>
                 We may use the information we obtain from your use of our cookies
                 for the following purposes:
             </p>
-
             <ul>
                 <li>to recognise you when you visit the website</li>
                 <li>to personalise the website for you (depending on your settings)</li>
             </ul>
+        </section>
 
-            <h4 class="my-4">Third party cookies</h4>
+        <section id="thirdparty" class="mb-4">
+            <h5 class="mb-4">Third party cookies</h5>
             <p>
                 Website is not creating any third party cookies, as it's not using
                 any advertisment/analytics services to protect your privacy.
             </p>
+        </section>
 
-            <h4 class="my-4">Blocking cookies</h4>
+        <section id="blocking" class="mb-4">
+            <h5 class="mb-4">Blocking cookies</h5>
+
             <p>Most browsers allow you to refuse to accept cookies. For example:</p>
-
             <ul>
                 <li>
                     in Internet Explorer you can refuse all cookies by clicking
@@ -108,17 +126,18 @@ require_once('system/inc/init.php');
                     selecting the “Privacy” tab and “Block cookies”.
                 </li>
             </ul>
-
             <p>
                 Blocking all cookies will, however, have a negative impact upon
                 the usability of many websites. If you block cookies, you may not
                 be able to use certain features on the website (log on, access
                 content, use search functions).
             </p>
+        </section>
 
-            <h4 class="my-4">Deleting cookies</h4>
+        <section id="deleting" class="mb-4">
+            <h5 class="mb-4">Deleting cookies</h5>
+
             <p>You can also delete cookies already stored on your computer:</p>
-
             <ul>
                 <li>
                     in Internet Explorer, you must manually delete cookie files;
@@ -141,7 +160,6 @@ require_once('system/inc/init.php');
                     selecting the “Privacy” tab and “Remove All Website Data”.
                 </li>
             </ul>
-
             <p>
                 Obviously, doing this may have a negative impact on the usability
                 of many websites.
@@ -150,8 +168,8 @@ require_once('system/inc/init.php');
     </div>
 
     <?php
-    // Require HTML of footer for not social pages.
-    require_once('system/inc/footer.php');
+    // Include scripts for all pages
+    require('system/partials/scripts.php');
     ?>
 </body>
 </html>

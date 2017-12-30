@@ -1,1168 +1,399 @@
 <?php
 
 /**
- * Class used for actions with users accounts.
- *
- * @copyright 2017 BronyCenter
- * @author Assertrex <norbert.gotowczyc@gmail.com>
- * @since 0.1.0
- */
+* Used for getting and modifing user details
+*
+* @since Release 0.1.0
+*/
+
+namespace BronyCenter;
+
+use AssertrexPHP\Database;
+use AssertrexPHP\Flash;
+use AssertrexPHP\Utilities;
+use AssertrexPHP\Validator;
+
 class User
 {
     /**
-     * Object of a system class.
+     * Singleton instance of a current class
      *
-     * @since 0.1.0
-     * @var null|object
+     * @since Release 0.1.0
      */
-    private $system = null;
+    private static $instance = null;
 
     /**
-     * Object of a database class.
+     * Place for instance of a database class
      *
-     * @since 0.1.0
-     * @var null|object
+     * @since Release 0.1.0
      */
     private $database = null;
 
     /**
-     * Object of a session class.
+     * Place for instance of a flash class
      *
-     * @since 0.1.0
-     * @var null|object
+     * @since Release 0.1.0
      */
-    private $session = null;
+    private $flash = null;
 
     /**
-     * Object of a validate class.
+     * Place for instance of an utilities class
      *
-     * @since 0.1.0
-     * @var null|object
+     * @since Release 0.1.0
      */
-    private $validate = null;
+    private $utilities = null;
 
     /**
-     * @since 0.1.0
-     * @var object $o_system Object of a system class.
-     * @var object $o_database Object of a database class.
-     * @var object $o_session Object of a session class.
-     * @var object $o_validate Object of a validate class.
+     * Place for instance of a validator class
+     *
+     * @since Release 0.1.0
      */
-    public function __construct($o_system, $o_database, $o_session, $o_validate)
+    private $validator = null;
+
+    /**
+     * Get instances of required classes
+     *
+     * @since Release 0.1.0
+     */
+    public function __construct()
     {
-        // Store required classes objects in a properties.
-        $this->system = $o_system;
-        $this->database = $o_database;
-        $this->session = $o_session;
-        $this->validate = $o_validate;
+        $this->database = Database::getInstance();
+        $this->flash = Flash::getInstance();
+        $this->utilities = Utilities::getInstance();
+        $this->validator = Validator::getInstance();
     }
 
     /**
-     * Check if selected user is online.
+     * Check if instance of current class is existing and create and/or return it
      *
-     * @since 0.1.0
-     * @var null|integer $id ID of the selected user.
-     * @var null|string $datetime Last online datetime.
-     * @return boolean Is user online.
+     * @since Release 0.1.0
+     * @var boolean Set as true to reset class instance
+     * @return object Instance of a current class
      */
-    public function isOnline($id = null, $datetime = null) {
-        // Check if user has been selected.
-        if (is_null($id)) {
-            // Check if user has been seen in last 90 seconds.
-            if ($this->system->countDateInterval($datetime) < 90) {
-                return true;
-            }
+    public static function getInstance($reset = false)
+    {
+        if (!self::$instance || $reset === true) {
+            self::$instance = new User();
+        }
 
-            // Return false if user has been inactive for more than 90 seconds.
+        return self::$instance;
+    }
+
+    /**
+     * Check if selected user is online
+     *
+     * @since Release 0.1.0
+     * @var integer Optional ID of a user
+     * @var string Optional date of user's last activity
+     * @return boolean State of selected user activity
+     */
+    public function isOnline($id = null, $datetime = null)
+    {
+        // Check if one of required parameters is existing
+        if (is_null($id) && is_null($datetime)) {
             return false;
         }
 
-        // TODO Allow checking for selected users (not needed yet).
+        // Check if user's last activity datetime has been provided
+        if (!is_null($datetime)) {
+            // User has been seen in last 40 seconds
+            if ($this->utilities->countDateInterval($datetime) < 40) {
+                return true;
+            }
+
+            // User has not been active for more than 60 seconds
+            return false;
+        }
+    }
+
+    /**
+     * Get all active registered members ordered by last seen time
+     *
+     * @since Release 0.1.0
+     * @return array Array of active registered members
+     */
+    public function getMembersList()
+    {
+        $members = $this->database->read(
+            'id, display_name, username, last_online, avatar, account_type',
+            'users',
+            'WHERE account_type != 0 AND account_standing NOT IN (8, 9) ORDER BY last_online DESC',
+            []
+        );
+
+        return $members;
+    }
+
+    /**
+     * Get all active registered members by last seen time
+     *
+     * @since Release 0.1.0
+     * @var integer ID of a user
+     * @return array Array of user details
+     */
+    public function getUserDetails($id)
+    {
+        // Get details about user from database
+        $user = $this->database->read(
+			'u.id, u.display_name, u.username, u.email, u.registration_ip,' .
+            'u.registration_datetime, u.login_ip, u.login_datetime, u.login_count,' .
+            'u.last_online, u.country_code, u.timezone, u.avatar, u.account_type,' .
+            'u.account_standing, u.displayname_changes, u.displayname_recent, d.birthdate, d.gender, d.city, d.short_description,' .
+            'd.full_description, d.contact_methods, d.favourite_music, d.favourite_movies,' .
+            'd.favourite_games, d.fandom_becameabrony, d.fandom_favouritepony, d.fandom_favouriteepisode,' .
+            'd.creations_links',
+			'users u',
+			'INNER JOIN users_details d ON u.id = d.user_id WHERE u.id = ?',
+			[$id],
+            false
+		);
+
+        // Return false if user has not been found
+        if (empty($user)) {
+            return false;
+        }
+
+        // Return details about selected user
+        return $user;
+    }
+
+    /**
+     * Change user's display name
+     *
+     * @since Release 0.1.0
+     * @var string $value New display name
+     * @return string Current display name
+     */
+    public function changeUserDisplayname($value)
+    {
+        // Check if new display name is not too short
+        if (strlen($value) < 3) {
+            $this->flash->error('Display name needs to be at least 3 characters long.');
+            return false;
+        }
+
+        // Check if new display name is not too long
+        if (strlen($value) > 32) {
+            $this->flash->error('Display name can\'t be longer than 32 characters.');
+            return false;
+        }
+
+        // Check if anyone is already using this display name
+        $isUsed = $this->database->read(
+            'id',
+            'users',
+            'WHERE display_name = ?',
+            [$value],
+            false
+        );
+
+        if ($isUsed) {
+            // Check if user has not made any changes to the display name
+            if ($_SESSION['account']['id'] == $isUsed['id']) {
+                $this->flash->info('No changes have been made to your display name.');
+                return $value;
+            }
+
+            $this->flash->error('Different user is already using this display name.');
+            return $value;
+        }
+
+        // Check how many times user have changed display name
+        $userDetails = $this->database->read(
+            'display_name, displayname_changes, displayname_recent',
+            'users',
+            'WHERE id = ?',
+            [$_SESSION['account']['id']],
+            false
+        );
+
+        // Don't allow an display name change if user has changed it 3 times already
+        if ($userDetails['displayname_changes'] >= 3) {
+            $this->flash->error('You have used the limit of your 3 display name changes.');
+            return $value;
+        }
+
+        // Store previous display name in a string with escaped commas
+        if (is_null($userDetails['displayname_recent'])) {
+            $userDetails['displayname_recent'] = str_replace(',', '&#44;', $userDetails['display_name']);
+        } else {
+            $userDetails['displayname_recent'] = $userDetails['displayname_recent'] . ',' . str_replace(',', '&#44;', $userDetails['display_name']);
+        }
+
+        // Replace field value in database
+        $hasChanged = $this->database->update(
+            'display_name, displayname_changes, displayname_recent',
+            'users',
+            'WHERE id = ?',
+            [$value, $userDetails['displayname_changes'] + 1, $userDetails['displayname_recent'], $_SESSION['account']['id']]
+        );
+
+        // Check if display name have been changed
+        if ($hasChanged) {
+            // Create a public post that inform about that change
+            $o_post = Post::getInstance();
+            $o_post->add(null, 11);
+
+            $this->flash->success('You have successfully changed your display name.');
+            return $value;
+        }
+
+        $this->flash->error('Your display name have not been changed due to an unknown error.');
+        return $value;
+    }
+
+    /**
+     * Change user's birthdate
+     *
+     * @since Release 0.1.0
+     * @var string $day New birthdate day
+     * @var string $month New birthdate month
+     * @var string $year New birthdate year
+     * @return string Current birthdate
+     */
+    public function changeUserBirthdate($day, $month, $year)
+    {
+        // Make sure that birthdate values contains only numbers
+        $day = intval($day);
+        $month = intval($month);
+        $year = intval($year);
+
+        // If any value is empty, set birthdate as null
+        if (empty($day) || empty($month) || empty($year)) {
+            $birthdate = null;
+        } else {
+            // Make sure that birthdate is valid
+            if (!checkdate($month, $day, $year) || $year < 1900) {
+                $this->flash->error('Your birthdate seems to be invalid!');
+                return false;
+            }
+
+            // Combine birthdate into MySQL date format
+            $birthdate = $year . '-' . $month . '-' . $day;
+        }
+
+        // Replace field value in database
+        $hasChanged = $this->database->update(
+            'birthdate',
+            'users_details',
+            'WHERE id = ?',
+            [$birthdate, $_SESSION['account']['id']]
+        );
+
+        // Check if birthdate have been changed
+        if ($hasChanged) {
+            $this->flash->success('You have successfully changed your birthdate.');
+            return $birthdate;
+        }
+
+        $this->flash->error('Your birthdate have not been changed due to an unknown error.');
         return false;
     }
 
     /**
-     * Get details about selected user.
+     * Change user's avatar
      *
-     * @since 0.1.0
-     * @var integer $id ID of a selected user.
-     * @return boolean|array Details about user or false if user is not existing.
+     * @since Release 0.1.0
+     * @var string $file Array containing details about file
+     * @return string|boolean Hash of a new avatar
      */
-    public function getDetails($id) {
-        // Get details about user from database.
-        $user = $this->database->read(
-			'u.id, u.display_name, u.username, u.email, u.registration_ip, u.registration_datetime, u.login_ip, u.login_datetime, u.login_count, u.last_online, u.country_code, u.timezone, u.avatar, u.account_type, u.account_standing, d.birthdate, d.gender, d.city, d.short_description',
-			'users u',
-			'INNER JOIN users_details d ON u.id = d.user_id WHERE u.id = ?',
-			[$id]
-		);
-
-        // Return false if user has not been found.
-        if (count($user) != 1) {
-            return false;
-        }
-
-        // Return details about selected user.
-        return $user[0];
-    }
-
-    /**
-     * Get descriptions about selected user.
-     *
-     * @since 0.1.0
-     * @var integer $id ID of a selected user.
-     * @return boolean|array User's descriptions or false if user is not existing.
-     */
-    public function getDescriptions($id) {
-        // Get user descriptions from database.
-        $user = $this->database->read(
-			'short_description, interests_description, bronyinterval_description, favpony_description, full_description',
-			'users_details',
-			'WHERE user_id = ?',
-			[$id]
-		);
-
-        // Return false if user has not been found.
-        if (count($user) != 1) {
-            return false;
-        }
-
-        // Return selected user descriptions.
-        return $user[0];
-    }
-
-    /**
-     * Count logged users (action/ajax from last 90 seconds).
-     *
-     * @since 0.1.0
-     * @return integer Amount of logged users.
-     */
-    public function getOnlineUsersCount() {
-        // Get amount of logged user from database.
-        $onlineUsers = $this->database->read(
-			'COUNT(*) AS users',
-			'users',
-			'WHERE last_online >= DATE_SUB(NOW(), INTERVAL 90 SECOND)',
-			[]
-		);
-
-        // Return amount of logged users.
-        return intval($onlineUsers[0]['users']);
-    }
-
-    /**
-     * Count created accounts.
-     * Function doesn't count users that haven't verified or has deleted their accounts.
-     *
-     * @since 0.1.0
-     * @return integer Amount of registered users.
-     */
-    public function getUsersCount() {
-        $existingUsers = $this->database->read(
-			'COUNT(*) AS users',
-			'users',
-			'WHERE account_type != 0 AND account_standing != 2',
-			[]
-		);
-
-        // Return amount of registered users.
-        return $existingUsers[0]['users'];
-    }
-
-    /**
-     * Change user's profile display name.
-     *
-     * @since 0.1.0
-     * @var integer $id ID of selected user.
-     * @var integer $displayname User's new profile display name.
-     * @return boolean Result of this method.
-     */
-     public function changeDisplayname($id, $displayname) {
-         // Validate user's new display name.
-         if (!$this->validate->displayName($displayname)) {
-             return false;
-         }
-
-         // Get different user with same display name from database.
-         $unique = $this->database->read(
-             'id',
-             'users',
-             'WHERE display_name = ?',
-             [$displayname]
-         );
-
-         // Check if user's new display name is available.
-         if (count($unique) !== 0) {
-             if ($unique[0]['id'] != $id) {
-                 // Show failed system message if other user is already using this display name.
-                 $this->system->setMessage(
-                     'error',
-                     'Different user is already using this display name!'
-                 );
-             }
-
-             return false;
-         }
-
-         // Change user's display name in database.
-         $update = $this->database->update(
-             'display_name',
-             'users',
-             'WHERE id = ?',
-             [$displayname, $id]
-         );
-
-         // Check if row value has been changed in database.
-         if ($update != 1) {
-             $this->system->setMessage(
-                 'error',
-                 'System couldn\'t change your display name, please try again!'
-             );
-
-             return false;
-         }
-
-         // Publish system post about display name change.
-         $o_post = new Post($this->system, $this->database, $this->validate);
-         $o_post->create($id, NULL, 11);
-
-         // Show successful system message about changed display name.
-         $this->system->setMessage(
-             'success',
-             'Your display name has been changed successfully!'
-         );
-
-         return true;
-     }
-
-    /**
-     * Change password of user.
-     *
-     * @since 0.1.0
-     * @var integer $id ID of user.
-     * @var string $old Old password.
-     * @var string $new New password.
-     * @var string $repeat Repeated new password.
-     * @return boolean Result of this method.
-     */
-     public function changePassword($id, $old, $new, $repeat) {
-         // Get selected user's password and e-mail address from database.
-         $user = $this->database->read(
-             'password, email',
-             'users',
-             'WHERE id = ?',
-             [$id]
-         )[0];
-
-         // Check if old password is correct.
-         if (!password_verify($old, $user['password'])) {
-             $this->system->setMessage(
-                 'error',
-                 'Old password is incorrect!'
-             );
-
-             return false;
-         }
-
-         // Check if new password is valid.
-         if (!$this->validate->password($new)) {
-             return false;
-         }
-
-         // Check if new passwords are the same.
-         if ($new !== $repeat) {
-             $this->system->setMessage(
-                 'error',
-                 'New passwords are not the same!'
-             );
-
-             return false;
-         }
-
-         // Hash a password with BCrypt algorithm.
-         $password = password_hash($new, PASSWORD_BCRYPT, ['cost' => 13]);
-
-         // Change password in database.
-         $update = $this->database->update(
-             'password',
-             'users',
-             'WHERE id = ?',
-             [$password, $id]
-         );
-
-         // Check if row value has been changed in database.
-         if ($update != 1) {
-             $this->system->setMessage(
-                 'error',
-                 'System could\'t change your password, please try again!'
-             );
-
-             return false;
-         }
-
-         // TODO Send an e-mail with password change notification.
-
-
-         // Show successful system message about changed password.
-         $this->system->setMessage(
-             'success',
-             'Your password has been changed successfully!'
-         );
-
-         return true;
-     }
-
-     /**
-      * Change user's birthdate.
-      *
-      * @since 0.1.0
-      * @var integer $id ID of user.
-      * @var integer $day User's new birthdate day.
-      * @var integer $month User's new birthdate month.
-      * @var integer $year User's new birthdate year.
-      * @return boolean Result of this method.
-      */
-      public function changeBirthdate($id, $day, $month, $year) {
-          // Make sure that birthdate values are all numbers.
-          $day = intval($day);
-          $month = intval($month);
-          $year = intval($year);
-
-          // Make sure that birthdate is valid.
-          if (!checkdate($month, $day, $year)) {
-              $this->system->setMessage(
-                  'error',
-                  'Your birthdate seems to be invalid!'
-              );
-
-              return false;
-          }
-
-          // Combine birthdate into MySQL date format.
-          $birthdate = $year . '-' . $month . '-' . $day;
-
-          // Change user's birthdate in database.
-          $update = $this->database->update(
-              'birthdate',
-              'users_details',
-              'WHERE user_id = ?',
-              [$birthdate, $id]
-          );
-
-          // Check if row value has been changed in database.
-          if ($update != 1) {
-              $this->system->setMessage(
-                  'error',
-                  'System couldn\'t change your birthdate, please try again!'
-              );
-
-              return false;
-          }
-
-          // Show successful system message on birthdate change.
-          $this->system->setMessage('success', 'Your birthdate has been changed successfully!');
-          return true;
-      }
-
-     /**
-      * Change user's gender.
-      *
-      * @since 0.1.0
-      * @var integer $id ID of user.
-      * @var integer $city User's new gender value.
-      * @return boolean Result of this method.
-      */
-      public function changeGender($id, $gender) {
-          // Make sure that gender value is a number.
-          $gender = intval($gender);
-
-          // Set null if gender value is empty.
-          if (empty($gender)) {
-              $gender = null;
-          }
-
-          // Change user's gender in database.
-          $update = $this->database->update(
-              'gender',
-              'users_details',
-              'WHERE user_id = ?',
-              [$gender, $id]
-          );
-
-          // Check if row value has been changed in database.
-          if ($update != 1) {
-              $this->system->setMessage(
-                  'error',
-                  'System couldn\'t change your gender, please try again!'
-              );
-
-              return false;
-          }
-
-          // Show successful system message on changed gender.
-          $this->system->setMessage('success', 'Your gender has been changed successfully!');
-          return true;
-      }
-
-     /**
-      * Change user's city name.
-      *
-      * @since 0.1.0
-      * @var integer $id ID of user.
-      * @var string $city New city name.
-      * @return boolean Result of this method.
-      */
-      public function changeCity($id, $city) {
-          // Validate new city name.
-          if (!$this->validate->city($city)) {
-              return false;
-          }
-
-          // Set null if city name value is empty.
-          if (strlen($city) === 0) {
-              $city = null;
-          }
-
-          // Change user's city name in database.
-          $update = $this->database->update(
-              'city',
-              'users_details',
-              'WHERE user_id = ?',
-              [$city, $id]
-          );
-
-          // Check if row value has been changed in database.
-          if ($update != 1) {
-              $this->system->setMessage(
-                  'error',
-                  'System couldn\'t change your city name, please try again!'
-              );
-
-              return false;
-          }
-
-          // Show successful system message on changed city name.
-          $this->system->setMessage(
-              'success',
-              'Your city name has been changed successfully!'
-          );
-
-          return true;
-      }
-
-     /**
-      * Change user's profile descriptions.
-      *
-      * @since 0.1.0
-      * @var integer $id ID of user.
-      * @var string $description New description.
-      * @var string $type Name of input field.
-      * @return boolean Result of this method.
-      */
-      public function changeProfileDescription($id, $description, $type) {
-          // Define default values.
-          $maxlength = 0;
-          $dbcolumn = '';
-
-          // Update values with current field settings.
-          switch ($type) {
-              case 'shortdescription':
-                  $maxlength = 255;
-                  $dbcolumn = 'short_description';
-                  break;
-              case 'interestsdescription':
-                  $maxlength = 255;
-                  $dbcolumn = 'interests_description';
-                  break;
-              case 'fulldescription':
-                  $maxlength = 1000;
-                  $dbcolumn = 'full_description';
-                  break;
-              case 'bronyintervaldescription':
-                  $maxlength = 64;
-                  $dbcolumn = 'bronyinterval_description';
-                  break;
-              case 'favponydescription':
-                  $maxlength = 64;
-                  $dbcolumn = 'favpony_description';
-                  break;
-          }
-
-          // Check if new description is not too long.
-          if (strlen($description) > $maxlength) {
-              $this->system->setMessage(
-                  'error',
-                  'This description field can\'t contain more than ' . $maxlength . ' characters!'
-              );
-
-              return false;
-          }
-
-          // Set description to null if empty.
-          if (strlen($description) === 0) {
-              $description = null;
-          }
-
-          // Set new description in database.
-          $update = $this->database->update(
-              "$dbcolumn",
-              'users_details',
-              'WHERE user_id = ?',
-              [$description, $id]
-          );
-
-          // Check if row value has been changed in database.
-          if ($update != 1) {
-              $this->system->setMessage(
-                  'error',
-                  'System couldn\'t change your description or it\'s the same!'
-              );
-
-              return false;
-          }
-
-          // Show successful system message on changed profile description.
-          $this->system->setMessage(
-              'success',
-              'Your description has been changed successfully!'
-          );
-
-          return true;
-      }
-
-      /**
-       * Change user's avatar and create 3 resolutions for it.
-       *
-       * @since 0.1.0
-       * @var integer $id ID of user.
-       * @var string $file Global $_FILES variable containing path to the new avatar.
-       * @return boolean Result of this method.
-       */
-      public function changeAvatar($id, $file) {
-          // Check if file has been uploaded correctly.
-          if ($file['error'] != 0) {
-              // Show failed system message if avatar couldn't be uploaded.
-              $o_system->setMessage(
-                  'error',
-                  'Avatar couldn\'t be uploaded!'
-              );
-          }
-
-          // Store only path to the new avatar.
-          $file = $file['tmp_name'];
-
-          // Store default variables for checking if hash is unique.
-          $isHashUnique = false;
-          $avatarHash = null;
-
-          // Generate random hash for user's new avatar.
-          while ($isHashUnique != true) {
-              // Generate new hash for avatar.
-              $avatarHash = $this->system->getRandomHash(16);
-
-              // Get same avatar's hash from database.
-              $duplicateHash = $this->database->read(
-                  'id',
-                  'users',
-                  'WHERE avatar = ?',
-                  [$avatarHash]
-              );
-
-              // Check if avatar's hash is unique.
-              if (count($duplicateHash) == 0) {
-                  $isHashUnique = true;
-
-                  // Create avatars and store them in a folder with unique name.
-                  $o_image = new Image();
-                  if (!$o_image->createAvatar($file, $avatarHash)) {
-                      $this->system->setMessage(
-                          'error',
-                          'System could\'t make an avatar! Please, try again!'
-                      );
-
-                      return false;
-                  }
-
-                  // Update avatar's hash in database.
-                  $insertedHash = $this->database->update(
-                      'avatar',
-                      'users',
-                      'WHERE id = ?',
-                      [$avatarHash, $id]
-                  );
-
-                  // Return error if hash couldn't be inserted in database.
-                  if (empty($insertedHash)) {
-                      $this->system->setMessage(
-                          'error',
-                          'System couldn\'t change your avatar, please try again!'
-                      );
-
-                      return false;
-                  }
-              }
-          }
-
-          // Update user's avatar in session.
-          $_SESSION['user']['avatar'] = $avatarHash;
-
-          // Show successful system message on changed avatar.
-          $this->system->setMessage(
-              'success',
-              'Your avatar has been changed successfully!'
-          );
-
-          return true;
-      }
-
-    /**
-     * Try to authenticate user with username and password values from $_POST.
-     * Method validates values from inputs, checks account status and creates new session.
-     * Method throws a system error message if it couldn't log in.
-     *
-     * @since 0.1.0
-     */
-    public function login()
+    public function changeAvatar($file)
     {
-        // Check if login method has been called correctly.
-        if (empty($_POST['submit']) || $_POST['submit'] !== 'login') {
-            $o_system->setMessage('error', 'Login form has been called incorrectly.');
-            return false;
+        // Set hash as not unique on before generating it
+        $uniqueHash = false;
+
+        // Generate a hash until it's unique
+        while ($uniqueHash === false) {
+            // Generate a hash for a new avatar
+            $hashAvatar = $this->utilities->getRandomHash(16);
+
+            // Check if a directory, named with a generated hash, already exists
+            if (!is_dir('../../media/avatars/' . $hashAvatar)) {
+                $uniqueHash = true;
+            }
         }
 
-        // Store POST values in a variables.
-        $username = $_POST['username'];
-        $password = $_POST['password'];
+        // Get instance of an Image class (class needs to be included before)
+        $classImage = Image::getInstance();
 
-        // Remember if username is an e-mail address.
-        $isEmail = false;
+        // Try to create three versions of an avatar
+        if ($classImage->createAvatar($file, $hashAvatar)) {
+            // Get current avatar hash
+            $hashPreviousAvatar = $this->database->read(
+                'avatar',
+                'users',
+                'WHERE id = ?',
+                [$_SESSION['account']['id']],
+                false
+            )['avatar'];
 
-        // Check if username is an e-mail address.
-        if (filter_var($username, FILTER_VALIDATE_EMAIL)) {
-            $isEmail = true;
-        }
+            // Remove a current avatar directory if exists
+            if (!is_null($hashPreviousAvatar) && is_dir('../../media/avatars/' . $hashAvatar)) {
+                // Delete files
+                unlink('../../media/avatars/' . $hashPreviousAvatar . '/minres.jpg');
+                unlink('../../media/avatars/' . $hashPreviousAvatar . '/defres.jpg');
+                unlink('../../media/avatars/' . $hashPreviousAvatar . '/maxres.jpg');
 
-        // Remember if input fields are valid.
-        $isUsernameValid = false;
-        $isPasswordValid = false;
+                // Delete a directory
+                rmdir('../../media/avatars/' . $hashPreviousAvatar);
+            }
 
-        // Validate username or e-mail address.
-        if ($isEmail) {
-            $isUsernameValid = $this->validate->email($email);
-        } else {
-            $isUsernameValid = $this->validate->username($username);
-        }
-
-        // Validate password.
-        $isPasswordValid = $this->validate->password($password);
-
-        // Check if both input fields are valid.
-        if (!$isUsernameValid || !$isPasswordValid) {
-            return false;
-        }
-
-        // Get selected details about user from database.
-		$user = $this->database->read(
-			'id, display_name, username, email, password, login_count, avatar, account_type, account_standing',
-			'users',
-			$isEmail ? 'WHERE email = ?' : 'WHERE username = ?',
-			[$username]
-		);
-
-        // Check if any user has been found.
-		if (count($user) != 1) {
-            $this->system->setMessage(
-                'error',
-                'Wrong username/e-mail or password.'
+            // Update an avatar hash with a new value
+            $this->database->update(
+                'avatar',
+                'users',
+                'WHERE id = ?',
+                [$hashAvatar, $_SESSION['account']['id']]
             );
 
-			return false;
-		}
+            // Update a session with a new avatar hash
+            $_SESSION['user']['avatar'] = $hashAvatar;
 
-        // Check if password is correct.
-		if (!password_verify($password, $user[0]['password'])) {
-			$this->system->setMessage(
-                'error',
-                'Wrong username/e-mail or password.'
-            );
-
-			return false;
-		}
-
-        // Check if user is banned.
-        if ($user[0]['account_standing'] == 2) {
-            // TODO Display left time of ban.
-            $this->system->setMessage(
-                'error',
-                'Your account has been banned for some time.'
-            );
-			return false;
+            return $hashAvatar;
         }
 
-        // Store common variables.
-		$currentLoginCount = $user[0]['login_count'] + 1;
-		$currentIP = $this->system->getVisitorIP();
-		$currentDatetime = $this->system->getDatetime();
-		$currentAgent = substr($this->system->getVisitorAgent(), 0, 256);
-
-        // Update user's login details.
-		$this->database->update(
-			'login_ip, login_datetime, login_count, last_online',
-			'users',
-			'WHERE id = ?',
-			[$currentIP, $currentDatetime, $currentLoginCount, $currentDatetime, $user[0]['id']]
-		);
-
-        // Log details about successful login.
-		$this->database->create(
-			'user_id, ip, datetime, agent',
-			'log_logins',
-			'',
-			[$user[0]['id'], $currentIP, $currentDatetime, $currentAgent]
-		);
-
-        // Check if session can be created.
-        if (!$this->session->create($user[0], $currentIP, $currentDatetime)) {
-            $this->system->setMessage(
-                'error',
-                'Couldn\'t create an account session.'
-            );
-
-			return false;
-        }
-
-        return true;
+        return false;
     }
 
     /**
-     * Try to create new user with values from $_POST.
+     * Change user's details settings
      *
-     * @since 0.1.0
+     * @since Release 0.1.0
+     * @var string $field Name of a column to change
+     * @var string $value New value for a column
+     * @return string New/current value of a column
      */
-    public function register()
+    public function changeSettingsDetails($field, $value)
     {
-        // Check if register method has been called correctly.
-        if (empty($_POST['submit']) || $_POST['submit'] !== 'register') {
-            $this->system->setMessage('error', 'Register form has been called incorrectly.');
+        // Check if field is available for edit
+        $availableFields = ['birthdate', 'gender', 'city', 'short_description', 'full_description', 'contact_methods', 'favourite_music', 'favourite_movies', 'favourite_games', 'fandom_becameabrony', 'fandom_favouritepony', 'fandom_favouriteepisode', 'creations_links'];
+        if (!in_array($field, $availableFields)) {
+            $this->flash->error('Field does not exist or is not available for editing.');
             return false;
         }
 
-        // Store POST values in a variables.
-        $displayname = $_POST['displayname'];
-        $username = strtolower($_POST['username']);
-        $email = strtolower($_POST['email']);
-        $password = $_POST['password'];
-        $passwordrepeat = $_POST['passwordrepeat'];
+        // TODO Limit letters
 
-        // Validate new display name.
-        $isDisplaynameValid = $this->validate->displayName($displayname);
-
-        // Validate new username.
-        $isUsernameValid = $this->validate->username($username);
-
-        // Validate new e-mail address.
-        $isEmailValid = $this->validate->email($email);
-
-        // Validate new password.
-        $isPasswordValid = $this->validate->password($password);
-
-        // Check if both passwords are the same.
-        $arePasswordsSame = ($password === $passwordrepeat) ? true : false;
-
-        // Check if all input fields are valid.
-        if (!$isDisplaynameValid || !$isUsernameValid || !$isPasswordValid || !$arePasswordsSame) {
-            return false;
+        // Change value to null if empty
+        if (empty($value)) {
+            $value = null;
         }
 
-        // Get any users using same display name, username or e-mail address from database.
-        $sameUsers = $this->database->read(
-			'id, display_name, username, email',
-			'users',
-			'WHERE display_name = ? OR username = ? OR email = ?',
-			[$displayname, $username, $email]
-		);
-
-        // Check if any user is already using same display name, username or e-mail address.
-		if (count($sameUsers) != 0) {
-			foreach ($sameUsers as $duplicateUser) {
-                // Check if no other user is using same display name.
-				if ($displayname === $duplicateUser['display_name']) {
-                    $this->system->setMessage(
-                        'error',
-                        'Display name is already in use.'
-                    );
-				}
-
-                // Check if no other user is using same username.
-				if ($username === $duplicateUser['username']) {
-                    $this->system->setMessage(
-                        'error',
-                        'Username is already in use.'
-                    );
-				}
-
-                // Check if no other user is using same e-mail address.
-				if ($email === $duplicateUser['email']) {
-                    $this->system->setMessage(
-                        'error',
-                        'E-mail address is already in use.'
-                    );
-				}
-			}
-
-			return false;
-		}
-
-        // Store common variables.
-        $currentIP = $this->system->getVisitorIP();
-		$currentDatetime = $this->system->getDatetime();
-
-        // Get user's country code and timezone.
-		$o_geoip = new GeoIP($currentIP);
-
-        // Insert new user into database if nothing has returned an error.
-        // TODO Check again if result has been inserted.
-        $this->database->create(
-			'display_name, username, email, password, registration_ip, registration_datetime, country_code, timezone',
-			'users',
-			'',
-			[
-				$displayname,
-				$username,
-                null,
-				password_hash($password, PASSWORD_BCRYPT, ['cost' => 13]),
-				$currentIP,
-				$currentDatetime,
-				$o_geoip->getCountryCode(),
-				$o_geoip->getTimezoneOffset(),
-			]
-		);
-
-        // Show successful system message on new account creation.
-        $this->system->setMessage(
-            'success',
-            'Account has been created successfully.'
+        // Replace field value in database
+        $hasChanged = $this->database->update(
+            $field,
+            'users_details',
+            'WHERE id = ?',
+            [$value, $_SESSION['account']['id']]
         );
 
-        // Store default values for e-mail verification.
-		$isHashUnique = false;
-		$uniqueHash = null;
-
-        // Generate random hash for e-mail verification.
-		while ($isHashUnique != true) {
-            // Generate random hash.
-			$uniqueHash = $this->system->getRandomHash(16);
-
-            // Get same hash from database if existing.
-			$duplicateHash = $this->database->read(
-				'hash',
-				'key_email',
-				'WHERE hash = ?',
-				[$uniqueHash]
-			);
-
-            // Check if hash is unique, if true, insert it into database.
-			if (count($duplicateHash) == 0) {
-                // Stop the while loop when unique hash has been found.
-				$isHashUnique = true;
-
-                // Get created user ID.
-				$userID = $this->database->read(
-					'id',
-					'users',
-					'WHERE username = ?',
-					[$username]
-				)[0];
-
-                // Create new row for user details.
-                $this->database->create(
-                    'user_id',
-                    'users_details',
-                    '',
-                    [$userID['id']]
-                );
-
-                // Create new row for not verified e-mail address.
-				$this->database->create(
-					'user_id, email, date, hash',
-					'key_email',
-					'',
-					[$userID['id'], $email, $currentDatetime, $uniqueHash]
-				);
-
-				break;
-			}
-		}
-
-        // Send a verification e-mail.
-		$o_mail = new Mail($this->system);
-		$o_mail->sendRegistrationMail($email, $displayname, $uniqueHash, $userID['id']);
-
-		return true;
-    }
-
-    /**
-     * Get a full country name from country code.
-     *
-     * @since 0.1.0
-     * @var string $code Country code.
-     * @return string|null Full country name.
-     */
-    public function getCountryName($code) {
-        // Check if country code format is valid.
-        if (strlen($code) != 2) {
-            return null;
+        // Check if creations links have been changed
+        if ($hasChanged) {
+            $this->flash->success('You have successfully changed your details.');
+            return $value;
         }
 
-        // Store countries country codes.
-        $codes = [
-            'AF' => 'Afghanistan',
-            'AX' => 'Aland Islands',
-            'AL' => 'Albania',
-            'DZ' => 'Algeria',
-            'AS' => 'American Samoa',
-            'AD' => 'Andorra',
-            'AO' => 'Angola',
-            'AI' => 'Anguilla',
-            'AQ' => 'Antarctica',
-            'AG' => 'Antigua And Barbuda',
-            'AR' => 'Argentina',
-            'AM' => 'Armenia',
-            'AW' => 'Aruba',
-            'AU' => 'Australia',
-            'AT' => 'Austria',
-            'AZ' => 'Azerbaijan',
-            'BS' => 'Bahamas',
-            'BH' => 'Bahrain',
-            'BD' => 'Bangladesh',
-            'BB' => 'Barbados',
-            'BY' => 'Belarus',
-            'BE' => 'Belgium',
-            'BZ' => 'Belize',
-            'BJ' => 'Benin',
-            'BM' => 'Bermuda',
-            'BT' => 'Bhutan',
-            'BO' => 'Bolivia',
-            'BA' => 'Bosnia And Herzegovina',
-            'BW' => 'Botswana',
-            'BV' => 'Bouvet Island',
-            'BR' => 'Brazil',
-            'IO' => 'British Indian Ocean Territory',
-            'BN' => 'Brunei Darussalam',
-            'BG' => 'Bulgaria',
-            'BF' => 'Burkina Faso',
-            'BI' => 'Burundi',
-            'KH' => 'Cambodia',
-            'CM' => 'Cameroon',
-            'CA' => 'Canada',
-            'CV' => 'Cape Verde',
-            'KY' => 'Cayman Islands',
-            'CF' => 'Central African Republic',
-            'TD' => 'Chad',
-            'CL' => 'Chile',
-            'CN' => 'China',
-            'CX' => 'Christmas Island',
-            'CC' => 'Cocos (Keeling) Islands',
-            'CO' => 'Colombia',
-            'KM' => 'Comoros',
-            'CG' => 'Congo',
-            'CD' => 'Congo, Democratic Republic',
-            'CK' => 'Cook Islands',
-            'CR' => 'Costa Rica',
-            'CI' => 'Cote D\'Ivoire',
-            'HR' => 'Croatia',
-            'CU' => 'Cuba',
-            'CY' => 'Cyprus',
-            'CZ' => 'Czech Republic',
-            'DK' => 'Denmark',
-            'DJ' => 'Djibouti',
-            'DM' => 'Dominica',
-            'DO' => 'Dominican Republic',
-            'EC' => 'Ecuador',
-            'EG' => 'Egypt',
-            'SV' => 'El Salvador',
-            'GQ' => 'Equatorial Guinea',
-            'ER' => 'Eritrea',
-            'EE' => 'Estonia',
-            'ET' => 'Ethiopia',
-            'FK' => 'Falkland Islands (Malvinas)',
-            'FO' => 'Faroe Islands',
-            'FJ' => 'Fiji',
-            'FI' => 'Finland',
-            'FR' => 'France',
-            'GF' => 'French Guiana',
-            'PF' => 'French Polynesia',
-            'TF' => 'French Southern Territories',
-            'GA' => 'Gabon',
-            'GM' => 'Gambia',
-            'GE' => 'Georgia',
-            'DE' => 'Germany',
-            'GH' => 'Ghana',
-            'GI' => 'Gibraltar',
-            'GR' => 'Greece',
-            'GL' => 'Greenland',
-            'GD' => 'Grenada',
-            'GP' => 'Guadeloupe',
-            'GU' => 'Guam',
-            'GT' => 'Guatemala',
-            'GG' => 'Guernsey',
-            'GN' => 'Guinea',
-            'GW' => 'Guinea-Bissau',
-            'GY' => 'Guyana',
-            'HT' => 'Haiti',
-            'HM' => 'Heard Island & Mcdonald Islands',
-            'VA' => 'Holy See (Vatican City State)',
-            'HN' => 'Honduras',
-            'HK' => 'Hong Kong',
-            'HU' => 'Hungary',
-            'IS' => 'Iceland',
-            'IN' => 'India',
-            'ID' => 'Indonesia',
-            'IR' => 'Iran, Islamic Republic Of',
-            'IQ' => 'Iraq',
-            'IE' => 'Ireland',
-            'IM' => 'Isle Of Man',
-            'IL' => 'Israel',
-            'IT' => 'Italy',
-            'JM' => 'Jamaica',
-            'JP' => 'Japan',
-            'JE' => 'Jersey',
-            'JO' => 'Jordan',
-            'KZ' => 'Kazakhstan',
-            'KE' => 'Kenya',
-            'KI' => 'Kiribati',
-            'KR' => 'Korea',
-            'KW' => 'Kuwait',
-            'KG' => 'Kyrgyzstan',
-            'LA' => 'Lao People\'s Democratic Republic',
-            'LV' => 'Latvia',
-            'LB' => 'Lebanon',
-            'LS' => 'Lesotho',
-            'LR' => 'Liberia',
-            'LY' => 'Libyan Arab Jamahiriya',
-            'LI' => 'Liechtenstein',
-            'LT' => 'Lithuania',
-            'LU' => 'Luxembourg',
-            'MO' => 'Macao',
-            'MK' => 'Macedonia',
-            'MG' => 'Madagascar',
-            'MW' => 'Malawi',
-            'MY' => 'Malaysia',
-            'MV' => 'Maldives',
-            'ML' => 'Mali',
-            'MT' => 'Malta',
-            'MH' => 'Marshall Islands',
-            'MQ' => 'Martinique',
-            'MR' => 'Mauritania',
-            'MU' => 'Mauritius',
-            'YT' => 'Mayotte',
-            'MX' => 'Mexico',
-            'FM' => 'Micronesia, Federated States Of',
-            'MD' => 'Moldova',
-            'MC' => 'Monaco',
-            'MN' => 'Mongolia',
-            'ME' => 'Montenegro',
-            'MS' => 'Montserrat',
-            'MA' => 'Morocco',
-            'MZ' => 'Mozambique',
-            'MM' => 'Myanmar',
-            'NA' => 'Namibia',
-            'NR' => 'Nauru',
-            'NP' => 'Nepal',
-            'NL' => 'Netherlands',
-            'AN' => 'Netherlands Antilles',
-            'NC' => 'New Caledonia',
-            'NZ' => 'New Zealand',
-            'NI' => 'Nicaragua',
-            'NE' => 'Niger',
-            'NG' => 'Nigeria',
-            'NU' => 'Niue',
-            'NF' => 'Norfolk Island',
-            'MP' => 'Northern Mariana Islands',
-            'NO' => 'Norway',
-            'OM' => 'Oman',
-            'PK' => 'Pakistan',
-            'PW' => 'Palau',
-            'PS' => 'Palestinian Territory, Occupied',
-            'PA' => 'Panama',
-            'PG' => 'Papua New Guinea',
-            'PY' => 'Paraguay',
-            'PE' => 'Peru',
-            'PH' => 'Philippines',
-            'PN' => 'Pitcairn',
-            'PL' => 'Poland',
-            'PT' => 'Portugal',
-            'PR' => 'Puerto Rico',
-            'QA' => 'Qatar',
-            'RE' => 'Reunion',
-            'RO' => 'Romania',
-            'RU' => 'Russian Federation',
-            'RW' => 'Rwanda',
-            'BL' => 'Saint Barthelemy',
-            'SH' => 'Saint Helena',
-            'KN' => 'Saint Kitts And Nevis',
-            'LC' => 'Saint Lucia',
-            'MF' => 'Saint Martin',
-            'PM' => 'Saint Pierre And Miquelon',
-            'VC' => 'Saint Vincent And Grenadines',
-            'WS' => 'Samoa',
-            'SM' => 'San Marino',
-            'ST' => 'Sao Tome And Principe',
-            'SA' => 'Saudi Arabia',
-            'SN' => 'Senegal',
-            'RS' => 'Serbia',
-            'SC' => 'Seychelles',
-            'SL' => 'Sierra Leone',
-            'SG' => 'Singapore',
-            'SK' => 'Slovakia',
-            'SI' => 'Slovenia',
-            'SB' => 'Solomon Islands',
-            'SO' => 'Somalia',
-            'ZA' => 'South Africa',
-            'GS' => 'South Georgia And Sandwich Isl.',
-            'ES' => 'Spain',
-            'LK' => 'Sri Lanka',
-            'SD' => 'Sudan',
-            'SR' => 'Suriname',
-            'SJ' => 'Svalbard And Jan Mayen',
-            'SZ' => 'Swaziland',
-            'SE' => 'Sweden',
-            'CH' => 'Switzerland',
-            'SY' => 'Syrian Arab Republic',
-            'TW' => 'Taiwan',
-            'TJ' => 'Tajikistan',
-            'TZ' => 'Tanzania',
-            'TH' => 'Thailand',
-            'TL' => 'Timor-Leste',
-            'TG' => 'Togo',
-            'TK' => 'Tokelau',
-            'TO' => 'Tonga',
-            'TT' => 'Trinidad And Tobago',
-            'TN' => 'Tunisia',
-            'TR' => 'Turkey',
-            'TM' => 'Turkmenistan',
-            'TC' => 'Turks And Caicos Islands',
-            'TV' => 'Tuvalu',
-            'UG' => 'Uganda',
-            'UA' => 'Ukraine',
-            'AE' => 'United Arab Emirates',
-            'GB' => 'United Kingdom',
-            'US' => 'United States',
-            'UM' => 'United States Outlying Islands',
-            'UY' => 'Uruguay',
-            'UZ' => 'Uzbekistan',
-            'VU' => 'Vanuatu',
-            'VE' => 'Venezuela',
-            'VN' => 'Viet Nam',
-            'VG' => 'Virgin Islands, British',
-            'VI' => 'Virgin Islands, U.S.',
-            'WF' => 'Wallis And Futuna',
-            'EH' => 'Western Sahara',
-            'YE' => 'Yemen',
-            'ZM' => 'Zambia',
-            'ZW' => 'Zimbabwe'
-        ];
-
-        return $codes[strtoupper($code)] ?? null;
+        $this->flash->error('Your settings have not been changed due to an unknown error.');
+        return false;
     }
 }

@@ -1,32 +1,39 @@
 <?php
-// Require system initialization code.
-require_once('system/inc/init.php');
+// Include system initialization code
+require('system/partials/init.php');
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
     <title>Privacy Policy :: BronyCenter</title>
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
-    <link rel="stylesheet" href="resources/css/style.css?v=<?php echo $systemVersion['commit']; ?>" /></head>
+    <?php
+    // Include stylesheets for all pages
+    require('system/partials/stylesheets.php');
+    ?>
+</head>
 <body>
     <?php
-    // Require HTML of header for not social pages.
-    require_once('system/inc/header.php');
-
-    // Require code to display system messages.
-    require_once('system/inc/messages.php');
+    // Include header for all pages
+    require('system/partials/header.php');
     ?>
 
-    <div class="container" id="main_content">
-        <section>
-            <h1>Privacy Policy</h1>
-            <p>Last update: <b>13.08.2017</b></p>
+    <div class="container">
+        <?php
+        // Include system messages if any exists
+        require('system/partials/flash.php');
+        ?>
+
+        <section id="policy" class="mb-4">
+            <h1 class="mb-2">Privacy Policy</h1>
+
+            <p class="mb-4">
+                Last update: <b>30.12.2017</b> (outdated)
+            </p>
 
             <p>
                 We care about your privacy and anonymity. You can learn here
@@ -35,18 +42,21 @@ require_once('system/inc/init.php');
                 It's a lot of learning and work and it's not really needed yet
                 with an amount of users that we have.
             </p>
-            <p>
+            <p class="mb-0">
                 Remember, that <b>we're not responsible</b> for any sensitive details,
-                that you will share or send in a private messages, in case of us
+                that you will share with us or send in private messages, in case of us
                 being hacked. We're in an early development stage and even
                 the biggest ones (Dropbox, Adobe, MySpace) have been hacked in
-                the past. We promise to do everything that we can to prevent it,
+                the past. We promise to do everything that we can do to prevent it,
                 but in case of being hacked, we'll notify you about that as soon
                 as we'll find that out. Check out below to get more details about
                 what informations, how and why we store about you.
             </p>
+        </section>
 
-            <h4 class="my-5">Informations that we collect about you.</h4>
+        <section id="collect" class="mb-4">
+            <h5 class="mb-4">Informations that we collect about you.</h5>
+
             <p>
                 We don't use any kind of software that will spy on you
                 (e.g. Google Analytics, Google AdWords, Facebook Like buttons).
@@ -101,7 +111,7 @@ require_once('system/inc/init.php');
                     <b>Date and time when you were last seen logged is updated automatically.</b>
                 </li>
                 <li class="mb-3">
-                    <b>Your private messages are stored in a plain text in database.</b>
+                    <b>Your private messages are stored in a database with a weak encryption, but not as a plain text.</b>
                 </li>
                 <li class="mb-3">
                     <b>Optional details about you that you can share:</b>
@@ -114,8 +124,11 @@ require_once('system/inc/init.php');
                     </ul>
                 </li>
             </ul>
+        </section>
 
-            <h4 class="my-5">Which details about you can be seen.</h4>
+        <section id="public" class="mb-4">
+            <h5 class="mb-4">Which details about you can be seen.</h5>
+
             <p>
                 <b>Everyone (even not logged) can see your:</b> display name, username,
                 registraton datetime, last online datetime, country, timezone, age,
@@ -130,8 +143,11 @@ require_once('system/inc/init.php');
             <p>
                 <b>Administrator can see everything.</b>
             </p>
+        </section>
 
-            <h4 class="my-5">Details about informations that we store.</h4>
+        <section id="store" class="mb-4">
+            <h5 class="mb-4">Details about informations that we store.</h5>
+
             <p>
                 <b>IP Address</b> is a numerical label that is assigned to all devices
                 in your network. It allows us to check if your account has been
@@ -189,8 +205,11 @@ require_once('system/inc/init.php');
                 happen, but as I care about your security, I have to tell you,
                 that's possible.
             </p>
+        </section>
 
-            <h4 class="my-5">Individuals' rights</h4>
+        <section id="rights" class="mb-4">
+            <h5 class="mb-4">Individuals' rights</h5>
+
             <p>
                 We don't know if we need to write this privacy policy, as we're
                 not an organisation or a company, but it's better to give you
@@ -266,8 +285,8 @@ require_once('system/inc/init.php');
     </div>
 
     <?php
-    // Require HTML of footer for not social pages.
-    require_once('system/inc/footer.php');
+    // Include scripts for all pages
+    require('system/partials/scripts.php');
     ?>
 </body>
 </html>

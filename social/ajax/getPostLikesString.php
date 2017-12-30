@@ -1,17 +1,23 @@
 <?php
-// Allow access only for logged users.
+
+// Allow access only for logged users
 $loginRequired = true;
 
-// Require system initialization code.
-require_once('../../system/inc/init.php');
+// Require system initialization code
+require_once('../../system/partials/init.php');
 
-// Get list of post likes.
-$likes = $o_post->getLikes($_GET['id']);
+// Use post class reading post likes
+use BronyCenter\Post;
+$posts = Post::getInstance();
 
-// Get string about users that has liked a post.
-$likesString = $o_post->getLikesString($_GET['id'], $likes, $_GET['ownlike']);
+// Get a string containing post likes string
+$likes = $posts->getLikes($_GET['id']);
 
-// Return a string containing string about user likes.
-echo $likesString;
+$string = $posts->getLikesString($_GET['id'], $likes, $_GET['hasliked']);
 
-// TODO Return error in JSON if not.
+// Return a post likes string
+if (!empty($string)) {
+    echo $string;
+}
+
+// TODO Return error in JSON if not

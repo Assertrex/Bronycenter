@@ -1,410 +1,400 @@
 <?php
-// Allow access only for logged users.
+
+// Page settings
+$pageTitle = 'Settings :: BronyCenter';
+$pageStylesheet = '
+aside .fa { width: 15px; }
+aside .list-group-item { border-radius: 0 !important; cursor: pointer; }
+aside .list-group-item:hover { background-color: #EEE; }
+aside .list-group-item a { color: #424242; text-decoration: none; }
+aside .list-group-item.active { background-color: #1565C0; border-color: #1565C0; }
+aside .list-group-item.active a { color: rgba(255, 255, 255, .8); }
+aside .list-group-item span { flex: 1; margin-left: -22px; text-align: center; user-select: none; }
+#tabs-content h6 { padding: .5rem 0; background-color: #EEEEEE; color: #616161; border-bottom: 1px solid #BDBDBD; }
+#tabs-content .content-block:last-child { margin-bottom: 0 !important; }
+#tabs-content .content-title { font-size: 12px; color: #90949C; text-transform: uppercase; border-bottom: 1px solid #DDDFE2; line-height: 26px; }
+input, textarea, select { font-size: 12px !important; }
+#content-input-avatar { font-size: 12px !important; }
+#content-currentavatar { width: 64px; height: 64px; }
+
+@media (min-width: 576px) {
+    #tabs-content .content-title { font-size: 13px; }
+    input, textarea, select { font-size: 15px !important; }
+    .content-block .form-inline input { flex: 1; }
+    #content-currentavatar { width: 128px; height: 128px; }
+';
+
+// Allow access only for logged users
 $loginRequired = true;
 
-// Require system initialization code.
-require_once('../system/inc/init.php');
+// Include system initialization code
+require('../system/partials/init.php');
 
-// Change selected setting when user has submitted a form.
-if (!empty($_POST['submit'])) {
-    switch($_POST['submit']) {
-        case 'changedisplayname':
-            $o_user->changeDisplayname($_SESSION['account']['id'], $_POST['displayname']);
-            break;
-        case 'changepassword':
-            $o_user->changePassword($_SESSION['account']['id'], $_POST['passwordold'], $_POST['passwordnew'], $_POST['passwordrepeat']);
-            break;
-        case 'changebirthdate':
-            $o_user->changeBirthdate($_SESSION['account']['id'], $_POST['day'], $_POST['month'], $_POST['year']);
-            break;
-        case 'changegender':
-            $o_user->changeGender($_SESSION['account']['id'], $_POST['gender']);
-            break;
-        case 'changecity':
-            $o_user->changeCity($_SESSION['account']['id'], $_POST['city']);
-            break;
-        case 'changeshortdescription':
-            $o_user->changeProfileDescription($_SESSION['account']['id'], $_POST['shortdescription'], 'shortdescription');
-            break;
-        case 'changeinterestsdescription':
-            $o_user->changeProfileDescription($_SESSION['account']['id'], $_POST['interestsdescription'], 'interestsdescription');
-            break;
-        case 'changefulldescription':
-            $o_user->changeProfileDescription($_SESSION['account']['id'], $_POST['fulldescription'], 'fulldescription');
-            break;
-        case 'changebronyintervaldescription':
-            $o_user->changeProfileDescription($_SESSION['account']['id'], $_POST['bronyintervaldescription'], 'bronyintervaldescription');
-            break;
-        case 'changefavponydescription':
-            $o_user->changeProfileDescription($_SESSION['account']['id'], $_POST['favponydescription'], 'favponydescription');
-            break;
-        case 'changeavatar':
-            // Require Image class for image manipulation.
-            require_once('../system/class/image.php');
+// Get details about selected user
+$userDetails = $user->getUserDetails($_SESSION['account']['id']);
 
-            // Try to change user's avatar.
-            $o_user->changeAvatar($_SESSION['account']['id'], $_FILES['avatar']);
-            break;
-    }
+// Format account standing status to string description
+switch ($userDetails['account_standing']) {
+    case '0':
+        $userDetails['account_standing_string'] = '<span class="text-success">Good</span>';
+        break;
+    case '1':
+        $userDetails['account_standing_string'] = '<span class="text-info">Muted</span>';
+        break;
+    case '2':
+        $userDetails['account_standing_string'] = '<span class="text-danger">Banned</span>';
+        break;
+    default:
+        $userDetails['account_standing_string'] = '<span class="text-secondary">Unknown</span>';
 }
 
-// Get details about current user.
-$user = $o_user->getDetails($_SESSION['account']['id']);
+// Format account type to string description
+switch ($userDetails['account_type']) {
+    case '9':
+        $userDetails['account_type_badge'] = '<span class="badge badge-pill badge-danger ml-1" style="vertical-align: text-bottom;">Admin</span>';
+        break;
+    case '8':
+        $userDetails['account_type_badge'] = '<span class="badge badge-pill badge-info ml-1" style="vertical-align: text-bottom;">Mod</span>';
+        break;
+    default:
+        $userDetails['account_type_badge'] = '<span class="badge badge-pill badge-light ml-1" style="vertical-align: text-bottom;">Standard user</span>';
+}
 
-// Get current user descriptions.
-$tmp_user_descriptions = $o_user->getDescriptions($_SESSION['account']['id']);
-
-// Merge both arrays.
-$user = array_merge($user, $tmp_user_descriptions);
-
-// Unset temporiary array with user descriptions.
-unset($tmp_user_descriptions);
-
-// Store birthdate as day, month and year variables if set up.
-if (!is_null($user['birthdate'])) {
-    $birthdate_temp = explode('-', $user['birthdate']);
-    $user['birthdate_temp']['year'] = $birthdate_temp[0];
-    $user['birthdate_temp']['month'] = $birthdate_temp[1];
-    $user['birthdate_temp']['day'] = $birthdate_temp[2];
+if (!is_null($userDetails['birthdate'])) {
+    $birthdate_temp = explode('-', $userDetails['birthdate']);
+    $userDetails['birthdate_temp']['year'] = $birthdate_temp[0];
+    $userDetails['birthdate_temp']['month'] = $birthdate_temp[1];
+    $userDetails['birthdate_temp']['day'] = $birthdate_temp[2];
 } else {
-    $user['birthdate_temp']['year'] = '';
-    $user['birthdate_temp']['month'] = '';
-    $user['birthdate_temp']['day'] = '';
+    $userDetails['birthdate_temp'] = null;
 }
 
-// Get current avatar of user or show the default one.
-$avatarName = $_SESSION['user']['avatar'] ?? 'default';
+// Get user's login history
+$loginHistory = $session->getHistory();
 
-// Store country name.
-$user['country_name'] = $o_user->getCountryName($user['country_code']) ?? 'Unknown';
+// Include social head content for all pages
+require('partials/head.php');
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="robots" content="noindex" />
-
-    <title>Settings :: BronyCenter</title>
-
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
-    <link rel="stylesheet" href="../resources/css/style.css?v=<?php echo $systemVersion['commit']; ?>" />
-
-    <style type="text/css">
-    @media (max-width: 767px) {
-        #birthdateGrid { text-align: left !important; }
-    }
-    </style>
-</head>
 <body>
     <?php
-    // Require HTML of header for not social pages.
-    require_once('inc/header.php');
-
-    // Require code to display system messages.
-    require_once('../system/inc/messages.php');
+    // Include social header for all pages
+    require('../system/partials/header-social.php');
     ?>
 
     <div class="container">
-        <section>
-            <h1>Settings</h1>
+        <?php
+        // Include system messages if any exists
+        require('../system/partials/flash.php');
+        ?>
 
-            <?php
-            // Show forms for changing settings if user has verified his e-mail address.
-            if ($emailVerified) {
-            ?>
+        <div class="row">
+            <aside id="aside-list" class="col-12 col-lg-4">
+                <section class="fancybox mt-lg-0">
+                    <h6 class="text-center mb-0">Account settings</h6>
 
-            <div id="accordion" role="tablist">
-                <!-- Change account settings card -->
-                <div class="card">
-                    <div class="card-header" role="tab" id="headingAccountSettings">
-                        <h5 class="mb-0">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseAccountSettings" aria-expanded="false" aria-controls="collapseAccountSettings">
-                                Account settings
-                            </a>
-                        </h5>
-                    </div>
+                    <ul class="list-group">
+                        <li class="list-group-item active" id="aside-list-credentials"><a href="#credentials" class="d-flex align-items-center"><i class="fa fa-key mr-2" aria-hidden="true"></i> <span>Login credentials</span></a></li>
+                        <li class="list-group-item" id="aside-list-email"><a href="#email" class="d-flex align-items-center"><i class="fa fa-envelope-o mr-2" aria-hidden="true"></i> <span>E-mail settings</span></a></li>
+                        <li class="list-group-item" id="aside-list-standing"><a href="#standing" class="d-flex align-items-center"><i class="fa fa-exclamation-triangle mr-2" aria-hidden="true"></i> <span>Account standing</span></a></li>
+                        <li class="list-group-item" id="aside-list-login"><a href="#login" class="d-flex align-items-center"><i class="fa fa-clock-o mr-2" aria-hidden="true"></i> <span>Login history</span></a></li>
+                    </ul>
+                </section>
 
-                    <div id="collapseAccountSettings" class="collapse" role="tabpanel" aria-labelledby="headingAccountSettings">
-                        <div class="card-body">
-                            <form method="post" action="settings.php" class="pb-2">
-                                <h6 class="pb-2">Username</h6>
-                                <div class="form-group">
-                                    <input type="text" name="username" value="<?php echo $user['username']; ?>" placeholder="Your username" class="form-control" aria-describedby="usernameHelp" disabled />
-                                    <small id="usernameHelp" class="form-text text-muted">You can't change your username. If you really need, please contact the administrator.</small>
-                                </div>
-                            </form>
+                <section class="fancybox mt-lg-0">
+                    <h6 class="text-center mb-0">Profile settings</h6>
 
-                            <form method="post" action="settings.php" class="pb-2">
-                                <h6 class="pb-2">E-mail address</h6>
-                                <div class="form-group">
-                                    <input type="text" name="email" value="<?php echo $user['email']; ?>" placeholder="Your email" class="form-control" aria-describedby="emailHelp" disabled />
-                                    <small id="emailHelp" class="form-text text-muted">Change of e-mail address is not available yet.</small>
-                                </div>
-                            </form>
+                    <ul class="list-group">
+                        <li class="list-group-item" id="aside-list-basic"><a href="#basic" class="d-flex align-items-center"><i class="fa fa-user-circle-o mr-2" aria-hidden="true"></i> <span>Basic information</span></a></li>
+                        <li class="list-group-item" id="aside-list-details"><a href="#details" class="d-flex align-items-center"><i class="fa fa-file-text-o mr-2" aria-hidden="true"></i> <span>Tell about yourself</span></a></li>
+                        <li class="list-group-item" id="aside-list-fandom"><a href="#fandom" class="d-flex align-items-center"><i class="fa fa-users mr-2" aria-hidden="true"></i> <span>You in a fandom</span></a></li>
+                        <li class="list-group-item" id="aside-list-creations"><a href="#creations" class="d-flex align-items-center"><i class="fa fa-star-o mr-2" aria-hidden="true"></i> <span>Share your creativity</span></a></li>
+                    </ul>
+                </section>
+            </aside>
 
-                            <h6 class="pb-2">Password</h6>
-                            <form method="post" action="settings.php">
-                                <div class="form-group row mb-0">
-                                    <div class="col-lg-3 mb-3 mb-lg-0">
-                                        <input type="password" name="passwordold" placeholder="Old password" class="form-control" required />
-                                    </div>
-                                    <div class="col-lg-3 mb-3 mb-lg-0">
-                                        <input type="password" name="passwordnew" placeholder="New password" class="form-control" required />
-                                    </div>
-                                    <div class="col-lg-3 mb-3 mb-lg-0">
-                                        <input type="password" name="passwordrepeat" placeholder="Repeat password" class="form-control" required />
-                                    </div>
-                                    <div class="col-lg-3 mb-0">
-                                        <button type="submit" name="submit" value="changepassword" class="btn btn-outline-primary" role="button">Change password</button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Change profile settings card -->
-                <div class="card">
-                    <div class="card-header" role="tab" id="headingProfileSettings">
-                        <h5 class="mb-0">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseProfileSettings" aria-expanded="false" aria-controls="collapseProfileSettings">
-                                Profile settings
-                            </a>
-                        </h5>
-                    </div>
-
-                    <div id="collapseProfileSettings" class="collapse" role="tabpanel" aria-labelledby="headingProfileSettings">
-                        <div class="card-body">
-                            <h6 class="pb-2">Display name</h6>
-                            <form method="post" action="settings.php" class="pb-2">
-                                <div class="form-group row">
-                                    <div class="col-md-7 mb-3 mb-md-0">
-                                        <input type="text" name="displayname" value="<?php echo $user['display_name']; ?>" placeholder="Your display name" class="form-control" />
-                                    </div>
-                                    <div class="col-md-5">
-                                        <button type="submit" name="submit" value="changedisplayname" class="btn btn-outline-primary d-inline-block" role="button">Change display name</button>
-                                    </div>
-                                </div>
-                            </form>
-
-                            <h6 class="pb-2">Gender</h6>
-                            <form method="post" action="settings.php" class="pb-2">
-                                <div class="form-group row">
-                                    <div class="col-md-7 mb-3 mb-md-0">
-                                        <select name="gender" class="form-control d-inline-block">
-                                            <option value="0" <?php if (empty($user['gender'])) { echo 'selected'; } ?>>Undefined</option>
-                                            <option value="1" <?php if ($user['gender'] == 1) { echo 'selected'; } ?>>Male</option>
-                                            <option value="2" <?php if ($user['gender'] == 2) { echo 'selected'; } ?>>Female</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-5">
-                                        <button type="submit" name="submit" value="changegender" class="btn btn-outline-primary" role="button">Change gender</button>
-                                    </div>
-                                </div>
-                            </form>
-
-                            <h6 class="pb-2">Birthdate</h6>
-                            <form method="post" action="settings.php" class="pb-2">
-                                <div class="form-group row mb-md-0">
-                                    <div class="col-md-7 mb-sm-3 mb-sm-0 text-right" id="birthdateGrid">
-                                        <input type="number" name="day" placeholder="DD" value="<?php echo $user['birthdate_temp']['day']; ?>" class="form-control d-inline-block mr-1" min="1" max="31" style="width: 72px;" />
-                                        <input type="number" name="month" placeholder="MM" value="<?php echo $user['birthdate_temp']['month']; ?>" class="form-control d-inline-block mr-1" min="1" max="12" style="width: 72px;" />
-                                        <input type="number" name="year" placeholder="YYYY" value="<?php echo $user['birthdate_temp']['year']; ?>" class="form-control d-inline-block mr-1 mb-3 mb-sm-0" min="1900" max="<?php echo date('Y'); ?>" style="width: 86px;" />
-                                    </div>
-                                    <div class="col-md-5">
-                                        <button type="submit" name="submit" value="changebirthdate" class="btn btn-outline-primary d-inline-block" role="button">Change birthdate</button>
-                                    </div>
-                                </div>
-                            </form>
-
-                            <h6 class="pb-2">Profile avatar</h6>
-                            <form method="post" action="settings.php" enctype="multipart/form-data">
-                                <div class="d-flex flex-column flex-md-row align-items-center">
-                                    <img src="../media/avatars/<?php echo $avatarName; ?>/128.jpg" class="rounded mr-3 mb-3 mb-md-0" />
-                                    <div class="d-inline-block">
-                                        <input type="file" name="avatar" class="form-control-file" aria-describedby="avatarhelp" />
-                                        <small id="avatarhelp" class="form-text text-muted mb-3 mb-md-2">Avatar needs to be in 1:1 resolution (recommended is 256x256). Only .jpg and .png are allowed. They will be converted into JPEG image.</small>
-                                        <button type="submit" name="submit" value="changeavatar" class="btn btn-outline-primary" role="button">Change avatar</button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Change profile details card -->
-                <div class="card">
-                    <div class="card-header" role="tab" id="headingProfileDetails">
-                        <h5 class="mb-0">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseProfileDetails" aria-expanded="false" aria-controls="collapseProfileDetails">
-                                Profile description
-                            </a>
-                        </h5>
-                    </div>
-
-                    <div id="collapseProfileDetails" class="collapse" role="tabpanel" aria-labelledby="headingProfileDetails">
-                        <div class="card-body">
-                            <form method="post" action="settings.php" class="pb-3">
-                                <h6 class="pb-2">Write a short description about you.</h6>
-                                <div class="form-group row mb-0">
-                                    <div class="col-md-10 text-right">
-                                        <input type="text" id="shortdescription-value" class="form-control" name="shortdescription" placeholder="e.g.: I am a cute little pony that loves to hug everypony!" value="<?php echo $user['short_description']; ?>" maxlength="255" />
-                                        <small class="text-muted ml-2"><span id="shortdescription-counter"><?php echo strlen($user['short_description']); ?></span> / 255</small>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <button type="submit" name="submit" value="changeshortdescription" class="btn btn-outline-primary" role="button">Update</button>
-                                    </div>
-                                </div>
-                            </form>
-
-                            <form method="post" action="settings.php" class="pb-3">
-                                <h6 class="pb-2">What do you like to do?</h6>
-                                <div class="form-group row mb-0">
-                                    <div class="col-md-10 text-right">
-                                        <input type="text" id="interestsdescription-value" class="form-control" name="interestsdescription" placeholder="e.g.: I love to play video games. Sometimes I make trance pony music." value="<?php echo $user['interests_description']; ?>" maxlength="255" />
-                                        <small class="text-muted ml-2"><span id="interestsdescription-counter"><?php echo strlen($user['interests_description']); ?></span> / 255</small>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <button type="submit" name="submit" value="changeinterestsdescription" class="btn btn-outline-primary" role="button">Update</button>
-                                    </div>
-                                </div>
-                            </form>
-
-                            <form method="post" action="settings.php" class="pb-3">
-                                <h6 class="pb-2">Tell us anything else you want about yourself.</h6>
-                                <div class="form-group row mb-0">
-                                    <div class="col-md-10 text-right">
-                                        <textarea id="fulldescription-value" class="form-control" name="fulldescription" placeholder="e.g.: My name is Pony and I'm usually a quiet and shy person looking for somepony that will talk to me." maxlength="1000"><?php echo $user['full_description']; ?></textarea>
-                                        <small class="text-muted ml-2"><span id="fulldescription-counter"><?php echo strlen($user['full_description']); ?></span> / 1000</small>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <button type="submit" name="submit" value="changefulldescription" class="btn btn-outline-primary" role="button">Update</button>
-                                    </div>
-                                </div>
-                            </form>
-
-                            <form method="post" action="settings.php" class="pb-3">
-                                <h6 class="pb-2">When you've became a brony/pegasister?</h6>
-                                <div class="form-group row mb-0">
-                                    <div class="col-md-10 text-right">
-                                        <input type="text" id="bronyintervaldescription-value" class="form-control" name="bronyintervaldescription" placeholder="e.g.: January 2012" value="<?php echo $user['bronyinterval_description']; ?>" maxlength="64" />
-                                        <small class="text-muted ml-2"><span id="bronyintervaldescription-counter"><?php echo strlen($user['bronyinterval_description']); ?></span> / 64</small>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <button type="submit" name="submit" value="changebronyintervaldescription" class="btn btn-outline-primary" role="button">Update</button>
-                                    </div>
-                                </div>
-                            </form>
-
-                            <form method="post" action="settings.php">
-                                <h6 class="pb-2">What is your favourite pony and why?</h6>
-                                <div class="form-group row mb-0">
-                                    <div class="col-md-10 text-right">
-                                        <input type="text" id="favponydescription-value" class="form-control" name="favponydescription" placeholder="e.g.: Fluttershy, because she is so cute!" value="<?php echo $user['favpony_description']; ?>" maxlength="64" />
-                                        <small class="text-muted ml-2"><span id="favponydescription-counter"><?php echo strlen($user['favpony_description']); ?></span> / 64</small>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <button type="submit" name="submit" value="changefavponydescription" class="btn btn-outline-primary" role="button">Update</button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Change localization card -->
-                <div class="card">
-                    <div class="card-header" role="tab" id="headingLocalization">
-                        <h5 class="mb-0">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseLocalization" aria-expanded="false" aria-controls="collapseLocalization">
-                                Localization
-                            </a>
-                        </h5>
-                    </div>
-
-                    <div id="collapseLocalization" class="collapse" role="tabpanel" aria-labelledby="headingLocalization">
-                        <div class="card-body">
-                            <form method="post" action="settings.php">
-                                <div class="form-group">
-                                    <input type="text" name="country" value="<?php echo $user['country_name']; ?>" placeholder="Your country" class="form-control" aria-describedby="countryHelp" disabled />
-                                    <small id="countryHelp" class="form-text text-muted">Change of country is not available yet. It depends on your IP localization when registering.</small>
-                                </div>
-                            </form>
-
-                            <form method="post" action="settings.php">
-                                <div class="form-group row mb-0">
-                                    <div class="col-md-10 text-right">
-                                        <input type="text" class="form-control" id="city-value" name="city" placeholder="Your city" value="<?php echo $user['city']; ?>" maxlength="58" />
-                                        <small class="text-muted ml-2"><span id="city-counter"><?php echo strlen($user['city']); ?></span> / 58</small>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <button type="submit" name="submit" value="changecity" class="btn btn-outline-primary" role="button">Change</button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+            <div class="col-12 col-lg-8">
+                <section class="fancybox mt-0 mb-0" id="tabs-content">
+                    <?php require('partials/settings/content-credentials.php'); ?>
+                    <?php require('partials/settings/content-email.php'); ?>
+                    <?php require('partials/settings/content-standing.php'); ?>
+                    <?php require('partials/settings/content-login.php'); ?>
+                    <?php require('partials/settings/content-basic.php'); ?>
+                    <?php require('partials/settings/content-details.php'); ?>
+                    <?php require('partials/settings/content-fandom.php'); ?>
+                    <?php require('partials/settings/content-creations.php'); ?>
+                </section>
             </div>
-
-            <?php
-            } // if
-            // Show warning about required e-mail verification if user has not verified it.
-            else {
-            ?>
-            <p class="text-danger"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> You need to verify your e-mail address before you'll be able to make changes to your account!</p>
-            <?php
-            } // else
-            ?>
-        </section>
+        </div>
     </div>
 
     <?php
-    // Require footer for social pages.
-    require_once('inc/footer.php');
+    // Include social scripts for all pages
+    require('partials/scripts.php');
     ?>
 
     <script type="text/javascript">
-    // First check if document is ready.
+    "use-strict";
+
+    // Start when document is ready
     $(document).ready(function() {
-        // Count amount of characters used in an description input.
-        $("#shortdescription-value").on("input", function() {
-            let amount = $("#shortdescription-value").val().length;
-            $("#shortdescription-counter").text(amount);
+        // Default settings tab is set to basic details
+        let currentSettingsTab = 'credentials';
+
+        // Change current settings list tab if hash exists and is valid
+        if (window.location.hash) {
+            let selectedTab = window.location.hash.substr(1);
+
+            changeSettingsTab(selectedTab);
+        }
+
+        // Listen for aside settings list clicks
+        $("#aside-list").click((e) => {
+            let linkNode = e.target;
+
+            // Move to parent if title or icon has been clicked
+            if (linkNode.tagName == 'SPAN' || linkNode.tagName == 'I') {
+                linkNode = linkNode.parentNode;
+            }
+
+            // Move to child link if list item has been clicked
+            if (linkNode.tagName == 'LI') {
+                linkNode = linkNode.firstElementChild;
+            }
+
+            // Check if valid settings tab has been clicked
+            if (linkNode.tagName != 'A') {
+                return false;
+            }
+
+            // Name of selected tab
+            let selectedTab = linkNode.getAttribute("href").substr(1);
+
+            // Check if settings tab has been switched correctly
+            if (changeSettingsTab(selectedTab)) {
+                window.location.hash = selectedTab;
+
+                return true;
+            }
+
+            return false;
         });
 
-        // Count amount of characters used in an description input.
-        $("#interestsdescription-value").on("input", function() {
-            let amount = $("#interestsdescription-value").val().length;
-            $("#interestsdescription-counter").text(amount);
+        // Listen for password change form submit
+        $("#content-form-changepassword").submit((e) => {
+            // Disable default redirection of form submission
+            e.preventDefault();
+
+            // Store input values
+            let oldPassword = $("#content-input-oldpassword").val();
+            let newPassword = $("#content-input-newpassword").val();
+            let repeatPassword = $("#content-input-repeatpassword").val();
+
+            // Check if all fields are filled
+            if (oldPassword.length === 0 || newPassword.length === 0 || repeatPassword.length === 0) {
+                return false;
+            }
+
+            // Request change of a password
+            $.post(
+                "ajax/doChangeSettingsPassword.php",
+                { oldpassword: oldPassword, newpassword: newPassword, repeatpassword: repeatPassword },
+                () => {
+                    $("#content-input-oldpassword").focus();
+
+                    $("#content-input-oldpassword").val('');
+                    $("#content-input-newpassword").val('');
+                    $("#content-input-repeatpassword").val('');
+
+                    showFlashMessages();
+                }
+            );
         });
 
-        // Count amount of characters used in an description input.
-        $("#fulldescription-value").on("input", function() {
-            let amount = $("#fulldescription-value").val().length;
-            $("#fulldescription-counter").text(amount);
+        // Listen for username change form // Not changeable
+        addLettersCounter('content-input-username', 'content-counter-username');
+
+        // Listen for email change form // TODO
+        addLettersCounter('content-input-email', 'content-counter-email');
+
+        // Listen for display name change form
+        addLettersCounter('content-input-displayname', 'content-counter-displayname');
+
+        // Listen for a selected form submit
+        $("#content-form-changedisplayname").submit((e) => {
+            // Disable default redirection of form submission
+            e.preventDefault();
+
+            // Store input value
+            let value = $("#content-input-displayname").val();
+
+            // Request change of a user's display name
+            $.post(
+                "ajax/doChangeSettingsDisplayname.php",
+                { value: value },
+                (result) => {
+                    $("#content-input-displayname").focus();
+                    $("#content-input-displayname").val(result);
+                    showFlashMessages();
+                }
+            );
         });
 
-        // Count amount of characters used in an description input.
-        $("#bronyintervaldescription-value").on("input", function() {
-            let amount = $("#bronyintervaldescription-value").val().length;
-            $("#bronyintervaldescription-counter").text(amount);
+        // Listen for gender change form
+        listenDetailsForm('gender', 'gender');
+
+        // Listen for birthdate change form
+        $("#content-form-changebirthdate").submit((e) => {
+            // Disable default redirection of form submission
+            e.preventDefault();
+
+            // Store input values
+            let valueDay = $("#content-input-birthday").val();
+            let valueMonth = $("#content-input-birthmonth").val();
+            let valueYear = $("#content-input-birthyear").val();
+
+            // Request change of a user's display name
+            $.post(
+                "ajax/doChangeSettingsBirthdate.php",
+                { day: valueDay, month: valueMonth, year: valueYear },
+                (result) => {
+                    // TODO Update it somehow if it's possible to do it easy
+                    showFlashMessages();
+                }
+            );
         });
 
-        // Count amount of characters used in an description input.
-        $("#favponydescription-value").on("input", function() {
-            let amount = $("#favponydescription-value").val().length;
-            $("#favponydescription-counter").text(amount);
+        // Listen for avatar change form
+        $("#content-form-changeavatar").submit((e) => {
+            // Disable default redirection of form submission
+            e.preventDefault();
+
+            // Store formdata as file upload via XHR is not supported
+            let formData = new FormData();
+            formData.append("avatar", document.getElementById("content-input-avatar").files[0]);
+
+            console.log(formData.entries());
+
+            // Request change of a user's avatar
+            $.ajax({
+                url: "ajax/doChangeSettingsAvatar.php",
+                method: "POST",
+                data: formData,
+                cache: false,
+                contentType : false,
+                processData : false,
+                beforeSend: () => {
+                    $('#content-form-changeavatar').css('display', 'none');
+                    $('#content-form-changeavatar-process').css('display', 'block');
+                },
+                success: (result) => {
+                    if (result.length = 16) {
+                        $('#header-user-avatar').attr('src', '../media/avatars/' + result + '/minres.jpg');
+                        $('#content-currentavatar').attr('src', '../media/avatars/' + result + '/defres.jpg');
+                    }
+
+                    $('#content-form-changeavatar').css('display', 'block');
+                    $('#content-form-changeavatar-process').css('display', 'none');
+
+                    showFlashMessages();
+                }
+            });
         });
 
-        // Count amount of characters used in a city name input.
-        $("#city-value").on("input", function() {
-            let amount = $("#city-value").val().length;
-            $("#city-counter").text(amount);
-        });
+        // Listen for city name change form
+        addLettersCounter('content-input-city', 'content-counter-city');
+        listenDetailsForm('city', 'city');
+
+        // Listen for short description change form
+        addLettersCounter('content-input-shortdescription', 'content-counter-shortdescription');
+        listenDetailsForm('shortdescription', 'short_description');
+
+        // Listen for full description change form
+        listenDetailsForm('fulldescription', 'full_description');
+        addLettersCounter('content-input-fulldescription', 'content-counter-fulldescription');
+
+        // Listen for contact methods change form
+        listenDetailsForm('contactmethods', 'contact_methods');
+        addLettersCounter('content-input-contactmethods', 'content-counter-contactmethods');
+
+        // Listen for favourite music change form
+        listenDetailsForm('favouritemusic', 'favourite_music');
+        addLettersCounter('content-input-favouritemusic', 'content-counter-favouritemusic');
+
+        // Listen for favourite movies change form
+        listenDetailsForm('favouritemovies', 'favourite_movies');
+        addLettersCounter('content-input-favouritemovies', 'content-counter-favouritemovies');
+
+        // Listen for favourite games change form
+        listenDetailsForm('favouritegames', 'favourite_games');
+        addLettersCounter('content-input-favouritegames', 'content-counter-favouritegames');
+
+        // Listen for fandom became a brony change form
+        listenDetailsForm('fandombecameabrony', 'fandom_becameabrony');
+        addLettersCounter('content-input-fandombecameabrony', 'content-counter-fandombecameabrony');
+
+        // Listen for fandom favourite pony change form
+        listenDetailsForm('fandomfavouritepony', 'fandom_favouritepony');
+        addLettersCounter('content-input-fandomfavouritepony', 'content-counter-fandomfavouritepony');
+
+        // Listen for fandom favourite episode change form
+        listenDetailsForm('fandomfavouriteepisode', 'fandom_favouriteepisode');
+        addLettersCounter('content-input-fandomfavouriteepisode', 'content-counter-fandomfavouriteepisode');
+
+        // Listen for creations links change form
+        listenDetailsForm('creationslinks', 'creations_links');
+        addLettersCounter('content-input-creationslinks', 'content-counter-creationslinks');
+
+        // Listen for details change form submit
+        function listenDetailsForm(elementPartID, fieldName) {
+            // Listen for a selected form submit
+            $("#content-form-change" + elementPartID).submit((e) => {
+                // Disable default redirection of form submission
+                e.preventDefault();
+
+                // Store input value
+                let value = $("#content-input-" + elementPartID).val();
+
+                // Request change of a selected settings field value
+                $.post(
+                    "ajax/doChangeSettingsDetails.php",
+                    { field: fieldName, value: value },
+                    (result) => {
+                        $("#content-input-" + elementPartID).focus();
+                        $("#content-input-" + elementPartID).val(result);
+                        showFlashMessages();
+                    }
+                );
+            });
+        }
+
+        // Change settings tab and content
+        function changeSettingsTab(tabName) {
+            let settingsTabs = ["credentials", "email", "standing", "login", "basic", "details", "fandom", "creations"];
+
+            // Check if tab name is valid
+            if (settingsTabs.indexOf(tabName) == -1) {
+                return false;
+            }
+
+            // Don't switch tab if same has been selected
+            if (tabName == currentSettingsTab) {
+                return false;
+            }
+
+            // Disable current tab and display new one
+            $("#content-" + currentSettingsTab).css("display", "none");
+            $("#content-" + tabName).css("display", "block");
+
+            // Update current tab on tabs list
+            $("#aside-list-" + currentSettingsTab).removeClass("active");
+            $("#aside-list-" + tabName).addClass("active");
+
+            // Store new tab value
+            currentSettingsTab = tabName;
+
+            return true;
+        }
     });
     </script>
 </body>

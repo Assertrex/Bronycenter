@@ -1,0 +1,17 @@
+h1 {
+    font-size: 2rem;
+}
+
+.lead {
+    font-size: 1.125rem;
+}
+
+@media (min-width: 992px) {
+    h1 {
+        font-size: 2.5rem;
+    }
+
+    .lead {
+        font-size: 1.25rem;
+    }
+}

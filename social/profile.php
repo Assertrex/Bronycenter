@@ -1,223 +1,394 @@
 <?php
-// Require system initialization code.
-require_once('../system/inc/init.php');
+// Include system initialization code
+require('../system/partials/init.php');
 
-// Check if user has been selected or current user is logged in.
-if (!empty($_GET['u']) || !empty($_SESSION['account']['id'])) {
-    // Check if user has been selected.
-    if (!empty($_GET['u'])) {
-        // Get details about selected user.
-        $id = intval($_GET['u']);
-    }
-
-    // Check if user is logged in if noone was selected or previous id has failed.
-    if (empty($id) && !empty($_SESSION['account']['id'])) {
-        // Get details about currently logged user if noone was selected.
-        $id = intval($_SESSION['account']['id']);
-    }
-
-    // Get details about selected user.
-    $user = $o_user->getDetails($id);
-
-    // Redirect into default page if user has not been found.
-    if ($user === false) {
-        header('Location: index.php');
-    }
-
-    // Name gender types.
-    switch ($user['gender']) {
-        case 1:
-            $user['gender'] = 'Male';
-            break;
-        case 2:
-            $user['gender'] = 'Female';
-            break;
-        default:
-            $user['gender'] = 'Unknown';
-    }
-
-    // Display badge for administrators and moderators.
-    switch ($user['account_type']) {
-        case '0':
-            $userBadge = '<span class="badge badge-secondary">Unverified</span>';
-            break;
-        case '9':
-            $userBadge = '<span class="badge badge-danger">Admin</span>';
-            break;
-        case '8':
-            $userBadge = '<span class="badge badge-info">Mod</span>';
-            break;
-        default:
-            $userBadge = '';
-    }
-
-    // Format birthdate if available.
-    if (!is_null($user['birthdate'])) {
-        $current_date = new DateTime();
-        $age_interval = new DateTime($user['birthdate']);
-        $age_interval = $current_date->diff($age_interval);
-        $user['birthdate'] = $age_interval->format('%y years old');
-    }
-
-    // Set user's avatar or get the default one if not existing.
-    $user['avatar'] = $user['avatar'] ?? 'default';
-
-    // Store country name.
-    $user['country_name'] = $o_user->getCountryName($user['country_code']) ?? 'Unknown';
-
-    // Format activity datetimes.
-    $registeredAt = $o_system->getDateIntervalString($o_system->countDateInterval($user['registration_datetime']));
-    $lastOnlineAt = $o_system->getDateIntervalString($o_system->countDateInterval($user['last_online']));
-
-    // Check if user is currently logged in.
-    $isOnline = $o_user->isOnline(null, $user['last_online']);
+// Get an ID of a selected profile
+if (!empty($_GET['u'])) {
+    $profileId = intval($_GET['u']);
+} else if (!empty($_SESSION['account']['id'])) {
+    $profileId = $_SESSION['account']['id'];
 } else {
-    // Redirect into homepage if no user has been selected by a guest.
-    header('Location: ../index.php');
+    $profileId = null;
 }
+
+// Redirect guest if no profile has been choosen
+if (empty($profileId)) {
+    $flash->info('You\'ve been redirected into members page, because no profile has been selected.');
+    $utilities->redirect('members.php');
+}
+
+// Get details about selected user
+$profileDetails = $user->getUserDetails($profileId);
+
+// Redirect if user has not been found
+if (empty($profileDetails)) {
+    $flash->info('You\'ve been redirected into members page, because user doesn\'t exist.');
+    $utilities->redirect('members.php');
+}
+
+// Check if user is currently logged in
+$isOnline = $user->isOnline(null, $profileDetails['last_online']);
+
+if ($isOnline) {
+    $userOnline = '<span class="badge badge-success mx-1">Online</span>';
+} else {
+    $userOnline = '';
+}
+
+// Display user badge
+switch ($profileDetails['account_type']) {
+    case '9':
+        $userBadge = '<span class="badge badge-danger mx-1">Admin</span>';
+        break;
+    case '8':
+        $userBadge = '<span class="badge badge-info mx-1">Mod</span>';
+        break;
+    default:
+        $userBadge = '';
+}
+
+// Set user's avatar or get the default one if not existing
+$avatar = $profileDetails['avatar'] ?? 'default';
+
+// Name gender types
+switch ($profileDetails['gender']) {
+    case 1:
+        $profileDetails['gender'] = 'Male';
+        break;
+    case 2:
+        $profileDetails['gender'] = 'Female';
+        break;
+    default:
+        $profileDetails['gender'] = '';
+}
+
+// Format birthdate if available
+if (!is_null($profileDetails['birthdate'])) {
+    $current_date = new DateTime();
+    $age_interval = new DateTime($profileDetails['birthdate']);
+    $age_interval = $current_date->diff($age_interval);
+    $profileDetails['birthdate'] = $age_interval->format('%y years old');
+}
+
+// Format activity datetimes
+$registeredAt = $utilities->getDateIntervalString($utilities->countDateInterval($profileDetails['registration_datetime']));
+$lastOnlineAt = $utilities->getDateIntervalString($utilities->countDateInterval($profileDetails['last_online']));
+
+// Get a full name of user's country
+$countryName = $utilities->getCountryName($profileDetails['country_code']);
+
+// Check if additional tabs should be displayed
+$anyAbout = !empty($profileDetails['full_description']) || !empty($profileDetails['contact_methods']) ||
+            !empty($profileDetails['favourite_music']) || !empty($profileDetails['favourite_movies']) ||
+            !empty($profileDetails['favourite_games']);
+$anyFandom = !empty($profileDetails['fandom_becameabrony']) || !empty($profileDetails['fandom_favouritepony']);
+$anyCreations = !empty($profileDetails['creations_links']);
+
+// Store recent display names
+$recentDisplaynamesArray = explode(',', $profileDetails['displayname_recent']);
+$recentDisplaynames = '';
+
+if ($recentDisplaynamesArray[0] != '') {
+    foreach ($recentDisplaynamesArray as $recentDisplayname) {
+        $recentDisplaynames .= '<div style=\'line-height: 1.2;\'><small>' . $recentDisplayname . '</small></div>';
+    }
+}
+
+// $recentDisplaynames = str_replace(',', '<br />', $profileDetails['displayname_recent']);
+
+// Page settings
+$pageTitle = 'Profile :: BronyCenter';
+$pageStylesheet = '
+#aside-tabs { background: #EEE; justify-content: center; }
+#aside-tabs .nav-item { flex: 1; text-align: center; }
+#aside-tabs .nav-item:first-child .nav-link.active { border-left: 0; }
+#aside-tabs .nav-item:last-child .nav-link.active { border-right: 0; }
+#aside-tabs .nav-link { border-top: 0; border-radius: 0; }
+#aside-tabs .nav-link.active { background-color: #EEE; color: #616161; border-bottom: 1px solid #EEE; }
+#aside-tabs-content h6 { padding: .5rem 0; background-color: #EEEEEE; color: #616161; border-bottom: 1px solid #BDBDBD; }
+#aside-tabs-content .aside-content-titles { font-size: 13px; color: #90949c; text-transform: uppercase; border-bottom: 1px solid #dddfe2; line-height: 26px; }
+#aside-tabs-content .aside-content-blocks:last-child { margin-bottom: 0 !important; }
+';
+
+// Include social head content for all pages
+require('partials/head.php');
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="robots" content="noindex" />
-
-    <title>Profile :: BronyCenter</title>
-
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
-    <link rel="stylesheet" href="../resources/css/style.css?v=<?php echo $systemVersion['commit']; ?>" />
-
-    <style type="text/css">
-    #aside-details { flex: 0 0 25%; }
-    #aside-posts { flex: 0 0 75%; }
-
-    @media (max-width: 1200px) {
-        #aside-details { flex: 0 0 29%; }
-        #aside-posts { flex: 0 0 71%; }
-    }
-
-    @media (max-width: 992px) {
-        #aside-details { flex: 0 0 35%; }
-        #aside-posts { flex: 0 0 65%; }
-    }
-    </style>
-</head>
 <body>
     <?php
-    // Require HTML of header for not social pages.
-    require_once('inc/header.php');
-
-    // Require code to display system messages.
-    require_once('../system/inc/messages.php');
+    // Include social header for all pages
+    require('../system/partials/header-social.php');
     ?>
 
     <div class="container">
-        <section class="d-flex flex-column flex-md-row">
-            <div class="py-2 pr-0 pr-md-3" id="aside-details">
-                <div class="rounded p-3 mb-3 text-center" style="border: 1px solid #E0E0E0;">
-                    <img src="../media/avatars/<?php echo $user['avatar']; ?>/128.jpg" class="rounded mb-3" style="border: 2px solid #E0E0E0;" />
+        <?php
+        // Include system messages if any exists
+        require('../system/partials/flash.php');
+        ?>
 
-                    <h5 class="mb-0"><?php echo $user['display_name']; ?></h5>
-                    <p class="mb-0 text-muted" style="margin-top: -2px;"><small>@<?php echo $user['username']; ?></small></p>
-                    <p class="mb-0"><?php echo $userBadge; ?> <?php echo $isOnline ? '<span class="badge badge-success">Online</span>' : '<span class="badge badge-danger">Offline</span>'; ?></p>
+        <div class="row">
+            <aside class="col-12 col-lg-4">
+                <section class="fancybox text-center p-4 mt-0">
+                    <img src="../media/avatars/<?php echo $avatar; ?>/defres.jpg" class="rounded mb-3">
 
-                    <?php
-                    // Display description only if available.
-                    if (!is_null($user['short_description'])) {
-                    ?>
-                    <p class="mt-3 mb-0" style="line-height: 1.2;"><small><?php echo htmlspecialchars($user['short_description']); ?></small></p>
-                    <?php
-                    }
-                    ?>
-                </div>
+                    <?php if (!empty($recentDisplaynames)) { ?>
+                    <h5 class="mb-0" style="cursor: help;" data-toggle="tooltip" data-html="true" title="<div class='my-1'>Previous display name:</div><div class='mb-2' style='color: #BDBDBD;'><?php echo htmlspecialchars($recentDisplaynames); ?></div>"><?php echo htmlspecialchars($profileDetails['display_name']); ?></h5>
+                    <?php } else { ?>
+                    <h5 class="mb-0"><?php echo htmlspecialchars($profileDetails['display_name']); ?></h5>
+                    <?php } ?>
 
-                <div class="rounded mb-3" style="border: 1px solid #E0E0E0;">
-                    <h6 class="p-2 mb-0 text-center" style="background-color: #F4F4F4; border-bottom: 1px solid #E0E0E0;">About</h6>
+                    <p class="mb-0 text-muted" style="margin-top: -2px;"><small>@<?php echo $profileDetails['username']; ?></small></p>
+                    <p class="mb-0 mt-2"><?php echo $userOnline; ?><?php echo $userBadge; ?></p>
 
-                    <div class="p-3">
+                    <?php if (!empty($profileDetails['short_description'])) { ?>
+                    <p class="mt-3 mb-0" style="font-size: 90%; line-height: 1.4;">
+                        <?php echo $utilities->doEscapeString($profileDetails['short_description']); ?>
+                    </p>
+                    <?php } // if ?>
+                </section>
+
+                <section class="fancybox">
+                    <h6 class="text-center mb-0">About</h6>
+
+                    <div class="px-4 my-3">
                         <p class="mb-0">
                             <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="Location">
                                 <i class="fa fa-map-marker text-primary" aria-hidden="true"></i>
                             </span>
-                            <?php echo htmlspecialchars($user['city'] ? $user['city'] . ', ' : '') . $user['country_name']; ?>
+                            <?php echo $profileDetails['city'] ? $profileDetails['city'] . ', ' : ''; ?><?php echo $countryName ?? 'Unknown'; ?>
                         </p>
+                        <?php if (!empty($profileDetails['gender'])) { ?>
                         <p class="mb-0">
                             <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="Gender">
                                 <i class="fa fa-transgender text-primary" aria-hidden="true"></i>
                             </span>
-                            <?php echo $user['gender']; ?>
+                            <?php echo $profileDetails['gender']; ?>
                         </p>
+                        <?php } // if ?>
+                        <?php if (!empty($profileDetails['birthdate'])) { ?>
                         <p class="mb-0">
                             <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="Age">
                                 <i class="fa fa-user-o text-primary" aria-hidden="true"></i>
                             </span>
-                            <?php echo $user['birthdate'] ?? 'Unknown'; ?>
+                            <?php echo $profileDetails['birthdate']; ?>
+                        </p>
+                        <?php } // if ?>
+                        <p class="mb-0">
+                            <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="Account created">
+                                <i class="fa fa-address-book-o text-primary" aria-hidden="true"></i>
+                            </span>
+                            <span style="cursor: help;" data-toggle="tooltip" data-placement="top" title="<?php echo $profileDetails['registration_datetime']; ?> (UTC)"><?php echo $registeredAt; ?></span>
                         </p>
                         <p class="mb-0">
                             <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="Last seen">
                                 <i class="fa fa-clock-o text-primary" aria-hidden="true"></i>
                             </span>
-                            <span style="cursor: help;"  data-toggle="tooltip" data-placement="top" title="<?php echo $user['last_online']; ?> (UTC)"><?php echo $isOnline ? 'Just now ' : $lastOnlineAt; ?></span>
-                        </p>
-                        <p class="mb-0">
-                            <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="Account created">
-                                <i class="fa fa-address-book-o text-primary" aria-hidden="true"></i>
-                            </span>
-                            <span style="cursor: help;"  data-toggle="tooltip" data-placement="top" title="<?php echo $user['registration_datetime']; ?> (UTC)"><?php echo $registeredAt; ?></span>
+                            <span style="cursor: help;" data-toggle="tooltip" data-placement="top" title="<?php echo $profileDetails['last_online']; ?> (UTC)"><?php echo $isOnline ? 'Just now ' : $lastOnlineAt; ?></span>
                         </p>
                     </div>
-                </div>
+                </section>
 
-                <div class="rounded" style="border: 1px solid #E0E0E0;">
-                    <h6 class="p-2 mb-0 text-center" style="background-color: #F4F4F4; border-bottom: 1px solid #E0E0E0;">Actions</h6>
+                <section class="d-none fancybox">
+                    <h6 class="text-center mb-0">Quick actions</h6>
 
-                    <div class="p-3 text-center">
-                        <?php
-                        // Show disabled buttons if user is not allowed to use it.
-                        if (!$isLogged || $user['id'] === $_SESSION['account']['id'] || !$emailVerified) {
-                        ?>
-                        <p class="mb-0"><button class="btn btn-outline-primary btn-sm" role="button" disabled>Send message</button></p>
-                        <?php
-                        } // if
-                        else {
-                        ?>
-                        <p class="mb-0"><a href="messages.php?u=<?php echo $user['id']; ?>"><button class="btn btn-outline-primary btn-sm" role="button">Send message</button></a></p>
-                        <?php
-                        } // else
-                        ?>
+                    <div class="px-4 my-3">
+                        <button type="button" class="btn btn-outline-primary btn-sm btn-block">Send a message</button>
                     </div>
-                </div>
-            </div>
+                </section>
+            </aside>
 
-            <div class="py-2" id="aside-posts">
-                <div class="rounded p-3 mb-3 text-center" style="border: 1px solid #E0E0E0;">
-                    <p class="mb-0 text-info">
-                        <i class="fa fa-exclamation-triangle mr-1" aria-hidden="true"></i>
-                        User's posts and posting to a user's profile will be available there soon (somewhere in the future).
-                    </p>
+            <div class="col-12 col-lg-8">
+                <section class="fancybox my-0" id="aside-wrapper">
+                    <?php if ($anyAbout || $anyFandom || $anyCreations) { ?>
+                    <ul class="nav nav-tabs" id="aside-tabs">
+                        <?php if ($anyAbout) { ?>
+                        <li class="nav-item">
+                            <a class="nav-link" id="aside-tab-about" href="#about">About</a>
+                        </li>
+                        <?php } // if ?>
+                        <li class="nav-item">
+                            <a class="nav-link active" id="aside-tab-posts" href="#posts">Posts</a>
+                        </li>
+                        <?php if ($anyFandom) { ?>
+                        <li class="nav-item">
+                            <a class="nav-link" id="aside-tab-fandom" href="#fandom">Fandom</a>
+                        </li>
+                        <?php } // if ?>
+                        <?php if ($anyCreations) { ?>
+                        <li class="nav-item">
+                            <a class="nav-link" id="aside-tab-creations" href="#creations">Creations</a>
+                        </li>
+                        <?php } // if ?>
+                    </ul>
+                    <?php } // if ?>
 
-                    <?php
-                    // Show warning about not verified account if user is logged in with no e-mail.
-                    if ($isLogged && $user['id'] === $_SESSION['account']['id'] && !$emailVerified) {
-                    ?>
-                    <p class="text-danger mt-3 mb-0">
-                        <i class="fa fa-exclamation-triangle mr-1" aria-hidden="true"></i>
-                        You need to verify your e-mail address before other's will be able to see your account!
-                    </p>
-                    <?php
-                    } // if
-                    ?>
-                </div>
+                    <div id="aside-tabs-content">
+                        <?php if ($anyAbout) { ?>
+                        <div id="aside-about" style="display: none;">
+                            <h6 class="text-center mb-0">About</h6>
+
+                            <div class="p-3">
+                                <?php if (!empty($profileDetails['full_description'])) { ?>
+                                <div class="aside-content-blocks mb-3">
+                                    <p class="aside-content-titles mb-2">Something about me</p>
+                                    <div><?php echo $utilities->doEscapeString($profileDetails['full_description']); ?></div>
+                                </div>
+                                <?php } // if ?>
+
+                                <?php if (!empty($profileDetails['contact_methods'])) { ?>
+                                <div class="aside-content-blocks mb-3">
+                                    <p class="aside-content-titles mb-2">You can find me there</p>
+                                    <div><?php echo $utilities->doEscapeString($profileDetails['contact_methods']); ?></div>
+                                </div>
+                                <?php } // if ?>
+
+                                <?php if (!empty($profileDetails['favourite_music'])) { ?>
+                                <div class="aside-content-blocks mb-3">
+                                    <p class="aside-content-titles mb-2">Favourite music</p>
+                                    <div><?php echo $utilities->doEscapeString($profileDetails['favourite_music']); ?></div>
+                                </div>
+                                <?php } // if ?>
+
+                                <?php if (!empty($profileDetails['favourite_movies'])) { ?>
+                                <div class="aside-content-blocks mb-3">
+                                    <p class="aside-content-titles mb-2">Favourite movies</p>
+                                    <div><?php echo $utilities->doEscapeString($profileDetails['favourite_movies']); ?></div>
+                                </div>
+                                <?php } // if ?>
+
+                                <?php if (!empty($profileDetails['favourite_games'])) { ?>
+                                <div class="aside-content-blocks mb-3">
+                                    <p class="aside-content-titles mb-2">Favourite games</p>
+                                    <div><?php echo $utilities->doEscapeString($profileDetails['favourite_games']); ?></div>
+                                </div>
+                                <?php } // if ?>
+                            </div>
+                        </div>
+                        <?php } // if ?>
+
+                        <div id="aside-posts">
+                            <h6 class="text-center mb-0">Posts</h6>
+
+                            <div class="p-3">
+                                <p class="mb-0 text-info text-center">
+                                    <i class="fa fa-exclamation-triangle mr-1" aria-hidden="true"></i>
+                                    User's posts will appear there in future update.
+                                </p>
+                            </div>
+                        </div>
+
+                        <?php if ($anyFandom) { ?>
+                        <div id="aside-fandom" style="display: none;">
+                            <h6 class="text-center mb-0">Fandom</h6>
+
+                            <div class="p-3">
+                                <?php if (!empty($profileDetails['fandom_becameabrony'])) { ?>
+                                <div class="aside-content-blocks mb-3">
+                                    <p class="aside-content-titles mb-2">When I've became a brony/pegasister</p>
+                                    <div><?php echo $utilities->doEscapeString($profileDetails['fandom_becameabrony']); ?></div>
+                                </div>
+                                <?php } // if ?>
+
+                                <?php if (!empty($profileDetails['fandom_favouritepony'])) { ?>
+                                <div class="aside-content-blocks mb-3">
+                                    <p class="aside-content-titles mb-2">Favourite pony</p>
+                                    <div><?php echo $utilities->doEscapeString($profileDetails['fandom_favouritepony']); ?></div>
+                                </div>
+                                <?php } // if ?>
+
+                                <?php if (!empty($profileDetails['fandom_favouriteepisode'])) { ?>
+                                <div class="aside-content-blocks mb-3">
+                                    <p class="aside-content-titles mb-2">Favourite episode</p>
+                                    <div><?php echo $utilities->doEscapeString($profileDetails['fandom_favouriteepisode']); ?></div>
+                                </div>
+                                <?php } // if ?>
+                            </div>
+                        </div>
+                        <?php } // if ?>
+
+                        <?php if ($anyCreations) { ?>
+                        <div id="aside-creations" style="display: none;">
+                            <h6 class="text-center mb-0">Creations</h6>
+
+                            <div class="p-3">
+                                <div class="aside-content-blocks mb-3 text-info text-center">
+                                    <i class="fa fa-exclamation-triangle mr-1" aria-hidden="true"></i>
+                                    Social networks integration will be available in future update.
+                                </div>
+
+                                <div class="aside-content-blocks mb-3">
+                                    <p class="aside-content-titles mb-2">Look what I've made</p>
+                                    <div><?php echo $utilities->doEscapeString($profileDetails['creations_links']); ?></div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <?php } // if ?>
+                    </div>
+                </section>
             </div>
-        </section>
+        </div>
     </div>
 
     <?php
-    // Require footer for social pages.
-    require_once('inc/footer.php');
+    // Include social scripts for all pages
+    require('partials/scripts.php');
     ?>
+
+    <script type="text/javascript">
+    "use-strict";
+
+    // Start when document is ready
+    $(document).ready(function() {
+        // Default profile tab is set to post
+        let currentProfileTab = 'posts';
+
+        // Change current tab if hash exists and is valid
+        if (window.location.hash) {
+            let selectedTab = window.location.hash.substr(1);
+
+            changeProfileTab(selectedTab);
+        }
+
+        // Listen for profile tab clicks
+        $("#aside-tabs").click((e) => {
+            // Check if tab link has been clicked
+            if ($(e.target).hasClass('nav-link')) {
+                let selectedTab = e.target.getAttribute("href").substr(1);
+
+                changeProfileTab(selectedTab);
+            }
+        });
+
+        // Change profile tab and content
+        function changeProfileTab(tabName) {
+            // Check if tab name is valid
+            if (tabName != 'about' &&
+                tabName != 'posts' &&
+                tabName != 'fandom' &&
+                tabName != 'creations') {
+                return false;
+            }
+
+            // Switch tab if different tab has been selected
+            if (tabName == currentProfileTab) {
+                return false;
+            }
+
+            // Disable current tab and display new one
+            $("#aside-" + currentProfileTab).css("display", "none");
+            $("#aside-" + tabName).css("display", "block");
+
+            // Update current tab on tabs list
+            $("#aside-tab-" + currentProfileTab).removeClass("active");
+            $("#aside-tab-" + tabName).addClass("active");
+
+            // Store new tab value
+            currentProfileTab = tabName;
+
+            return true;
+        }
+    });
+    </script>
 </body>
 </html>

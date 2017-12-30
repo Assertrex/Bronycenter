@@ -1,9 +1,10 @@
 <?php
+// Include system initialization code
+require('system/partials/init.php');
 
-// Start session and clear content of it.
-session_start();
-session_destroy();
+// Destroy a session to log out a user
+$session->destroy();
 
-// Redirect user as guest into homepage.
+// Redirect user into the homepage after log out
 header('Location: index.php');
 die();

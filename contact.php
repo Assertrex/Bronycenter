@@ -1,43 +1,56 @@
 <?php
-// Require system initialization code.
-require_once('system/inc/init.php');
+// Include system initialization code
+require('system/partials/init.php');
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
     <title>Contact :: BronyCenter</title>
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
-    <link rel="stylesheet" href="resources/css/style.css?v=<?php echo $systemVersion['commit']; ?>" /></head>
+    <?php
+    // Include stylesheets for all pages
+    require('system/partials/stylesheets.php');
+    ?>
+</head>
 <body>
     <?php
-    // Require HTML of header for not social pages.
-    require_once('system/inc/header.php');
-
-    // Require code to display system messages.
-    require_once('system/inc/messages.php');
+    // Include header for all pages
+    require('system/partials/header.php');
     ?>
 
-    <div class="container" id="main_content">
-        <section>
-            <h1>Contact</h1>
+    <div class="container">
+        <?php
+        // Include system messages if any exists
+        require('system/partials/flash.php');
+        ?>
+
+        <section id="contact">
+            <h1 class="mb-4">Contact</h1>
 
             <p>
-                As a contact form is not needed yet, you can contact with
-                me using one of the options listed below in the footer of a
-                page.
+                As we don't have a contact form yet, you can contact with an
+                administrator with methods shown below. Feel free to message me.
             </p>
+        </section>
+
+        <section id="methods">
+            <ul>
+                <li>Messenger: <b><a href="http://m.me/norbert.gotowczyc" target="_blank">Norbert Gotowczyc</a></b></li>
+                <li>Snapchat: <b><a href="https://www.snapchat.com/add/assertrex" target="_blank">Assertrex</a></b></li>
+                <li>Skype: <b><a href="skype:norbertgti?add">NorbertGTI</a></b></li>
+                <li>Discord: <b>NorbertGTI#4048</b></li>
+                <li>E-mail: <b><a href="mailto:norbert.gotowczyc@gmail.com">norbert.gotowczyc@gmail.com</a></b></li>
+            </ul>
         </section>
     </div>
 
     <?php
-    // Require HTML of footer for not social pages.
-    require_once('system/inc/footer.php');
+    // Include scripts for all pages
+    require('system/partials/scripts.php');
     ?>
 </body>
 </html>

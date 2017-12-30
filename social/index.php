@@ -1,168 +1,293 @@
 <?php
-// Allow access only for logged users.
+// Allow access only for logged users
 $loginRequired = true;
 
-// Require system initialization code.
-require_once('../system/inc/init.php');
+// Include system initialization code
+require('../system/partials/init.php');
 
-// Create a post if user has submitted a form.
-if (!empty($_POST['submit']) && $_POST['submit'] === 'createpost') {
-    // Try to create a new post.
-    $o_post->create($_SESSION['account']['id'], $_POST['message'], 1);
+// Use post class for creating and reading user's posts
+use BronyCenter\Post;
+$posts = Post::getInstance();
 
-    header('Location: index.php');
-}
+// Page settings
+$pageTitle = 'Posts :: BronyCenter';
+$pageStylesheet = '
+.posts-container-from { margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(189, 189, 189, .5); }
+.post-content-text { word-break: break-word; }
+.comment-container { border-bottom: 1px solid #EEEEEE; }
+.comment-container:last-child { padding-bottom: 0 !important; border-bottom: 0; }
+';
+
+// Include social head content for all pages
+require('partials/head.php');
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="robots" content="noindex" />
-
-    <title>Social :: BronyCenter</title>
-
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
-    <link rel="stylesheet" href="../resources/css/style.css?v=<?php echo $systemVersion['commit']; ?>" />
-
-    <style type="text/css">
-    .post-row { border-bottom: 1px solid #EEE; }
-    .post-row:last-of-type { border: 0; }
-    .btn-postshowlikes, .btn-loadmorecomments { color: #0275d8; cursor: pointer; }
-    .btn-postshowlikes:hover, .btn-loadmorecomments:hover { color: #014c8c; text-decoration: underline; }
-    </style>
-</head>
 <body>
     <?php
-    // Require HTML of header for not social pages.
-    require_once('inc/header.php');
-
-    // Require code to display system messages.
-    require_once('../system/inc/messages.php');
+    // Include social header for all pages
+    require('../system/partials/header-social.php');
     ?>
 
     <div class="container">
-        <section>
-            <?php
-            // Require HTML containing form for post creating.
-            require_once('inc/posts-create.php');
-            ?>
-        </section>
+        <?php
+        // Include system messages if any exists
+        require('../system/partials/flash.php');
+        ?>
 
-        <section>
-            <?php
-            // Require HTML containing recent posts.
-            require_once('inc/posts-recent.php');
+        <div class="row">
+            <div class="col-12 col-lg-8">
+                <?php
+                // Include partial containing a post creator
+                require('partials/index/post-creator.php');
 
-            // Require HTML containing recent posts pagination.
-            require_once('inc/posts-recent-pagination.php');
-            ?>
-        </section>
+                // Include partial containing a posts list
+                require('partials/index/posts-list.php');
+
+                // Include partial containing a posts pagination bar
+                require('partials/index/posts-pagination.php');
+                ?>
+            </div>
+
+            <aside class="col-12 col-lg-4">
+                <?php
+                // Include partial containing an aside panel
+                require('partials/index/aside.php');
+                ?>
+            </aside>
+        </div>
     </div>
 
     <?php
-    // Require footer for social pages.
-    require_once('inc/footer.php');
+    // Include social scripts for all pages
+    require('partials/scripts.php');
     ?>
 
     <script type="text/javascript">
-    // First check if document is ready.
-    $(document).ready(function() {
-        // Count amount of characters used in new post.
-        $("#createpost-content").on("input", function() {
-            let amount = $("#createpost-content").val().length;
-            $("#createpost-characters-counter").text(amount);
-        });
+    // Enable the strict JavaScript mode
+    "use-strict";
 
-        // Count amount of characters used in comments.
-        $(".post-comment-input").on("input", function(e) {
-            let amount = $(this).val().length;
-            $(e.currentTarget.nextElementSibling.firstChild).text(amount);
-        });
+    // Check if new posts are available
+    setInterval(
+        () => {
+            // Get ID of last fetched post
+            let lastPostID = $('#posts-list-wrapper').children(':first');
 
-        // Call a post like function on button click.
-        $(".btn-postlike").click(likePost);
+            // Check if lastest fetched post exists into additional container
+            if (lastPostID[0].className == 'posts-container-from') {
+                lastPostID = lastPostID.children(':first').attr('id').substr(5);
+            } else {
+                lastPostID = lastPostID.attr('id').substr(5);
+            }
 
-        // Call a post switch comment function on button click.
-        $(".btn-postcommentswitch").click(switchCommentPost);
+            // Get amount of new posts
+            $.get('ajax/doGetLastestPostsCounter.php?id=' + lastPostID, function(response) {
+                let json;
 
-        // Call a more comments loader function on button click.
-        $(".btn-loadmorecomments").click(loadMoreComments);
-
-        // Call an own post delete function on button click.
-        $(".btn-deletepost").click(deletePost);
-
-        // Call a moderator post delete function on button click.
-        $(".btn-moddeletepost").click(modDeletePost);
-
-        // Call a post update likes modal function on button click.
-        $(".btn-postshowlikes").click(updateLikesModal);
-
-        // Post like function.
-        function likePost(e) {
-            // Store details in a variables.
-            let postID = e.currentTarget.parentNode.getAttribute('data-postid');
-            let likeStatus = e.currentTarget.getAttribute('data-liked');
-            let likeID = e.currentTarget.getAttribute('data-ownlike-id');
-
-            // Make an AJAX call to like post code.
-            $.post(
-                "ajax/likePost.php",
-                { id: postID },
-                function(json) {
-                    // TODO Display status from JSON here.
-                    // TODO Check if action was successful first.
-
-                    // Check if post was already liked and like or unlike it.
-                    if (likeStatus === 'false') {
-                        likeStatus = true;
-                        e.currentTarget.setAttribute('data-liked', 'true');
-                        $(e.currentTarget).toggleClass('btn-outline-primary');
-                        $(e.currentTarget).toggleClass('btn-outline-success');
-                        $(e.currentTarget).html('<i class="fa fa-thumbs-o-down" aria-hidden="true"></i> Unlike');
-                    } else if (likeStatus === 'true') {
-                        likeStatus = false;
-                        e.currentTarget.setAttribute('data-liked', 'false');
-                        $(e.currentTarget).toggleClass('btn-outline-success');
-                        $(e.currentTarget).toggleClass('btn-outline-primary');
-                        $(e.currentTarget).html('<i class="fa fa-thumbs-o-up" aria-hidden="true"></i> Like');
-                    }
-
-                    // Update post likes string after successful like/unlike.
-                    $.ajax({
-                        url: "ajax/getPostLikesString.php",
-                        data: { id: postID, ownlike: likeStatus },
-                        success: function(response) {
-                            if (response.length === 0) {
-                                $('#post-like-string-' + postID).html("");
-                                $('#post-like-wrapper-' + postID).css("display", "none");
-                            } else {
-                                $('#post-like-string-' + postID).html(response);
-                                $('#post-like-wrapper-' + postID).css("display", "block");
-
-                                // Call a post update likes modal function on new button click.
-                                $('#post-like-string-' + postID).find(".btn-postshowlikes").click(updateLikesModal);
-                            }
-                        }
-                    });
+                // Try to parse a JSON
+                try {
+                    json = JSON.parse(response);
+                } catch (e) {
+                    return false;
                 }
-            );
+
+                // Modify post content if it has been modified successfully
+                if (json.status == 'success') {
+                    // Update new posts counter value
+                    $('#posts-list-checker-available-counter').text(json.amount);
+
+                    // Update counter text if any new post exists
+                    if (json.amount > 0) {
+                        // Hide notification about available posts
+                        $('#posts-list-checker-available').addClass('d-inline-block');
+                        $('#posts-list-checker-available').removeClass('d-none');
+
+                        // Show default notifications about no new posts
+                        $('#posts-list-checker-unavailable').addClass('d-none');
+                        $('#posts-list-checker-unavailable').removeClass('d-inline-block');
+                    }
+                }
+            });
+        }, 15000
+    );
+
+    // Store default resizable textarea height
+    let initialTextareaValue;
+    let textareaState = false;
+
+    // Handle resizable textarea height in a post creator
+    // FIXME: Try to stop moving textarea after executing this code on page reload
+    $('#post-creator-textarea').each(function () {
+        initialTextareaValue = this.scrollHeight;
+        $(this).css('height', initialTextareaValue + "px");
+    }).on('input', function () {
+        $(this).css('height', initialTextareaValue);
+        $(this).css('height', this.scrollHeight + "px");
+
+        // Count letters in a textarea
+        $('#post-creator-lettercounter').text(this.value.length);
+
+        // Don't allow to submit if content is too short
+        if (this.value.length >= 3 && textareaState === false) {
+            textareaState = true;
+            $('#post-creator-submit').prop('disabled', false);
+            $('#post-creator-submit').css('cursor', 'pointer');
+        } else if (this.value.length < 3 && textareaState === true) {
+            textareaState = false;
+            $('#post-creator-submit').prop('disabled', true);
+            $('#post-creator-submit').css('cursor', 'not-allowed');
+        }
+    });
+
+    // Handle the post create action
+    $('#post-creator-submit').click(function() {
+        if ($('#post-creator-textarea').val().length < 3) {
+            return false;
         }
 
-        // Switch comment element state function.
-        function switchCommentPost(e) {
-            // Store details in a variables.
+        $.ajax({
+            'url': 'ajax/doPostCreate.php',
+            'method': 'POST',
+            'data': {
+                'content': $('#post-creator-textarea').val(),
+                'type': 1
+            },
+            'success': function(result) {
+                // Reset content of a textarea after publishing new post
+                $('#post-creator-textarea').val('');
+
+                // Reset letters counter of a textarea
+                $('#post-creator-lettercounter').text(0);
+
+                // Return textarea to it's initial height
+                $('#post-creator-textarea').css('height', initialTextareaValue + 'px');
+
+                // Display new posts including the created one
+                displayLastestPosts();
+
+                return true;
+            }
+        });
+    });
+
+    // Fetch new posts
+    $('#posts-list-checker-available').click(displayLastestPosts);
+
+    // Bind listeners to a default posts container
+    bindListeners('#posts-list');
+
+    function displayLastestPosts() {
+        // Get ID of last fetched post
+        let lastPostID = $('#posts-list-wrapper').children(':first');
+
+        // Check if lastest fetched post exists into additional container
+        if (lastPostID[0].className == 'posts-container-from') {
+            lastPostID = lastPostID.children(':first').attr('id').substr(5);
+        } else {
+            lastPostID = lastPostID.attr('id').substr(5);
+        }
+
+        $.get('ajax/doGetLastestPosts.php?id=' + lastPostID, (result) => {
+            $('#posts-list-wrapper').prepend(result);
+            $('#posts-container-from-' + lastPostID).slideDown('fast');
+
+            // Bind default listeners to the new posts
+            bindListeners('#posts-container-from-' + lastPostID);
+
+            // Hide notification about available posts
+            $('#posts-list-checker-available').addClass('d-none');
+            $('#posts-list-checker-available').removeClass('d-inline-block');
+
+            // Show default notifications about no new posts
+            $('#posts-list-checker-unavailable').addClass('d-inline-block');
+            $('#posts-list-checker-unavailable').removeClass('d-none');
+        });
+    }
+
+    // Listen to a post like button click
+    function listenToPostsLikeButton(containerName) {
+        // Add click listeners to selected container
+        $(containerName + ' .btn-postlike').click(function() {
+            let button = $(this);
+            let postID = $(button).data('postid');
+
+            $.ajax({
+                'url': 'ajax/doPostLike.php?id=' + postID,
+                'method': 'GET',
+                'success': function() {
+                    let hasLiked = $(button).attr('data-hasliked');
+
+                    // Update a like status
+                    if (hasLiked === 'false') {
+                        hasLiked = 'true';
+                        $(button).attr('data-hasliked', hasLiked);
+                        $(button).removeClass('btn-outline-secondary');
+                        $(button).addClass('btn-outline-primary');
+                    } else {
+                        hasLiked = 'false';
+                        $(button).attr('data-hasliked', hasLiked);
+                        $(button).removeClass('btn-outline-primary');
+                        $(button).addClass('btn-outline-secondary');
+                    }
+
+                    // Update a post likes string
+                    updatePostLikeString(postID, hasLiked);
+                }
+            });
+        });
+
+        // Function for getting and updating post likes string
+        function updatePostLikeString(postID, hasLiked) {
+            $.ajax({
+                'url': 'ajax/getPostLikesString.php?id=' + postID + '&hasliked=' + hasLiked,
+                'method': 'GET',
+                'success': function(result) {
+                    if (result != '') {
+                        $('#post-' + postID + ' .post-likes').removeClass('d-none');
+                        $('#post-' + postID + ' .post-likes').addClass('d-block');
+                    } else {
+                        $('#post-' + postID + ' .post-likes').removeClass('d-block');
+                        $('#post-' + postID + ' .post-likes').addClass('d-none');
+                    }
+
+                    $('#post-' + postID + ' .post-likes-string').html(result);
+                }
+            });
+        }
+    }
+
+    // Listen to a post likes show modal button
+    function listenToPostsLikesShowModalButton(containerName) {
+        $(containerName + ' .btn-showlikesmodal').click(() => {
+            // Request server for a post likes list
+            $.ajax({
+                'url': 'ajax/getModalLikesList.php?id=' + $('.btn-showlikesmodal').data('postid'),
+                'method': 'GET',
+                'success': (result) => {
+                    displayModal(
+                        'Users that liked this post',
+                        result,
+                        '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>'
+                    );
+                }
+            });
+        });
+    }
+
+    // Listen to a post like button click
+    function listenToPostsCommentButton(containerName) {
+        // Handle the action for displaying an comment input form
+        $(containerName + " .btn-postcommentswitch").click((e) => {
+            // Store details in a variables
             let switchActive = e.currentTarget.getAttribute('data-active');
             let postID = e.currentTarget.parentNode.getAttribute('data-postid');
             let inputWrapper = $('#post-comment-input-wrapper-' + postID);
             let inputField = inputWrapper.find('.post-comment-input');
             let sendButton = inputWrapper.find('.btn-postcommentsend');
 
-            // Show or hide comment field depending on current status.
+            // Show or hide comment field depending on current status
             if (switchActive === 'false') {
                 switchActive = 'true';
+                $(e.currentTarget).toggleClass('btn-outline-secondary btn-outline-primary');
                 inputWrapper.show('fast');
                 inputField.focus();
                 sendButton.click(function(e) {
@@ -170,70 +295,22 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'createpost') {
                 });
             } else {
                 switchActive = 'false';
+                $(e.currentTarget).toggleClass('btn-outline-primary btn-outline-secondary');
                 inputWrapper.hide('fast');
                 inputField.blur();
                 sendButton.unbind('click');
             }
 
-            // Set up new data-active to a comment button.
+            // Set up new data-active to a comment button
             e.currentTarget.setAttribute('data-active', switchActive);
-        }
+        });
+    }
 
-        // Post comment function.
-        function sendCommentPost(id, inputField) {
-            $.post("ajax/commentPost.php", { id: id, content: inputField.val() }, function(response) {
-                inputField.val("");
+    // Listen to a post show more comments button click
+    function listenToPostsMoreCommentsButton(containerName) {
+        $(containerName + " .btn-loadmorecomments").click((e) => {
+            e.preventDefault();
 
-                let postID = id;
-                let loadMoreComments = $("#post-" + postID + " .btn-loadmorecomments");
-                let newestCommentID = parseInt($("#post-comments-container-" + postID + " .comment-container").last().attr("data-commentid"));
-                let commentsContainer = $("#post-comments-container-" + postID);
-                let commentsAmount = parseInt($(loadMoreComments).attr("data-commentsAmount"));
-                let commentsShown = parseInt($(loadMoreComments).attr("data-commentsShown"));
-                let commentsLeft = commentsAmount - commentsShown;
-
-                // Set newest comment ID to 0 if there's no any.
-                if (isNaN(newestCommentID)) {
-                    newestCommentID = 0;
-                }
-
-                // Load more comments.
-                $.get("ajax/getMorePostComments.php", { id: postID, lastcommentid: newestCommentID, mode: "send" }, function(response) {
-                    // Show own comment.
-                    $(commentsContainer).append(response);
-
-                    // Get amount of fetched comments.
-                    let fetchedAmount = parseInt($("#post-comments-container-" + postID + " .comment-container").last().attr("data-fetchamount"));
-
-                    // Display container if there was no comments.
-                    if (newestCommentID === 0) {
-                        $(commentsContainer).parent().show('fast');
-                    }
-
-                    // Update comments amount.
-                    commentsAmount += fetchedAmount;
-                    commentsShown += fetchedAmount;
-
-                    // Update the shown comments amount.
-                    if (commentsAmount > 2) {
-                        $(loadMoreComments[0].previousElementSibling).text(commentsAmount);
-                        $(loadMoreComments[0].previousElementSibling.previousElementSibling).text(commentsShown);
-                    }
-
-                    // Update comments details in container data.
-                    $(loadMoreComments).attr("data-commentsAmount", commentsAmount);
-                    $(loadMoreComments).attr("data-commentsShown", commentsShown);
-
-                    // Listen to new tooltips.
-                    $(function () {
-                      $('#post-comments-container-' + postID + ' [data-toggle="tooltip"]').tooltip();
-                    });
-                });
-            });
-        }
-
-        // Function for getting more comments for a post.
-        function loadMoreComments(e) {
             let postID = parseInt(e.currentTarget.getAttribute("data-postID"));
             let lastCommentID = parseInt(e.currentTarget.getAttribute("data-lastCommentID"));
             let commentsAmount = parseInt(e.currentTarget.getAttribute("data-commentsAmount"));
@@ -276,88 +353,187 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'createpost') {
                   $('#post-comments-container-' + postID + ' [data-toggle="tooltip"]').tooltip();
                 });
             });
-        }
+        });
+    }
 
-        // Post delete function (own post).
-        function deletePost(e) {
-            // Store details in a variables.
-            let postID = e.currentTarget.getAttribute("data-postid");
-            let articleElement = $("#post-" + postID);
+    // Listen to a post edit button click
+    function listenToPostsEditButton(containerName) {
+        $(containerName + " .btn-postedit").click((e) => {
+            let editContentID = e.currentTarget.getAttribute('data-postid');
+            let editTextareaContent = $('#post-' + editContentID + ' .post-content-text').text();
 
-            // Stop removing if user has canceled action.
-            // TODO Change it to a modal somehow.
-            if (!confirm("Are you sure that you want to delete this post?")) {
-                return false;
-            }
-
-            // Make an AJAX call to delete post code.
-            $.post(
-                "ajax/deletePost.php",
-                { id: postID },
-                function(json) {
-                    // TODO Display status from JSON here.
-                    // TODO Check if post was successfully removed first.
-
-                    // Hide a deleted post from DOM.
-                    $(articleElement).hide();
-                }
+            displayModal(
+                'Post editor',
+                `<p><small>You can now edit your post, but your post edit history will be available for everypony.</small></p>
+                 <textarea class="std-textarea textarea-posteditcontent" style="height: 126px; background-color: #EEEEEE; padding: .5rem 1rem; border-radius: 8px;">${editTextareaContent}</textarea>`,
+                `<button type="button" class="btn btn-primary btn-posteditconfirm" data-dismiss="modal" data-postid="${editContentID}">Apply</button>
+                 <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>`
             );
-        }
 
-        // Post delete function (moderating posts).
-        function modDeletePost(e) {
-            // Store details in a variables.
-            let postID = e.currentTarget.getAttribute("data-postid");
-            let articleElement = $("#post-" + postID);
+            // Listen for an apply button click
+            $('#mainModal .btn-posteditconfirm').click((e) => {
+                let editedTextareaContent = $('#mainModal .textarea-posteditcontent').val();
 
-            // Get a reason for removing post.
-            // TODO Change it to a modal somehow.
-            let removeReason = prompt("Why do you want to remove someone's post?");
+                // Edit post content only if it has been changed
+                if (editTextareaContent != editedTextareaContent) {
+                    // Send a new post content
+                    $.post("ajax/doPostEdit.php", { id: editContentID, content: editedTextareaContent }, function(response) {
+                        let json;
 
-            // End function if user has not provided reason.
-            if (!removeReason) {
-                return false;
-            }
+                        // Try to parse a JSON
+                        try {
+                            json = JSON.parse(response);
+                        } catch (e) {
+                            showFlashMessages();
+                            return false;
+                        }
 
-            // Make an AJAX call to like post code.
-            $.post(
-                "ajax/deletePost.php",
-                { id: postID, reason: removeReason },
-                function(json) {
-                    // TODO Display status from JSON here.
-                    // TODO Check if post was successfully removed first.
+                        // Modify post content if it has been modified successfully
+                        if (json.status == 'success') {
+                            $('#post-' + json.post + ' .post-content-text').text(json.content);
 
-                    // Hide a deleted post from DOM.
-                    $(articleElement).hide();
+                            // Display newlines in a post without the need of page refreshing
+                            $('#post-' + json.post + ' .post-content-text').css('white-space', 'pre-line');
+                        }
+
+                        showFlashMessages();
+                        return true;
+                    });
                 }
-            );
-        }
+            });
+        });
+    }
 
-        // Update modal with user's likes list.
-        function updateLikesModal(e) {
-            // Store details in a variables.
-            let postID = e.currentTarget.getAttribute('data-postid');
+    // Listen to a post delete button click
+    function listenToPostsDeleteButton(containerName) {
+        $(containerName + ' .btn-deletepost').click(function() {
+            let button = $(this);
+            let postID = $(button).data('postid');
+            let userModerator = $(button).data('moderate');
 
-            // Update modal details after opening.
-            $('#mainModal').on('show.bs.modal', function(event) {
-                let button = $(event.relatedTarget);
+            // Display reason form if moderator tries to remove a post
+            // TODO Display a fancy modal instead of native JS function
+            if (userModerator) {
+                let reason;
 
-                // Store modal in a variable.
-                let modal = $(this);
+                if (reason = prompt('Why do you think that this post needs to be removed? (This will be shown to post author and moderators)')) {
+                    $.ajax({
+                        'url': 'ajax/doPostDelete.php?id=' + postID + '&reason=' + reason,
+                        'method': 'GET',
+                        'success': function(result) {
+                            $('#post-' + postID).hide('slow', function() {
+                                let containerParent = $('#post-' + postID).parent();
 
-                // Get list of users that has liked a post.
-                $.ajax({
-                    url: "ajax/getPostLikesList.php",
-                    data: { id: postID },
-                    success: function(response) {
-                        // Update modal's title and content.
-                        modal.find('.modal-title').text('Ponies that like this post.');
-                        modal.find('.modal-body').html(response);
-                    }
-                });
+                                // Remove the whole container if it is the last fetched post
+                                if (containerParent[0].className == 'posts-container-from' &&
+                                    containerParent.children().length == 1) {
+                                    $(this).remove();
+                                    containerParent.remove();
+                                } else {
+                                    $(this).remove();
+                                }
+
+                                showFlashMessages();
+                            });
+                        }
+                    });
+                }
+            } else {
+                if (confirm('Are you sure that you want to remove your post?')) {
+                    $.ajax({
+                        'url': 'ajax/doPostDelete.php?id=' + postID,
+                        'method': 'GET',
+                        'success': function(result) {
+                            $('#post-' + postID).hide('slow', function() {
+                                let containerParent = $('#post-' + postID).parent();
+
+                                // Remove the whole container if it is the last fetched post
+                                if (containerParent[0].className == 'posts-container-from' &&
+                                    containerParent.children().length == 1) {
+                                    $(this).remove();
+                                    containerParent.remove();
+                                } else {
+                                    $(this).remove();
+                                }
+
+                                showFlashMessages();
+                            });
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    // Function used to bind all listeners to a selected posts container
+    function bindListeners(containerName) {
+        listenToPostsLikeButton(containerName);
+        listenToPostsLikesShowModalButton(containerName);
+        listenToPostsCommentButton(containerName);
+        listenToPostsMoreCommentsButton(containerName);
+        listenToPostsEditButton(containerName);
+        listenToPostsDeleteButton(containerName);
+
+        // Add tooltips to the new container
+        if (containerName != '#posts-list') {
+            $(function () {
+                $(containerName + ' [data-toggle="tooltip"]').tooltip();
             });
         }
-    });
+    }
+
+    // Post comment function
+    function sendCommentPost(id, inputField) {
+        $.post("ajax/doPostComment.php", { id: id, content: inputField.val() }, function(response) {
+            inputField.val("");
+
+            let postID = id;
+            let loadMoreComments = $("#post-" + postID + " .btn-loadmorecomments");
+            let newestCommentID = parseInt($("#post-comments-container-" + postID + " .comment-container").last().attr("data-commentid"));
+            let commentsContainer = $("#post-comments-container-" + postID);
+            let commentsAmount = parseInt($(loadMoreComments).attr("data-commentsAmount"));
+            let commentsShown = parseInt($(loadMoreComments).attr("data-commentsShown"));
+            let commentsLeft = commentsAmount - commentsShown;
+
+            // Set newest comment ID to 0 if there's no any
+            if (isNaN(newestCommentID)) {
+                newestCommentID = 0;
+            }
+
+            // Load more comments.
+            $.get("ajax/getMorePostComments.php", { id: postID, lastcommentid: newestCommentID, mode: "send" }, function(response) {
+                // Show own comment
+                $(commentsContainer).append(response);
+
+                // Get amount of fetched comments
+                let fetchedAmount = parseInt($("#post-comments-container-" + postID + " .comment-container").last().attr("data-fetchamount"));
+
+                // Display container if there was no comments
+                if (newestCommentID === 0) {
+                    $(commentsContainer).parent().show('fast');
+                }
+
+                // Update comments amount
+                commentsAmount += fetchedAmount;
+                commentsShown += fetchedAmount;
+
+                // Update the shown comments amount
+                if (commentsAmount > 2) {
+                    $(loadMoreComments[0].previousElementSibling).text(commentsAmount);
+                    $(loadMoreComments[0].previousElementSibling.previousElementSibling).text(commentsShown);
+                }
+
+                // Update comments details in container data
+                $(loadMoreComments).attr("data-commentsAmount", commentsAmount);
+                $(loadMoreComments).attr("data-commentsShown", commentsShown);
+
+                // Listen to the new tooltips
+                $(function () {
+                  $('#post-comments-container-' + postID + ' [data-toggle="tooltip"]').tooltip();
+                });
+            });
+        });
+    }
     </script>
 </body>
 </html>
