@@ -33,7 +33,7 @@ require('system/partials/init.php');
         </div>
     </div>
 
-    <div class="container">
+    <div class="container" style="padding-top: 1rem;">
         <?php
         // Include system messages if any exists
         require('system/partials/flash.php');

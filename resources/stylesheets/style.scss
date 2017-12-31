@@ -42,7 +42,7 @@ section {
 }
 
 .container {
-    padding-top: 1rem;
+    padding-top: calc(108px + 1rem);
     padding-bottom: 1rem;
 }
 
@@ -117,5 +117,9 @@ textarea.std-textarea {
 @media (min-width: 992px) {
     body {
         font-size: 15px;
+    }
+
+    .container {
+        padding-top: calc(57px + 1rem);
     }
 }
