@@ -15,8 +15,48 @@ $(document).ready(function() {
     // Extend account session every X seconds
     setInterval(() => {
         // TODO Handle a false return
-        $.get("../system/ajax/doExtendSession.php");
+        // FIXME Fix path for pages outside social/ directory
+        $.get('../system/ajax/doExtendSession.php');
     }, 30000);
+
+    // Check current Y position of a window
+    let currentPositionY = $(window).scrollTop();
+
+    // Show scroll button if page has been loaded on specified Y position
+    let scrollButtonEnabled = false;
+
+    if (currentPositionY > 100) {
+        scrollButtonEnabled = true;
+        $('#button-scroll-top').show();
+    }
+
+    // Listen to the page scroll event
+    $(window).scroll((e) => {
+        currentPositionY = e.currentTarget.pageYOffset;
+
+        if (currentPositionY > 100) {
+            // Stop execution if button is already enabled
+            if (scrollButtonEnabled === true) {
+                return false;
+            }
+
+            scrollButtonEnabled = true;
+            $('#button-scroll-top').show();
+        } else {
+            // Stop execution if button is not enabled yet
+            if (scrollButtonEnabled === false) {
+                return false;
+            }
+
+            scrollButtonEnabled = false;
+            $('#button-scroll-top').hide();
+        }
+    });
+
+    // Listen to the page scroll button
+    $('#button-scroll-top').click(() => {
+        $('html').animate({ scrollTop: 0 }, 500);
+    });
 
     // Listen to the header's searchbar
     $('#navbar-searchbar').on('input', (e) => {

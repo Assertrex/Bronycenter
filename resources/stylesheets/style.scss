@@ -112,6 +112,15 @@ textarea.std-textarea {
     outline: none;
 }
 
+#button-scroll-top {
+    position: fixed;
+    bottom: 4px;
+    right: 10px;
+    color: rgba(0, 0, 0, .5);
+    font-size: 3rem;
+    cursor: pointer;
+}
+
 @import "scss/social-index";
 
 @media (min-width: 992px) {
@@ -121,5 +130,11 @@ textarea.std-textarea {
 
     .container {
         padding-top: calc(57px + 1rem);
+    }
+
+    #button-scroll-top {
+        bottom: 12px;
+        right: 20px;
+        font-size: 3.5rem;
     }
 }
