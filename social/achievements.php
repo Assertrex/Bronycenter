@@ -1,4 +1,7 @@
 <?php
+// Allow access only for logged users
+$loginRequired = true;
+
 // Include system initialization code
 require('../system/partials/init.php');
 

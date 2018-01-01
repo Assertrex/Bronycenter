@@ -23,7 +23,7 @@ require('partials/head.php');
     require('../system/partials/header-social.php');
     ?>
 
-    <div class="container">
+    <div class="container <?php echo $loggedIn ?: 'guest'; ?>">
         <?php
         // Include system messages if any exists
         require('../system/partials/flash.php');
