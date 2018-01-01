@@ -58,6 +58,25 @@ $(document).ready(function() {
         $('html').animate({ scrollTop: 0 }, 500);
     });
 
+    // Remember the current state of a searchbar
+    let searchbarEnabled = false;
+
+    // Add click event listener to the whole document
+    $(document).click((e) => {
+        let searchbar = $('#navbar-searchbar');
+        let searchbarResultbox = $('#navbar-searchbar-result');
+
+        // Close the searchbar if clicked outside of it
+        if (searchbarEnabled === true && !searchbar.is(e.target) && !searchbarResultbox.is(e.target))
+        {
+            searchbarEnabled = false;
+            $(searchbarResultbox).removeClass('d-lg-block');
+        } else if (searchbarEnabled === false && searchbar.is(e.target) && $(searchbar).val().length > 0) {
+            searchbarEnabled = true;
+            $(searchbarResultbox).addClass('d-lg-block');
+        }
+    });
+
     // Listen to the header's searchbar
     $('#navbar-searchbar').on('input', (e) => {
         let resultContainer = $('#navbar-searchbar-result');
@@ -76,11 +95,12 @@ $(document).ready(function() {
                 // Clear content of a result box
                 cleanupSearchboxResults();
 
+                // Show results container
+                searchbarEnabled = true;
+                resultContainer.addClass('d-lg-block');
+
                 // Check if any matching user has been found
                 if (matchingUsers.users.length > 0) {
-                    // Show results container
-                    resultContainer.addClass('d-lg-block');
-
                     // Display each matching user
                     matchingUsers.users.forEach((user) => {
                         resultContainer.append(`
@@ -93,13 +113,19 @@ $(document).ready(function() {
                             </a>
                         `);
                     });
-                } else {
-                    // Hide results container
-                    resultContainer.removeClass('d-lg-block');
+                }
+                // Display information if no results have been found
+                else {
+                    resultContainer.append(`
+                        <div class="d-flex align-items-center px-3 py-2">
+                            <span style="color: rgba(255, 255, 255, .5); line-height: 1.25;">No matching users found.</span>
+                        </div>
+                    `);
                 }
             });
         } else {
             // Hide results container
+            searchbarEnabled = false;
             resultContainer.removeClass('d-lg-block');
         }
     });
