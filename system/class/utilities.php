@@ -200,6 +200,52 @@ class Utilities
 	}
 
     /**
+     * Generate badges for a user
+     *
+     * @since 0.1.0
+     * @var array $details Array containing selected user details
+     * @var string $class Classes to use with a span (automatically adds -color class on end)
+     * @var string $style Styles for use with a span
+     * @return array Array containing user badges (you should merge it with user details array)
+     */
+    public function generateUserBadges($details, $class = 'badge badge', $style = '') {
+        // Define empty array for user badges
+        $badges = [];
+
+        // Store user's online badge
+        if ($details['is_online']) {
+            $badges['is_online_badge'] = '<span class="' . $class . '-success" style="' . $style . '">Online</span>';
+        } else {
+            $badges['is_online_badge'] = '<span class="' . $class . '-secondary" style="' . $style . '">Offline</span>';
+        }
+
+        // Store user's account type badge
+        switch ($details['account_type']) {
+            case '9':
+                $badges['account_type_badge'] = '<span class="' . $class . '-danger" style="' . $style . '">Admin</span>';
+                break;
+            case '8':
+                $badges['account_type_badge'] = '<span class="' . $class . '-info" style="' . $style . '">Mod</span>';
+                break;
+            case '0':
+                $badges['account_type_badge'] = '<span class="' . $class . '-secondary" style="' . $style . '">Unverified</span>';
+                break;
+        }
+
+        // Store user's account standing badge
+        switch ($details['account_standing']) {
+            case '1':
+                $badges['account_standing_badge'] = '<span class="' . $class . '-warning" style="' . $style . '">Muted</span>';
+                break;
+            case '2':
+                $badges['account_standing_badge'] = '<span class="' . $class . '-danger" style="' . $style . '">Banned</span>';
+                break;
+        }
+
+        return $badges;
+    }
+
+    /**
      * Get a full country name from country code
      *
      * @since 0.1.0

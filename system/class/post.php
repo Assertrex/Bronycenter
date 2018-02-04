@@ -8,6 +8,7 @@
 
 namespace BronyCenter;
 
+use DateTime;
 use BronyCenter\Database;
 use BronyCenter\Flash;
 use BronyCenter\Utilities;
@@ -21,6 +22,13 @@ class Post
      * @since Release 0.1.0
      */
     private static $instance = null;
+
+    /**
+     * Place for instance of a user class
+     *
+     * @since Release 0.1.0
+     */
+    private $user = null;
 
     /**
      * Place for instance of a database class
@@ -64,6 +72,7 @@ class Post
      */
     public function __construct()
     {
+        $this->user = User::getInstance();
         $this->database = Database::getInstance();
         $this->flash = Flash::getInstance();
         $this->utilities = Utilities::getInstance();
@@ -277,7 +286,7 @@ class Post
      */
     public function get($array)
     {
-        $fetchColumns = 'p.id, p.user_id, p.datetime, p.content, p.like_count, p.comment_count, p.edit_count, p.type, u.display_name, u.username, u.last_online, u.country_code, u.avatar, u.account_type, d.birthdate, d.gender, l.user_id AS ownlike_id';
+        $fetchColumns = 'p.id, p.user_id, p.datetime, p.content, p.like_count, p.comment_count, p.edit_count, p.type, l.user_id AS ownlike_id';
 
         // Use selected fetch mode
         switch ($array['fetchMode']) {
@@ -287,8 +296,7 @@ class Post
                     $fetchColumns,
                     'posts p',
                     'INNER JOIN users u ON p.user_id = u.id
-                     INNER JOIN users_details d ON d.user_id = u.id
-                     LEFT JOIN (SELECT id, post_id, user_id FROM posts_likes WHERE user_id = ? AND active = 1) AS l ON p.id = l.post_id
+                     LEFT JOIN (SELECT post_id, user_id FROM posts_likes WHERE user_id = ? AND active = 1) AS l ON p.id = l.post_id
                      WHERE status != 9 ORDER BY id DESC LIMIT ? OFFSET ?',
                     [$_SESSION['account']['id'], $array['fetchAmount'] ?? 10, $array['fetchOffset'] ?? 0]
                 );
@@ -305,7 +313,6 @@ class Post
                     $fetchColumns,
                     'posts p',
                     'INNER JOIN users u ON p.user_id = u.id
-                     INNER JOIN users_details d ON d.user_id = u.id
                      LEFT JOIN (SELECT id, post_id, user_id FROM posts_likes WHERE user_id = ? AND active = 1) AS l ON p.id = l.post_id
                      WHERE p.id > ? AND status != 9 ORDER BY id DESC',
                     [$_SESSION['account']['id'], $array['fetchFromID']]
@@ -320,30 +327,45 @@ class Post
         // Modify and format post details
         for ($i = 0; $i < count($posts); $i++) {
             // Check if current user is an author of a post
-            $posts[$i]['ownPost'] = $posts[$i]['user_id'] == $_SESSION['account']['id'];
+            $posts[$i]['is_current_user_author'] = $posts[$i]['user_id'] == $_SESSION['account']['id'];
 
             // Check if post contains any likes
-            $posts[$i]['hasLikes'] = $posts[$i]['like_count'] > 0;
+            $posts[$i]['post_has_likes'] = $posts[$i]['like_count'] > 0;
 
             // Check if current user has liked a post
-            $posts[$i]['hasLiked'] = $posts[$i]['ownlike_id'] != 0;
-
-            // Set user's avatar or get the default one if not existing
-            $posts[$i]['avatar'] = '../media/avatars/' . ($posts[$i]['avatar'] ?? 'default') . '/minres.jpg';
+            $posts[$i]['current_user_liked'] = $posts[$i]['ownlike_id'] != 0;
 
             // Make a named interval of when a post has been published
-            $posts[$i]['datetimeInterval'] = $this->utilities->getDateIntervalString($this->utilities->countDateInterval($posts[$i]['datetime']));
+            $posts[$i]['datetime_interval'] = $this->utilities->getDateIntervalString($this->utilities->countDateInterval($posts[$i]['datetime']));
 
-            // Store user badge depending on it's account type
-            switch ($posts[$i]['account_type']) {
-                case '9':
-                    $posts[$i]['userBadge'] = '<span class="d-block badge badge-danger mt-2">Admin</span>';
-                    break;
-                case '8':
-                    $posts[$i]['userBadge'] = '<span class="d-block badge badge-info mt-2">Mod</span>';
-                    break;
-                default:
-                    $posts[$i]['userBadge'] = '';
+            // Remember amount of post comments
+            $posts[$i]['amount_comments'] = intval($posts[$i]['comment_count']);
+
+            // Remember if post has been edited
+            $posts[$i]['was_edited'] = false;
+
+            if ($posts[$i]['edit_count'] != 0) {
+                $posts[$i]['was_edited'] = true;
+
+                if ($posts[$i]['edit_count'] > 1) {
+                    $posts[$i]['edit_count_string'] = ' ' . $posts[$i]['edit_count'] . ' times';
+                } else {
+                    $posts[$i]['edit_count_string'] = '';
+                }
+            }
+
+            // Get array of post comments (limit to 2 newest) if any exists
+            if ($posts[$i]['amount_comments'] > 0) {
+                $posts[$i]['array_comments'] = $this->getComments($posts[$i]['id'], null, 2);
+            }
+
+            // Get details about post likes if any exists
+            if ($posts[$i]['post_has_likes']) {
+                // Get list of a post likes
+                $posts[$i]['array_likes'] = $this->getLikes($posts[$i]['id']);
+
+                // Get string about users that has liked a post
+                $posts[$i]['string_likes'] = $this->getLikesString($posts[$i]['id'], $posts[$i]['array_likes'], $posts[$i]['current_user_liked']);
             }
         }
 
@@ -404,9 +426,9 @@ class Post
 
         // Get an array of users that has liked a post
         $likes = $this->database->read(
-            'u.id, u.display_name, u.username, u.avatar',
-            'posts_likes p',
-            'INNER JOIN users u ON p.user_id = u.id WHERE p.post_id = ? AND p.active = 1',
+            'u.id',
+            'posts_likes l',
+            'INNER JOIN users u ON l.user_id = u.id WHERE l.post_id = ? AND l.active = 1',
             [$postID]
         );
 
@@ -554,7 +576,7 @@ class Post
 
             // Skip current user and get one more person
             if ($array[$i - 1]['id'] != $_SESSION['account']['id']) {
-                $randomUsers[] = $array[$i - 1];
+                $randomUsers[] = $this->user->generateUserDetails($array[$i - 1]['id']);
             } else {
                 $loopAmount = 4;
             }
@@ -568,43 +590,43 @@ class Post
             // Check if there are two likes
             else if ($likesAmount === 2)
                 $string = 'You and ' .
-                          '<a href="profile.php?u=' . $randomUsers[0]['id'] . '">' . htmlspecialchars($randomUsers[0]['display_name']) . '</a> ' .
+                          '<a href="profile.php?u=' . $randomUsers[0]['id'] . '" data-toggle="tooltip" data-html="true" title="' . $randomUsers[0]['tooltip'] . '">' . $this->utilities->doEscapeString($randomUsers[0]['display_name']) . '</a> ' .
                           'like this post.';
             // Check if there are three likes
             else if ($likesAmount === 3)
                 $string = 'You, ' .
-                          '<a href="profile.php?u=' . $randomUsers[0]['id'] . '">' . htmlspecialchars($randomUsers[0]['display_name']) . '</a> ' .
+                          '<a href="profile.php?u=' . $randomUsers[0]['id'] . '" data-toggle="tooltip" data-html="true" title="' . $randomUsers[0]['tooltip'] . '">' . $this->utilities->doEscapeString($randomUsers[0]['display_name']) . '</a> ' .
                           'and ' .
-                          '<a href="profile.php?u=' . $randomUsers[1]['id'] . '">' . htmlspecialchars($randomUsers[1]['display_name']) . '</a> ' .
+                          '<a href="profile.php?u=' . $randomUsers[1]['id'] . '" data-toggle="tooltip" data-html="true" title="' . $randomUsers[1]['tooltip'] . '">' . $this->utilities->doEscapeString($randomUsers[1]['display_name']) . '</a> ' .
                           'like this post.';
             // Check if there are more than three likes
             else
                 $string = 'You, ' .
-                          '<a href="profile.php?u=' . $randomUsers[0]['id'] . '">' . htmlspecialchars($randomUsers[0]['display_name']) . '</a> ' .
+                          '<a href="profile.php?u=' . $randomUsers[0]['id'] . '" data-toggle="tooltip" data-html="true" title="' . $randomUsers[0]['tooltip'] . '">' . $this->utilities->doEscapeString($randomUsers[0]['display_name']) . '</a> ' .
                           'and ' .
                           '<span class="btn-openmodal btn-showlikesmodal " data-postid="' . $postID . '" data-toggle="modal" data-target="#mainModal">' . ($likesAmount - 2) . ' other ponies</span> like this post.';
         } else {
             // Check if there is only one like
             if ($likesAmount === 1)
-                $string = '<a href="profile.php?u=' . $randomUsers[0]['id'] . '">' . htmlspecialchars($randomUsers[0]['display_name']) . '</a> ' .
+                $string = '<a href="profile.php?u=' . $randomUsers[0]['id'] . '" data-toggle="tooltip" data-html="true" title="' . $randomUsers[0]['tooltip'] . '">' . $this->utilities->doEscapeString($randomUsers[0]['display_name']) . '</a> ' .
                           'like this post.';
             // Check if there are two likes
             else if ($likesAmount === 2)
-                $string = '<a href="profile.php?u=' . $randomUsers[0]['id'] . '">' . htmlspecialchars($randomUsers[0]['display_name']) . '</a> ' .
+                $string = '<a href="profile.php?u=' . $randomUsers[0]['id'] . '" data-toggle="tooltip" data-html="true" title="' . $randomUsers[0]['tooltip'] . '">' . $this->utilities->doEscapeString($randomUsers[0]['display_name']) . '</a> ' .
                           'and ' .
-                          '<a href="profile.php?u=' . $randomUsers[1]['id'] . '">' . htmlspecialchars($randomUsers[1]['display_name']) . '</a> ' .
+                          '<a href="profile.php?u=' . $randomUsers[1]['id'] . '" data-toggle="tooltip" data-html="true" title="' . $randomUsers[1]['tooltip'] . '">' . $this->utilities->doEscapeString($randomUsers[1]['display_name']) . '</a> ' .
                           'like this post.';
             // Check if there are three likes
             else if ($likesAmount === 3)
-                $string = '<a href="profile.php?u=' . $randomUsers[0]['id'] . '">' . htmlspecialchars($randomUsers[0]['display_name']) . '</a>, ' .
-                          '<a href="profile.php?u=' . $randomUsers[1]['id'] . '">' . htmlspecialchars($randomUsers[1]['display_name']) . '</a> ' .
+                $string = '<a href="profile.php?u=' . $randomUsers[0]['id'] . '" data-toggle="tooltip" data-html="true" title="' . $randomUsers[0]['tooltip'] . '">' . $this->utilities->doEscapeString($randomUsers[0]['display_name']) . '</a>, ' .
+                          '<a href="profile.php?u=' . $randomUsers[1]['id'] . '" data-toggle="tooltip" data-html="true" title="' . $randomUsers[1]['tooltip'] . '">' . $this->utilities->doEscapeString($randomUsers[1]['display_name']) . '</a> ' .
                           'and ' .
-                          '<a href="profile.php?u=' . $randomUsers[2]['id'] . '">' . htmlspecialchars($randomUsers[2]['display_name']) . '</a> ' .
+                          '<a href="profile.php?u=' . $randomUsers[2]['id'] . '" data-toggle="tooltip" data-html="true" title="' . $randomUsers[2]['tooltip'] . '">' . $this->utilities->doEscapeString($randomUsers[2]['display_name']) . '</a> ' .
                           'like this post.';
             // Check if there are more than three likes
             else
-                $string = '<a href="profile.php?u=' . $randomUsers[0]['id'] . '">' . htmlspecialchars($randomUsers[0]['display_name']) . '</a>, ' .
-                          '<a href="profile.php?u=' . $randomUsers[1]['id'] . '">' . htmlspecialchars($randomUsers[1]['display_name']) . '</a> ' .
+                $string = '<a href="profile.php?u=' . $randomUsers[0]['id'] . '" data-toggle="tooltip" data-html="true" title="' . $randomUsers[0]['tooltip'] . '">' . $this->utilities->doEscapeString($randomUsers[0]['display_name']) . '</a>, ' .
+                          '<a href="profile.php?u=' . $randomUsers[1]['id'] . '" data-toggle="tooltip" data-html="true" title="' . $randomUsers[1]['tooltip'] . '">' . $this->utilities->doEscapeString($randomUsers[1]['display_name']) . '</a> ' .
                           'and ' .
                           '<span class="btn-openmodal btn-showlikesmodal " data-postid="' . $postID . '" data-toggle="modal" data-target="#mainModal">' . ($likesAmount - 2) . ' other ponies</span> like this post.';
         }
@@ -677,35 +699,31 @@ class Post
      */
     public function getComments($postID, $lastCommentID, $amount, $mode = 'first')
     {
-        // Get array of comments for selected post
+        // Set query for selected mode
         switch ($mode) {
             case 'first':
-                $comments = $this->database->read(
-                    'pcm.id, pcm.user_id, usr.display_name, usr.username, usr.avatar, pcm.datetime, pcm.content',
-                    'posts_comments pcm',
-                    'INNER JOIN users usr ON usr.id = pcm.user_id WHERE pcm.post_id = ? ORDER BY pcm.id DESC LIMIT ?',
-                    [$postID, $amount]
-                );
+                $sql_additional = 'WHERE post_id = ? ORDER BY id DESC LIMIT ?';
+                $sql_array = [$postID, $amount];
                 break;
             case 'more':
-                $comments = $this->database->read(
-                    'pcm.id, pcm.user_id, usr.display_name, usr.username, usr.avatar, pcm.datetime, pcm.content',
-                    'posts_comments pcm',
-                    'INNER JOIN users usr ON usr.id = pcm.user_id WHERE pcm.post_id = ? AND pcm.id < ? ORDER BY pcm.id DESC LIMIT ?',
-                    [$postID, $lastCommentID, $amount]
-                );
+                $sql_additional = 'WHERE post_id = ? AND id < ? ORDER BY id DESC LIMIT ?';
+                $sql_array = [$postID, $lastCommentID, $amount];
                 break;
             case 'send':
-                $comments = $this->database->read(
-                    'pcm.id, pcm.user_id, usr.display_name, usr.username, usr.avatar, pcm.datetime, pcm.content',
-                    'posts_comments pcm',
-                    'INNER JOIN users usr ON usr.id = pcm.user_id WHERE pcm.post_id = ? AND pcm.id > ? ORDER BY pcm.id DESC',
-                    [$postID, $lastCommentID]
-                );
+                $sql_additional = 'WHERE post_id = ? AND id > ? ORDER BY id DESC';
+                $sql_array = [$postID, $lastCommentID];
                 break;
             default:
                 return false;
         }
+
+        // Get array of comments for selected post
+        $comments = $this->database->read(
+            'id, user_id, datetime, content',
+            'posts_comments',
+            $sql_additional,
+            $sql_array
+        );
 
         // Reverse an array to display newest post on bottom
         $comments = array_reverse($comments);

@@ -31,35 +31,28 @@ $loginRequired = true;
 require('../system/partials/init.php');
 
 // Get details about selected user
-$userDetails = $user->getUserDetails($_SESSION['account']['id']);
+$userDetails = $user->generateUserDetails($_SESSION['account']['id'], ['descriptions' => true, 'sensitive' => true]);
 
-// Format account standing status to string description
+// Generate user badges and add them the array with user details
+$userDetails = array_merge(
+    $userDetails,
+    $utilities->generateUserBadges(
+        $userDetails,
+        'mx-1 badge badge',
+        'vertical-align: text-bottom;'
+    )
+);
+
+// Add two more account standing badges
 switch ($userDetails['account_standing']) {
     case '0':
-        $userDetails['account_standing_string'] = '<span class="text-success">Good</span>';
-        break;
-    case '1':
-        $userDetails['account_standing_string'] = '<span class="text-info">Muted</span>';
-        break;
-    case '2':
-        $userDetails['account_standing_string'] = '<span class="text-danger">Banned</span>';
+        $userDetails['account_standing_badge'] = '<span class="mx-1 badge badge-success">Good</span>';
         break;
     default:
-        $userDetails['account_standing_string'] = '<span class="text-secondary">Unknown</span>';
+        $userDetails['account_standing_badge'] = '<span class="mx-1 badge badge-secondary">Unknown</span>';
 }
 
-// Format account type to string description
-switch ($userDetails['account_type']) {
-    case '9':
-        $userDetails['account_type_badge'] = '<span class="badge badge-pill badge-danger ml-1" style="vertical-align: text-bottom;">Admin</span>';
-        break;
-    case '8':
-        $userDetails['account_type_badge'] = '<span class="badge badge-pill badge-info ml-1" style="vertical-align: text-bottom;">Mod</span>';
-        break;
-    default:
-        $userDetails['account_type_badge'] = '<span class="badge badge-pill badge-light ml-1" style="vertical-align: text-bottom;">Standard user</span>';
-}
-
+// Separate birthdate into temporary day/month/year values
 if (!is_null($userDetails['birthdate'])) {
     $birthdate_temp = explode('-', $userDetails['birthdate']);
     $userDetails['birthdate_temp']['year'] = $birthdate_temp[0];

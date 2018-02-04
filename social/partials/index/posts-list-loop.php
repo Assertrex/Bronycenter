@@ -1,116 +1,33 @@
 <?php
 // Display each found post
 foreach ($listPosts as $post) {
-    // Check if author is currently logged in
-    $post['userOnline'] = $user->isOnline(null, $post['last_online']);
-    $post['userOnlineBadge'] = $post['userOnline'] ? '<span class="d-block badge badge-success mt-1">Online</span>' : '';
-
-    // Remember amount of post comments
-    $commentsAmount = intval($post['comment_count']);
-
-    // Remember if post has been edited
-    $wasEdited = false;
-
-    if ($post['edit_count'] != 0) {
-        $wasEdited = true;
-
-        if ($post['edit_count'] > 1) {
-            $editCounterString = ' ' . $post['edit_count'] . ' times';
-        } else {
-            $editCounterString = '';
-        }
-    }
-
-    // Get array of post comments (limit to 2 newest) if any exists
-    if ($commentsAmount > 0) {
-        $comments = $posts->getComments($post['id'], null, 2);
-    }
-
-    // Check if post contains any likes
-    if ($post['hasLikes']) {
-        // Get list of a post likes
-        $likes = $posts->getLikes($post['id']);
-
-        // Get string about users that has liked a post
-        $likesString = $posts->getLikesString($post['id'], $likes, $post['hasLiked']);
-    }
-
-    // Name gender types
-    switch ($post['gender']) {
-        case 1:
-            $post['gender'] = 'Male';
-            break;
-        case 2:
-            $post['gender'] = 'Female';
-            break;
-        default:
-            $post['gender'] = 'Unknown gender';
-    }
-
-    // Format birthdate if available
-    if (!is_null($post['birthdate'])) {
-        $current_date = new DateTime();
-        $age_interval = new DateTime($post['birthdate']);
-        $age_interval = $current_date->diff($age_interval);
-        $post['birthdate'] = $age_interval->format('%y years old');
-    } else {
-        $post['birthdate'] = 'Unknown age';
-    }
-
-    // Get a full name of user's country
-    $post['country_code'] = $utilities->getCountryName($post['country_code']);
-
-    // TODO ESCAPE STRINGS
-    $usernameTooltip = '
-    <div style=\'padding: .5rem .25rem; line-height: 1.2;\'>
-        <div>' . htmlspecialchars($post['display_name']) . '</div>
-        <div><small class=\'text-muted\'>@' . htmlspecialchars($post['username']) . '</small></div>
-
-        <div style=\'padding-top: 8px; text-align: left;\'>
-            <div style=\'margin-bottom: 1px;\'>
-                <span class=\'text-center mr-1\' style=\'width: 15px;\'>
-                    <i class=\'fa fa-transgender text-primary\' style=\'width: 15px;\' aria-hidden=\'true\'></i>
-                </span>
-                <small>' . $post['gender'] . '</small>
-            </div>
-            <div style=\'margin-bottom: 1px;\'>
-                <span class=\'text-center mr-1\' style=\'width: 15px;\'>
-                    <i class=\'fa fa-user-o text-primary\' style=\'width: 15px;\' aria-hidden=\'true\'></i>
-                </span>
-                <small>' . $post['birthdate'] . '</small>
-            </div>
-            <div>
-                <span class=\'text-center mr-1\' style=\'width: 15px;\'>
-                    <i class=\'fa fa-map-marker text-primary\' style=\'width: 15px;\' aria-hidden=\'true\'></i>
-                </span>
-                <small>' . $post['country_code'] . '</small>
-            </div>
-        </div>
-    </div>
-    ';
+    // Generate additional details about user or get a cached version of it and add to the array
+    $post['author'] = $user->generateUserDetails($post['user_id']);
+    $post['author'] = array_merge($post['author'], $utilities->generateUserBadges($post['author'], 'd-block mt-1 badge badge'));
 ?>
 
 <article class="d-flex flex-column px-1" id="post-<?php echo $post['id']; ?>">
     <div class="d-flex">
         <div class="mr-3 post-author-details">
-            <img class="rounded" src="<?php echo $post['avatar']; ?>" alt="User's avatar">
-            <div><?php echo $post['userBadge']; ?></div>
-            <div><?php echo $post['userOnlineBadge']; ?></div>
+            <img class="rounded mb-1" src="../media/avatars/<?php echo $post['author']['avatar']; ?>/minres.jpg" alt="User's avatar">
+            <?php echo $post['author']['is_online'] ? $post['author']['is_online_badge'] : ''; ?>
+            <?php echo $post['author']['account_type_badge'] ?? ''; ?>
+            <?php echo $post['author']['account_standing_badge'] ?? ''; ?>
         </div>
 
         <div class="d-flex flex-column" style="flex: 1;">
             <div class="mb-2">
                 <p class="post-displayname d-flex align-items-center justify-content-between font-weight-bold mb-0">
-                    <a href="profile.php?u=<?php echo $post['user_id']; ?>" data-toggle="tooltip" data-html="true" title="<?php echo $usernameTooltip; ?>">
-                        <?php echo htmlspecialchars($post['display_name']); ?>
+                    <a href="profile.php?u=<?php echo $post['author']['id']; ?>" data-toggle="tooltip" data-html="true" title="<?php echo $post['author']['tooltip']; ?>">
+                        <?php echo $post['author']['display_name']; ?>
                     </a>
                     <small class="d-none d-md-inline-block text-muted" data-toggle="tooltip" style="cursor: help;" title="<?php echo $post['datetime'] . ' (UTC)'; ?>">
-                        <?php echo $post['datetimeInterval']; ?>
+                        <?php echo $post['datetime_interval']; ?>
                     </small>
                 </p>
                 <p class="d-block d-md-none mb-0">
                     <small class="text-muted" data-toggle="tooltip" style="cursor: help;" title="<?php echo $post['datetime'] . ' (UTC)'; ?>">
-                        <i class="d-none d-lg-inline fa fa-clock-o pr-1"></i> <?php echo $post['datetimeInterval']; ?>
+                        <i class="d-none d-lg-inline fa fa-clock-o pr-1"></i> <?php echo $post['datetime_interval']; ?>
                     </small>
                 </p>
             </div>
@@ -119,7 +36,7 @@ foreach ($listPosts as $post) {
                 <div>
                     <?php
                     if ($post['content'] != NULL) {
-                        echo $wasEdited ? '<div><small class="font-weight-bold text-dark" style="opacity: .5;">Post has been edited' . $editCounterString . '.</small></div>' : '';
+                        echo $post['was_edited'] ? '<div><small class="font-weight-bold text-dark" style="opacity: .5;">Post has been edited' . $post['edit_count_string'] . '.</small></div>' : '';
                         echo '<span class="post-content-text">' . $utilities->doEscapeString($post['content']) . '</span>';
                     } else {
                     ?>
@@ -150,7 +67,7 @@ foreach ($listPosts as $post) {
             <div class="d-flex post-actions" data-postid="<?php echo $post['id']; ?>">
                 <?php
                 // Display not active like button if user has not liked a post
-                if (!$post['hasLiked']) {
+                if (!$post['current_user_liked']) {
                 ?>
                 <button type="button" class="btn btn-outline-secondary btn-sm btn-postlike mr-1" data-postid="<?php echo $post['id']; ?>" data-hasliked="false">
                     <span class="d-inline-block" style="width: 14px; height: 12px; text-align: center;">
@@ -185,7 +102,7 @@ foreach ($listPosts as $post) {
 
                     <?php
                     // Display edit history for posts that have been edited at least once
-                    if ($wasEdited) {
+                    if ($post['was_edited']) {
                     ?>
                     <button class="dropdown-item btn-postedithistory" type="button" role="button" data-toggle="modal" data-target="#mainModal" data-postid="<?php echo $post['id']; ?>" disabled>
                         <div class="d-flex align-items-center" style="font-size: .875em;">
@@ -199,7 +116,7 @@ foreach ($listPosts as $post) {
 
                     <?php
                     // Display editing tools only for post author
-                    if ($post['ownPost'] && $post['type'] == 1) {
+                    if ($post['is_current_user_author'] && $post['type'] == 1) {
                     ?>
                     <button class="dropdown-item btn-postedit" type="button" role="button" data-toggle="modal" data-target="#mainModal" data-postid="<?php echo $post['id']; ?>">
                         <div class="d-flex align-items-center" style="font-size: .875em;">
@@ -229,14 +146,14 @@ foreach ($listPosts as $post) {
 
                     <?php
                     // Display moderate section only for moderators
-                    if ($loggedModerator && !$post['ownPost'] && $post['type'] == 1) {
+                    if ($loggedModerator && !$post['is_current_user_author'] && $post['type'] == 1) {
                     ?>
                     <h6 class="dropdown-header" style="font-size: .813rem;">Moderate</h6>
 
                     <button class="dropdown-item btn-deletepost" type="button" role="button" data-postid="<?php echo $post['id']; ?>" data-moderate="true">
                         <div class="d-flex align-items-center" style="font-size: .875em;">
-                            <i class="fa fa-ban" aria-hidden="true"></i>
-                            <span class="text-right" style="flex: 1;">Delete</span>
+                            <i class="fa fa-ban" style="margin-right: 12px;" aria-hidden="true"></i>
+                            <span style="flex: 1;">Delete</span>
                         </div>
                     </button>
                     <?php
@@ -254,8 +171,8 @@ foreach ($listPosts as $post) {
 
         <div class="d-flex flex-column" style="flex: 1;">
             <!-- Display post likes string if any like exists -->
-            <div class="<?php echo empty($likesString) ? 'd-none' : 'd-block'; ?> pt-3 post-likes">
-                <small class="post-likes-string"><?php echo $likesString ?? ''; ?></small>
+            <div class="<?php echo empty($post['string_likes']) ? 'd-none' : 'd-block'; ?> pt-3 post-likes">
+                <small class="post-likes-string"><?php echo $post['string_likes'] ?? ''; ?></small>
             </div>
         </div>
     </div>
@@ -267,19 +184,19 @@ foreach ($listPosts as $post) {
 
         <div class="d-flex flex-column" style="flex: 1;">
             <!-- Display post comments if any exists -->
-            <div class="pt-2" id="post-comments-wrapper" style="<?php echo $commentsAmount ? '' : 'display: none;'; ?>">
+            <div class="pt-2" id="post-comments-wrapper" style="<?php echo $post['amount_comments'] ? '' : 'display: none;'; ?>">
                 <?php
-                if ($commentsAmount > 2) {
-                    $lastCommentID = $comments[0]['id'];
-                    $commentsShown = count($comments);
+                if ($post['amount_comments'] > 2) {
+                    $lastCommentID = $post['array_comments'][0]['id'];
+                    $commentsShown = count($post['array_comments']);
                 ?>
                 <p class="mb-0 text-muted" id="posts-comments-showing-wrapper">
                     <small>
-                        Showing <span class="var-commentsshown"><?php echo $commentsShown; ?></span> of <span class="var-commentsamount"><?php echo $commentsAmount; ?></span> comments.
+                        Showing <span class="var-commentsshown"><?php echo $commentsShown; ?></span> of <span class="var-commentsamount"><?php echo $post['amount_comments']; ?></span> comments.
                         <a href="#" class="btn-loadmorecomments"
                               data-postID="<?php echo $post['id']; ?>"
                               data-lastCommentID="<?php echo $lastCommentID; ?>"
-                              data-commentsAmount="<?php echo $commentsAmount; ?>"
+                              data-commentsAmount="<?php echo $post['amount_comments']; ?>"
                               data-commentsShown="<?php echo $commentsShown; ?>">
                               View more</a>
                     </small>
@@ -291,17 +208,22 @@ foreach ($listPosts as $post) {
                 <div id="post-comments-container-<?php echo $post['id']; ?>">
                     <?php
                     // Display each comment.
-                    if ($commentsAmount) {
-                        foreach ($comments as $comment) {
+                    if ($post['amount_comments']) {
+                        foreach ($post['array_comments'] as $comment) {
+                            // Format comment publish datetime into readable string
+                            $comment['datetime_string'] = $utilities->getDateIntervalString($utilities->countDateInterval($comment['datetime']));
+
+                            // Generate additional details about user or get a cached version of it and add to the array
+                            $comment['author'] = $user->generateUserDetails($comment['user_id']);
                     ?>
 
                     <div class="d-flex py-2 comment-container" id="comment-<?php echo $comment['id']; ?>" data-commentid="<?php echo $comment['id']; ?>">
                         <div class="mr-2">
-                            <img src="../media/avatars/<?php echo $comment['avatar'] ?? 'default'; ?>/minres.jpg" class="rounded" style="display: block; width: 26px; height: 26px;" />
+                            <img src="../media/avatars/<?php echo $comment['author']['avatar'] ?? 'default'; ?>/minres.jpg" class="rounded" style="display: block; width: 26px; height: 26px;" />
                         </div>
                         <div class="mr-2" style="flex: 1;">
                             <small class="d-block pb-1" style="line-height: 1;">
-                                <a href="profile.php?u=<?php echo $comment['user_id']; ?>"><?php echo htmlspecialchars($comment['display_name']); ?></a>
+                                <a href="profile.php?u=<?php echo $comment['author']['id']; ?>" data-toggle="tooltip" data-html="true" title="<?php echo $comment['author']['tooltip']; ?>"><?php echo $utilities->doEscapeString($comment['author']['display_name']); ?></a>
                             </small>
                             <small class="d-block pt-1" style="line-height: 1.4; word-break: break-word;">
                                 <?php echo $utilities->doEscapeString($comment['content']); ?>
@@ -309,7 +231,7 @@ foreach ($listPosts as $post) {
                         </div>
                         <div>
                             <small style="color: #BDBDBD; line-height: 1; vertical-align: top; cursor: help;" data-toggle="tooltip" data-placement="top" title="<?php echo $comment['datetime']; ?> (UTC)">
-                                <?php echo $utilities->getDateIntervalString($utilities->countDateInterval($comment['datetime'])); ?>
+                                <?php echo $comment['datetime_string']; ?>
                             </small>
                         </div>
                     </div>
@@ -340,8 +262,5 @@ foreach ($listPosts as $post) {
 </article>
 
 <?php
-    // Delete likes variables to prevent displaying likes from previous post
-    unset($likes);
-    unset($likesString);
 } // foreach
 ?>

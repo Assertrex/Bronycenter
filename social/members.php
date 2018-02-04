@@ -38,41 +38,40 @@ require('partials/head.php');
                         <?php
                         // Display each member
                         foreach ($members as $member) {
-                            // Check if user is currently logged in
-                            $isOnline = $user->isOnline(null, $member['last_online']);
+                            // Generate additional user details
+                            $member = $user->generateUserDetails($member['id']);
 
-                            if ($isOnline) {
-                                $userOnline = '<span class="badge badge-success mx-2" style="flex: 1;">Online</span>';
-                            } else {
-                                $userOnline = '';
-                            }
-
-                            // Display user badge
-                            switch ($member['account_type']) {
-                                case '9':
-                                    $userBadge = '<span class="badge badge-danger mx-2" style="flex: 1;">Admin</span>';
-                                    break;
-                                case '8':
-                                    $userBadge = '<span class="badge badge-info mx-2" style="flex: 1;">Mod</span>';
-                                    break;
-                                default:
-                                    $userBadge = '';
-                            }
-
-                            // Set user's avatar or get the default one if not existing
-                            $avatar = $member['avatar'] ?? 'default';
+                            // Generate user badges and add them the array with user details
+                            $member = array_merge(
+                                $member,
+                                $utilities->generateUserBadges(
+                                    $member,
+                                    'd-block my-1 badge badge'
+                                )
+                            );
                         ?>
 
                         <a class="d-flex align-items-center p-2 px-lg-3" href="profile.php?u=<?php echo $member['id']; ?>">
                             <div style="width: 64px;">
-                                <img src="../media/avatars/<?php echo $avatar; ?>/minres.jpg" class="rounded" />
+                                <img src="../media/avatars/<?php echo $member['avatar']; ?>/minres.jpg" class="rounded" />
                             </div>
-                            <div class="text-center pl-2 pl-lg-3" style="flex: 1; line-height: 1.1;">
-                                <div><?php echo htmlspecialchars($member['display_name']); ?></div>
-                                <div><small class="text-muted">@<?php echo $member['username']; ?></small></div>
-                                <div<?php if (!empty($userOnline) || !empty($userBadge)) { echo ' class="d-flex mt-2"'; } ?>>
-                                    <?php echo $userBadge; ?> <?php echo $userOnline; ?>
+                            <div class="ml-2" style="width: 64px;">
+                                <?php echo !empty($member['is_online_badge']) ? '<div class="mx-2">' . $member['is_online_badge'] . '</div>' : ''; ?>
+                                <?php echo !empty($member['account_type_badge']) ? '<div class="mx-2">' . $member['account_type_badge'] . '</div>' : ''; ?>
+                                <?php echo !empty($member['account_standing_badge']) ? '<div class="mx-2">' . $member['account_standing_badge'] . '</div>' : ''; ?>
+                            </div>
+                            <div class="text-center pl-2" style="flex: 1; line-height: 1.1;">
+                                <div>
+                                    <?php echo $utilities->doEscapeString($member['display_name']); ?>
                                 </div>
+                                <div>
+                                    <small class="text-muted">@<?php echo $member['username']; ?></small>
+                                </div>
+                                <?php if (!empty($member['short_description'])) { ?>
+                                <div class="mt-2">
+                                    <small>"<?php echo $utilities->doEscapeString($member['short_description']); ?>"</small>
+                                </div>
+                                <?php } // if ?>
                             </div>
                         </a>
 

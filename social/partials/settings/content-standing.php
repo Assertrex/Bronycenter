@@ -8,7 +8,7 @@
             <p class="content-title mb-2">Account standing</p>
             <div>
                 <p class="mb-1">Account type: <?php echo $userDetails['account_type_badge']; ?></p>
-                <p>Current standing: <?php echo $userDetails['account_standing_string']; ?></p>
+                <p>Account standing: <?php echo $userDetails['account_standing_badge']; ?></p>
             </div>
         </div>
 

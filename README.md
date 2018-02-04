@@ -16,9 +16,9 @@ to make my code as much readable as I can.
 
 ## Security
 If you really want to use this code, please, don't forget to secure
-/system/config/settings.ini from remote access if you're using Nginx.
+**/system/config/settings.ini** from remote access if you're using Nginx.
 
-##### Nginx
+#### Nginx
 Add code below to this file (inside server block):
 /etc/nginx/sites-available/[name-of-your-website]
 
@@ -29,4 +29,5 @@ location /system/config/ {
 }
 ```
 
-If you're using Apache, then *.htaccess* file will do that for you (added in commit 48).
+#### Apache
+You don't have to add anything, as *.htaccess* file will do that for you (added in commit 48).

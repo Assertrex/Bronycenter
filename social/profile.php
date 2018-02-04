@@ -18,7 +18,7 @@ if (empty($profileId)) {
 }
 
 // Get details about selected user
-$profileDetails = $user->getUserDetails($profileId);
+$profileDetails = $user->generateUserDetails($profileId, ['descriptions' => true]);
 
 // Redirect if user has not been found
 if (empty($profileDetails)) {
@@ -26,75 +26,14 @@ if (empty($profileDetails)) {
     $utilities->redirect('members.php');
 }
 
-// Check if user is currently logged in
-$isOnline = $user->isOnline(null, $profileDetails['last_online']);
-
-if ($isOnline) {
-    $userOnline = '<span class="badge badge-success mx-1">Online</span>';
-} else {
-    $userOnline = '';
-}
-
-// Display user badge
-switch ($profileDetails['account_type']) {
-    case '9':
-        $userBadge = '<span class="badge badge-danger mx-1">Admin</span>';
-        break;
-    case '8':
-        $userBadge = '<span class="badge badge-info mx-1">Mod</span>';
-        break;
-    default:
-        $userBadge = '';
-}
-
-// Set user's avatar or get the default one if not existing
-$avatar = $profileDetails['avatar'] ?? 'default';
-
-// Name gender types
-switch ($profileDetails['gender']) {
-    case 1:
-        $profileDetails['gender'] = 'Male';
-        break;
-    case 2:
-        $profileDetails['gender'] = 'Female';
-        break;
-    default:
-        $profileDetails['gender'] = '';
-}
-
-// Format birthdate if available
-if (!is_null($profileDetails['birthdate'])) {
-    $current_date = new DateTime();
-    $age_interval = new DateTime($profileDetails['birthdate']);
-    $age_interval = $current_date->diff($age_interval);
-    $profileDetails['birthdate'] = $age_interval->format('%y years old');
-}
-
-// Format activity datetimes
-$registeredAt = $utilities->getDateIntervalString($utilities->countDateInterval($profileDetails['registration_datetime']));
-$lastOnlineAt = $utilities->getDateIntervalString($utilities->countDateInterval($profileDetails['last_online']));
-
-// Get a full name of user's country
-$countryName = $utilities->getCountryName($profileDetails['country_code']);
-
-// Check if additional tabs should be displayed
-$anyAbout = !empty($profileDetails['full_description']) || !empty($profileDetails['contact_methods']) ||
-            !empty($profileDetails['favourite_music']) || !empty($profileDetails['favourite_movies']) ||
-            !empty($profileDetails['favourite_games']);
-$anyFandom = !empty($profileDetails['fandom_becameabrony']) || !empty($profileDetails['fandom_favouritepony']);
-$anyCreations = !empty($profileDetails['creations_links']);
-
-// Store recent display names
-$recentDisplaynamesArray = explode(',', $profileDetails['displayname_recent']);
-$recentDisplaynames = '';
-
-if ($recentDisplaynamesArray[0] != '') {
-    foreach ($recentDisplaynamesArray as $recentDisplayname) {
-        $recentDisplaynames .= '<div style=\'line-height: 1.2;\'><small>' . $recentDisplayname . '</small></div>';
-    }
-}
-
-// $recentDisplaynames = str_replace(',', '<br />', $profileDetails['displayname_recent']);
+// Generate user badges and add them the array with user details
+$profileDetails = array_merge(
+    $profileDetails,
+    $utilities->generateUserBadges(
+        $profileDetails,
+        'mx-1 badge badge'
+    )
+);
 
 // Page settings
 $pageTitle = 'Profile :: BronyCenter';
@@ -120,7 +59,7 @@ require('partials/head.php');
     require('../system/partials/header-social.php');
     ?>
 
-    <div class="container <?php echo $loggedIn ?: 'guest'; ?>">
+    <div class="container <?php echo $profileDetails['is_online'] ?: 'guest'; ?>">
         <?php
         // Include system messages if any exists
         require('../system/partials/flash.php');
@@ -129,16 +68,20 @@ require('partials/head.php');
         <div class="row">
             <aside class="col-12 col-lg-4">
                 <section class="fancybox text-center p-4 mt-0">
-                    <img src="../media/avatars/<?php echo $avatar; ?>/defres.jpg" class="rounded mb-3">
+                    <img src="../media/avatars/<?php echo $profileDetails['avatar']; ?>/defres.jpg" class="rounded mb-3">
 
-                    <?php if (!empty($recentDisplaynames)) { ?>
-                    <h5 class="mb-0" style="cursor: help;" data-toggle="tooltip" data-html="true" title="<div class='my-1'>Previous display name:</div><div class='mb-2' style='color: #BDBDBD;'><?php echo htmlspecialchars($recentDisplaynames); ?></div>"><?php echo htmlspecialchars($profileDetails['display_name']); ?></h5>
+                    <?php if (!empty($profileDetails['recent_displaynames_divs'])) { ?>
+                    <h5 class="mb-0" style="cursor: help;" data-toggle="tooltip" data-html="true" title="<div class='my-1'>Previous display name:</div><div class='mb-2' style='color: #BDBDBD;'><?php echo $utilities->doEscapeString($profileDetails['recent_displaynames_divs']); ?></div>"><?php echo $utilities->doEscapeString($profileDetails['display_name']); ?></h5>
                     <?php } else { ?>
-                    <h5 class="mb-0"><?php echo htmlspecialchars($profileDetails['display_name']); ?></h5>
+                    <h5 class="mb-0"><?php echo $utilities->doEscapeString($profileDetails['display_name']); ?></h5>
                     <?php } ?>
 
                     <p class="mb-0 text-muted" style="margin-top: -2px;"><small>@<?php echo $profileDetails['username']; ?></small></p>
-                    <p class="mb-0 mt-2"><?php echo $userOnline; ?><?php echo $userBadge; ?></p>
+                    <p class="mb-0 mt-2">
+                        <?php echo $profileDetails['is_online_badge']; ?>
+                        <?php echo $profileDetails['account_type_badge'] ?? ''; ?>
+                        <?php echo $profileDetails['account_standing_badge'] ?? ''; ?>
+                    </p>
 
                     <?php if (!empty($profileDetails['short_description'])) { ?>
                     <p class="mt-3 mb-0" style="font-size: 90%; line-height: 1.4;">
@@ -155,14 +98,14 @@ require('partials/head.php');
                             <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="Location">
                                 <i class="fa fa-map-marker text-primary" aria-hidden="true"></i>
                             </span>
-                            <?php echo $profileDetails['city'] ? $profileDetails['city'] . ', ' : ''; ?><?php echo $countryName ?? 'Unknown'; ?>
+                            <?php echo $profileDetails['city'] ? $utilities->doEscapeString($profileDetails['city']) . ', ' : ''; ?><?php echo $profileDetails['country_name']; ?>
                         </p>
                         <?php if (!empty($profileDetails['gender'])) { ?>
                         <p class="mb-0">
                             <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="Gender">
                                 <i class="fa fa-transgender text-primary" aria-hidden="true"></i>
                             </span>
-                            <?php echo $profileDetails['gender']; ?>
+                            <?php echo $profileDetails['gender_name']; ?>
                         </p>
                         <?php } // if ?>
                         <?php if (!empty($profileDetails['birthdate'])) { ?>
@@ -170,20 +113,20 @@ require('partials/head.php');
                             <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="Age">
                                 <i class="fa fa-user-o text-primary" aria-hidden="true"></i>
                             </span>
-                            <?php echo $profileDetails['birthdate']; ?>
+                            <?php echo $profileDetails['birthdate_years']; ?>
                         </p>
                         <?php } // if ?>
                         <p class="mb-0">
                             <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="Account created">
                                 <i class="fa fa-address-book-o text-primary" aria-hidden="true"></i>
                             </span>
-                            <span style="cursor: help;" data-toggle="tooltip" data-placement="top" title="<?php echo $profileDetails['registration_datetime']; ?> (UTC)"><?php echo $registeredAt; ?></span>
+                            <span style="cursor: help;" data-toggle="tooltip" data-placement="top" title="<?php echo $profileDetails['registration_datetime']; ?> (UTC)"><?php echo $profileDetails['registration_interval']; ?></span>
                         </p>
                         <p class="mb-0">
                             <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="Last seen">
                                 <i class="fa fa-clock-o text-primary" aria-hidden="true"></i>
                             </span>
-                            <span style="cursor: help;" data-toggle="tooltip" data-placement="top" title="<?php echo $profileDetails['last_online']; ?> (UTC)"><?php echo $isOnline ? 'Just now ' : $lastOnlineAt; ?></span>
+                            <span style="cursor: help;" data-toggle="tooltip" data-placement="top" title="<?php echo $profileDetails['last_online']; ?> (UTC)"><?php echo $profileDetails['is_online'] ? 'Just now ' : $profileDetails['last_online_interval']; ?></span>
                         </p>
                     </div>
                 </section>
@@ -199,9 +142,9 @@ require('partials/head.php');
 
             <div class="col-12 col-lg-8">
                 <section class="fancybox my-0" id="aside-wrapper">
-                    <?php if ($anyAbout || $anyFandom || $anyCreations) { ?>
+                    <?php if ($profileDetails['filled_about'] || $profileDetails['filled_fandom'] || $profileDetails['filled_creations']) { ?>
                     <ul class="nav nav-tabs" id="aside-tabs">
-                        <?php if ($anyAbout) { ?>
+                        <?php if ($profileDetails['filled_about']) { ?>
                         <li class="nav-item">
                             <a class="nav-link" id="aside-tab-about" href="#about">About</a>
                         </li>
@@ -209,12 +152,12 @@ require('partials/head.php');
                         <li class="nav-item">
                             <a class="nav-link active" id="aside-tab-posts" href="#posts">Posts</a>
                         </li>
-                        <?php if ($anyFandom) { ?>
+                        <?php if ($profileDetails['filled_fandom']) { ?>
                         <li class="nav-item">
                             <a class="nav-link" id="aside-tab-fandom" href="#fandom">Fandom</a>
                         </li>
                         <?php } // if ?>
-                        <?php if ($anyCreations) { ?>
+                        <?php if ($profileDetails['filled_creations']) { ?>
                         <li class="nav-item">
                             <a class="nav-link" id="aside-tab-creations" href="#creations">Creations</a>
                         </li>
@@ -223,7 +166,7 @@ require('partials/head.php');
                     <?php } // if ?>
 
                     <div id="aside-tabs-content">
-                        <?php if ($anyAbout) { ?>
+                        <?php if ($profileDetails['filled_about']) { ?>
                         <div id="aside-about" style="display: none;">
                             <h6 class="text-center mb-0">About</h6>
 
@@ -277,7 +220,7 @@ require('partials/head.php');
                             </div>
                         </div>
 
-                        <?php if ($anyFandom) { ?>
+                        <?php if ($profileDetails['filled_fandom']) { ?>
                         <div id="aside-fandom" style="display: none;">
                             <h6 class="text-center mb-0">Fandom</h6>
 
@@ -306,7 +249,7 @@ require('partials/head.php');
                         </div>
                         <?php } // if ?>
 
-                        <?php if ($anyCreations) { ?>
+                        <?php if ($profileDetails['filled_creations']) { ?>
                         <div id="aside-creations" style="display: none;">
                             <h6 class="text-center mb-0">Creations</h6>
 

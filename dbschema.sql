@@ -105,7 +105,7 @@ CREATE TABLE `users` (
   `account_standing` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
   `suggestion_points` smallint(5) UNSIGNED NOT NULL DEFAULT '0',
   `displayname_changes` tinyint(3) UNSIGNED NOT NULL,
-  `displayname_recent` varchar(162) DEFAULT NULL
+  `displaynames_recent` varchar(162) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `users_details` (

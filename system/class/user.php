@@ -8,6 +8,7 @@
 
 namespace BronyCenter;
 
+use DateTime;
 use BronyCenter\Database;
 use BronyCenter\Flash;
 use BronyCenter\Utilities;
@@ -49,6 +50,13 @@ class User
      * @since Release 0.1.0
      */
     private $validator = null;
+
+    /**
+     * Place for array containing users details
+     *
+     * @since Release 0.1.0
+     */
+    private $users_details = [];
 
     /**
      * Get instances of required classes
@@ -110,12 +118,12 @@ class User
      * Get all active registered members ordered by last seen time
      *
      * @since Release 0.1.0
-     * @return array Array of active registered members
+     * @return array Array of active registered members ID's
      */
     public function getMembersList()
     {
         $members = $this->database->read(
-            'id, display_name, username, last_online, avatar, account_type',
+            'id',
             'users',
             'WHERE account_type != 0 AND account_standing NOT IN (8, 9) ORDER BY last_online DESC',
             []
@@ -125,36 +133,175 @@ class User
     }
 
     /**
-     * Get all active registered members by last seen time
+     * Get details about selected user and generate additional informations
      *
      * @since Release 0.1.0
-     * @var integer ID of a user
-     * @return array Array of user details
+     * @var integer $id ID of a user
+     * @var array $settings Select which data should be fetched
+     * @return array Contains user details
      */
-    public function getUserDetails($id)
+    public function getUserDetails($id, $settings = [])
     {
+        // Start with default SQL columns and joins
+        $sql_columns = 'u.id, u.display_name, u.username, u.registration_datetime, u.login_datetime, ' .
+                       'u.last_online, u.country_code, u.timezone, u.avatar, u.account_type, d.short_description, ' .
+                       'u.account_standing, d.birthdate, d.gender, d.city, u.displayname_changes, u.displaynames_recent';
+        $sql_additional = 'INNER JOIN users_details d ON u.id = d.user_id';
+
+        // Add user's statistics to the columns (usually used for statistics)
+        if (!empty($settings['statistics'])) {
+            $sql_columns .= ', user_points, posts_created, posts_likes_given, posts_comments_given, ' .
+                            'posts_deleted, posts_likes_received, posts_comments_receved';
+            $sql_additional .= ' INNER JOIN users_statistics s ON u.id = s.user_id';
+        }
+
+        // Add user's descriptions to the columns (usually used for profiles and settings)
+        if (!empty($settings['descriptions'])) {
+            $sql_columns .= ', d.full_description, d.contact_methods, ' .
+                            'd.favourite_music, d.favourite_movies, d.favourite_games, d.fandom_becameabrony, ' .
+                            'd.fandom_favouritepony, d.fandom_favouriteepisode, d.creations_links';
+        }
+
+        // Add user's more sensitive details (usually used for settings)
+        if (!empty($settings['sensitive']) && $id == $_SESSION['account']['id']) {
+            $sql_columns .= ', u.email, u.registration_ip, u.login_ip, u.login_count';
+        }
+
         // Get details about user from database
         $user = $this->database->read(
-			'u.id, u.display_name, u.username, u.email, u.registration_ip,' .
-            'u.registration_datetime, u.login_ip, u.login_datetime, u.login_count,' .
-            'u.last_online, u.country_code, u.timezone, u.avatar, u.account_type,' .
-            'u.account_standing, u.displayname_changes, u.displayname_recent, d.birthdate, d.gender, d.city, d.short_description,' .
-            'd.full_description, d.contact_methods, d.favourite_music, d.favourite_movies,' .
-            'd.favourite_games, d.fandom_becameabrony, d.fandom_favouritepony, d.fandom_favouriteepisode,' .
-            'd.creations_links',
+			$sql_columns,
 			'users u',
-			'INNER JOIN users_details d ON u.id = d.user_id WHERE u.id = ?',
-			[$id],
+			$sql_additional . ' WHERE u.id = ?',
+			[intval($id)],
             false
 		);
 
-        // Return false if user has not been found
+        // Return false if user does not exist
         if (empty($user)) {
             return false;
         }
 
         // Return details about selected user
         return $user;
+    }
+
+    /**
+     * Generate additional details about selected user
+     *
+     * @since Release 0.1.0
+     * @var integer $id ID of a user
+     * @var array $settings Select which data should be fetched (from getUsersDetails method)
+     * @return array Contains user details with additional details
+     */
+    public function generateUserDetails($id, $settings = [])
+    {
+        // Get integer from user's ID and return false if ID is not valid
+        if (empty($id = intval($id))) {
+            return false;
+        }
+
+        // Get cached version of user's details if available
+        if (!empty($this->users_details[$id])) {
+            return $this->users_details[$id];
+        }
+
+        // Get details about user if no have been fetched
+        $details = $this->getUserDetails($id, $settings);
+
+        // Return false if user have not been found
+        if (empty($details)) {
+            return false;
+        }
+
+        // Check if user is currently logged in
+        $details['is_online'] = $this->isOnline(null, $details['last_online']);
+
+        // Set user's avatar as default if user haven't uploaded any
+        $details['avatar'] = $details['avatar'] ?? 'default';
+
+        // Name gender types
+        switch ($details['gender']) {
+            case 1:
+                $details['gender_name'] = 'Male';
+                break;
+            case 2:
+                $details['gender_name'] = 'Female';
+                break;
+            default:
+                $details['gender_name'] = 'Unknown';
+        }
+
+        // Format birthdate if available
+        if (!is_null($details['birthdate'])) {
+            $current_date = new DateTime();
+            $age_interval = new DateTime($details['birthdate']);
+            $age_interval = $current_date->diff($age_interval);
+            $details['birthdate_years'] = $age_interval->format('%y years old');
+        }
+
+        // Format activity datetimes
+        if (!is_null($details['registration_datetime'])) {
+            $details['registration_interval'] = $this->utilities->getDateIntervalString($this->utilities->countDateInterval($details['registration_datetime']));
+        }
+        if (!is_null($details['last_online'])) {
+            $details['last_online_interval'] = $this->utilities->getDateIntervalString($this->utilities->countDateInterval($details['last_online']));
+        }
+
+        // Get a full name of user's country
+        if (!is_null($details['country_code'])) {
+            $details['country_name'] = $this->utilities->getCountryName($details['country_code']) ?? 'Unknown';
+        }
+
+        // Check if additional tabs should be displayed
+        $details['filled_about']     = !empty($details['full_description']) || !empty($details['contact_methods']) ||
+                                       !empty($details['favourite_music']) || !empty($details['favourite_movies']) ||
+                                       !empty($details['favourite_games']);
+        $details['filled_fandom']    = !empty($details['fandom_becameabrony']) || !empty($details['fandom_favouritepony']);
+        $details['filled_creations'] = !empty($details['creations_links']);
+
+        // Store recent display names
+        $recentDisplaynamesArray = explode(',', $details['displaynames_recent']);
+        $details['recent_displaynames_divs'] = '';
+
+        if ($recentDisplaynamesArray[0] != '') {
+            foreach ($recentDisplaynamesArray as $recentDisplayname) {
+                $details['recent_displaynames_divs'] .= '<div style=\'line-height: 1.2;\'><small>' . $recentDisplayname . '</small></div>';
+            }
+        }
+
+        // Store user details in an tooltip
+        $details['tooltip'] = '
+        <div style=\'padding: .5rem .25rem; line-height: 1.2;\'>
+            <div>' . $this->utilities->doEscapeString($details['display_name']) . '</div>
+            <div><small class=\'text-muted\'>@' . $this->utilities->doEscapeString($details['username']) . '</small></div>
+
+            <div style=\'padding-top: 8px; text-align: left;\'>
+                <div style=\'margin-bottom: 1px;\'>
+                    <span class=\'text-center mr-1\' style=\'width: 15px;\'>
+                        <i class=\'fa fa-transgender text-primary\' style=\'width: 15px;\' aria-hidden=\'true\'></i>
+                    </span>
+                    <small>' . ($details['gender'] ? $details['gender_name'] : 'Unknown gender') . '</small>
+                </div>
+                <div style=\'margin-bottom: 1px;\'>
+                    <span class=\'text-center mr-1\' style=\'width: 15px;\'>
+                        <i class=\'fa fa-user-o text-primary\' style=\'width: 15px;\' aria-hidden=\'true\'></i>
+                    </span>
+                    <small>' . ($details['birthdate_years'] ?? 'Unknown age') . '</small>
+                </div>
+                <div>
+                    <span class=\'text-center mr-1\' style=\'width: 15px;\'>
+                        <i class=\'fa fa-map-marker text-primary\' style=\'width: 15px;\' aria-hidden=\'true\'></i>
+                    </span>
+                    <small>' . ($details['country_name'] ?? 'Unknown country') . '</small>
+                </div>
+            </div>
+        </div>
+        ';
+
+        // Cache user details
+        $this->users_details[$id] = $details;
+
+        return $details;
     }
 
     /**
