@@ -1,4 +1,5 @@
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -86,6 +87,16 @@ CREATE TABLE `posts_likes` (
   `active` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE `posts_reported` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `post_id` int(10) UNSIGNED NOT NULL,
+  `user_id` int(10) UNSIGNED NOT NULL,
+  `category` tinyint(3) UNSIGNED NOT NULL,
+  `reason` tinytext,
+  `datetime` datetime NOT NULL,
+  `result` tinyint(3) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE `users` (
   `id` int(10) UNSIGNED NOT NULL,
   `display_name` varchar(32) NOT NULL,
@@ -167,6 +178,9 @@ ALTER TABLE `posts_edits`
 ALTER TABLE `posts_likes`
   ADD PRIMARY KEY (`id`);
 
+ALTER TABLE `posts_reported`
+  ADD PRIMARY KEY (`id`);
+
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `username` (`username`),
@@ -200,6 +214,8 @@ ALTER TABLE `posts_comments`
 ALTER TABLE `posts_edits`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 ALTER TABLE `posts_likes`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE `posts_reported`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 ALTER TABLE `users`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;

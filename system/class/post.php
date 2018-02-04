@@ -278,6 +278,107 @@ class Post
     }
 
     /**
+     * [NEW METHOD STYLE] + [PENDING FEATURES]
+     * Report a post that should be removed
+     *
+     * @since Release 0.1.0
+     * @var integer $id ID of a reported post
+     * @var string $category Selected reason category of a report
+     * @var string|null $reason Additional message to the moderators
+     * @return boolean|array Returns true or an array of errors
+     */
+    public function doReport($id, $category, $reason = '')
+    {
+        // Define an array for holding error messages
+        $method_errors = [];
+
+        // Allow post reporting only to the users without account restrictions
+        if ($_SESSION['account']['standing'] != 0) {
+            $method_errors[] = 'You\'re not allowed to report a post. Check your account standing in settings.';
+            $this->flash->error($method_errors[0]);
+
+            return $method_errors;
+        }
+
+        // Change post ID from string to the integer
+        $id = intval($id);
+
+        // Check if post ID is an valid integer (higher than 0)
+        if (empty($id)) {
+            $method_errors[] = 'Post could not be reported as it\'s ID number is not valid.';
+            $this->flash->error($method_errors[0]);
+
+            return $method_errors;
+        }
+
+        // Search for a selected post
+        $post_status = $this->database->read(
+            'status',
+            'posts',
+            'WHERE id = ?',
+            [$id],
+            false
+        );
+
+        // Check if post have been found
+        if (empty($post_status)) {
+            $method_errors[] = 'Post could not be reported because it\'s ID number does not exist.';
+            $this->flash->error($method_errors[0]);
+
+            return $method_errors;
+        }
+
+        // Check if post is still available
+        if ($post_status['status'] != 0) {
+            $method_errors[] = 'Post could not be reported because it has been already suspended or removed.';
+            $this->flash->error($method_errors[0]);
+
+            return $method_errors;
+        }
+
+        // Search if user has already reported this post
+        $post_reported = $this->database->read(
+            'id',
+            'posts_reported',
+            'WHERE post_id = ? AND user_id = ?',
+            [$id, $_SESSION['account']['id']],
+            false
+        );
+
+        // Check if user has already reported this post
+        if (!empty($post_reported)) {
+            $method_errors[] = 'You can report a post only once.';
+            $this->flash->error($method_errors[0]);
+
+            return $method_errors;
+        }
+
+        // Report a post if all above conditions have been met
+        $report_created = $this->database->create(
+            'post_id, user_id, category, reason, datetime',
+            'posts_reported',
+            '',
+            [$id, $_SESSION['account']['id'], $category ?? 0, $reason ?? null, $this->utilities->getDatetime()]
+        );
+
+        // Check if post has been successfully reported
+        if (empty($report_created)) {
+            $method_errors[] = 'Post could not be reported due to an unknown error.';
+            $this->flash->error($method_errors[0]);
+
+            return $method_errors;
+        }
+
+        // TODO Send an e-mail to the administrator about a post to review
+        // TODO Send an e-mail to the moderators that agreed to receive this type of emails
+        // TODO Send an e-mail only once for a post
+
+        // Return an successful notification
+        $this->flash->success('Thank you for helping us with keeping BronyCenter safe. Moderators will receive a notification to review a post that you have reported.');
+        return true;
+    }
+
+    /**
      * Get selected post/posts
      *
      * @since Release 0.1.0

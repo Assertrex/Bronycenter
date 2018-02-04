@@ -145,9 +145,9 @@ foreach ($listPosts as $post) {
                     <?php
                     } else {
                     ?>
-                    <button class="dropdown-item disabled" type="button" role="button" disabled>
+                    <button class="dropdown-item btn-showreportmodal" type="button" role="button" data-toggle="modal" data-target="#mainModal" data-postid="<?php echo $post['id']; ?>">
                         <div class="d-flex align-items-center" style="font-size: .875em;">
-                            <i class="fa fa-exclamation-triangle" style="margin-right: 12px;" aria-hidden="true"></i>
+                            <i class="fa fa-flag-o" style="margin-right: 12px;" aria-hidden="true"></i>
                             <span style="flex: 1;">Report</span>
                         </div>
                     </button>

@@ -465,6 +465,56 @@ require('partials/head.php');
         });
     }
 
+    // Listen to a post report show modal button
+    function listenToPostsReportShowModalButton(containerName) {
+        $(containerName + ' .btn-showreportmodal').click((e) => {
+            let postID = e.currentTarget.getAttribute('data-postid');
+
+            displayModal(
+                'Report a post',
+                `
+                <div class="form-group">
+                    <label for="">Why do you think that this post shouldn't be here?</label>
+                    <select class="form-control" id="input-post-report-category">
+                        <option value="0" selected>Not selected / Other reason</option>
+                        <option value="1">NSFW (sexual content)</option>
+                        <option value="2">Hate speech or trolling</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="input-post-report-reason">Write a message to the moderators <small class="text-muted">(optional)</small></label>
+                    <textarea class="form-control" id="input-post-report-reason" maxlength="255"></textarea>
+                </div>
+                `,
+                '<button type="button" class="btn btn-danger" id="btn-postreportconfirm" data-dismiss="modal" data-postid="' + postID + '">Report</button>' +
+                '<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>'
+            );
+
+            // Listen for an apply button click
+            $('#mainModal #btn-postreportconfirm').click((e) => {
+                let postID = e.currentTarget.getAttribute('data-postid');
+                let category = $('#mainModal #input-post-report-category').val();
+                let reason = $('#mainModal #input-post-report-reason').val();
+
+                // Send a new post content
+                $.post("ajax/doPostReport.php", { id: postID, category: category, reason: reason }, function(response) {
+                    let result;
+
+                    // Try to parse a JSON
+                    try {
+                        result = JSON.parse(response);
+                    } catch (e) {
+                        showFlashMessages();
+                        return false;
+                    }
+
+                    showFlashMessages();
+                    return true;
+                });
+            });
+        });
+    }
+
     // Function used to bind all listeners to a selected posts container
     function bindListeners(containerName) {
         listenToPostsLikeButton(containerName);
@@ -473,6 +523,7 @@ require('partials/head.php');
         listenToPostsMoreCommentsButton(containerName);
         listenToPostsEditButton(containerName);
         listenToPostsDeleteButton(containerName);
+        listenToPostsReportShowModalButton(containerName);
 
         // Add tooltips to the new container
         if (containerName != '#posts-list') {
