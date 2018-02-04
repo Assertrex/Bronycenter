@@ -52,8 +52,19 @@ foreach ($listPosts as $post) {
                                      '<span class="post-content-text">Has created a new account. Welcome our new member!</span>';
                                 break;
                             case '11':
-                                echo '<small style="opacity: .6;"><i class="fa fa-address-book-o text-dark mr-1" aria-hidden="true"></i></small> ' .
-                                     '<span class="post-content-text">Has changed his/her display name.</span>';
+                                echo '<small style="opacity: .6;"><i class="fa fa-address-book-o text-dark mr-1" aria-hidden="true"></i></small> ';
+
+                                // Different message depending on user's gender
+                                switch ($post['author']['gender']) {
+                                    case '1':
+                                        echo '<span class="post-content-text">Has changed his display name.</span>';
+                                    break;
+                                    case '2':
+                                        echo '<span class="post-content-text">Has changed her display name.</span>';
+                                    break;
+                                    default:
+                                        echo '<span class="post-content-text">Has changed his/her display name.</span>';
+                                }
                                 break;
                             default:
                                 echo '<small style="opacity: .6;"><i class="fa fa-question-circle-o text-dark mr-1" aria-hidden="true"></i></small> ' .
