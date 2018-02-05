@@ -18,19 +18,28 @@ $commentsAmount = count($comments);
 
 // Display each comment
 foreach ($comments as $comment) {
+    // Format comment publish datetime into readable string
+    $comment['datetime_string'] = $utilities->getDateIntervalString($utilities->countDateInterval($comment['datetime']));
+
+    // Generate additional details about user or get a cached version of it and add to the array
+    $comment['author'] = $user->generateUserDetails($comment['user_id']);
 ?>
 
-<div class="d-flex align-items-center pt-2 comment-container" id="comment-<?php echo $comment['id']; ?>" data-commentid="<?php echo $comment['id']; ?>" data-fetchamount="<?php echo $commentsAmount; ?>">
-    <div>
-        <img src="../media/avatars/<?php echo $comment['avatar'] ?? 'default'; ?>/minres.jpg" class="rounded" style="display: block; width: 26px; height: 26px;" />
+<div class="d-flex py-2 comment-container" id="comment-<?php echo $comment['id']; ?>" data-commentid="<?php echo $comment['id']; ?>" data-fetchamount="<?php echo $commentsAmount; ?>">
+    <div class="mr-2">
+        <img src="../media/avatars/<?php echo $comment['author']['avatar'] ?? 'default'; ?>/minres.jpg" class="rounded" style="display: block; width: 26px; height: 26px;" />
     </div>
-    <div class="ml-2" style="line-height: 1.4;">
-        <small class="d-block">
-            <a href="profile.php?u=<?php echo $comment['user_id']; ?>"><?php echo htmlspecialchars($comment['display_name']); ?></a>
-            <span class="ml-1"><?php echo htmlspecialchars($comment['content']); ?></span>
+    <div class="mr-2" style="flex: 1;">
+        <small class="d-block pb-1" style="line-height: 1;">
+            <a href="profile.php?u=<?php echo $comment['author']['id']; ?>" data-toggle="tooltip" data-html="true" title="<?php echo $comment['author']['tooltip']; ?>"><?php echo $utilities->doEscapeString($comment['author']['display_name']); ?></a>
         </small>
-        <small class="d-inline-block text-muted" style="cursor: help;" data-toggle="tooltip" data-placement="top" title="<?php echo $comment['datetime']; ?> (UTC)">
-            <?php echo $utilities->getDateIntervalString($utilities->countDateInterval($comment['datetime'])); ?>
+        <small class="d-block pt-1" style="line-height: 1.4; word-break: break-word;">
+            <?php echo $utilities->doEscapeString($comment['content']); ?>
+        </small>
+    </div>
+    <div>
+        <small style="color: #BDBDBD; line-height: 1; vertical-align: top; cursor: help;" data-toggle="tooltip" data-placement="top" title="<?php echo $comment['datetime']; ?> (UTC)">
+            <?php echo $comment['datetime_string']; ?>
         </small>
     </div>
 </div>
