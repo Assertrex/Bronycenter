@@ -183,7 +183,7 @@ class Post
         }
 
         // Modify a post in a database
-        $postID = $this->database->update(
+        $postModified = $this->database->update(
             'content, edit_count',
             'posts',
             'WHERE id = ?',
@@ -191,7 +191,7 @@ class Post
         );
 
         // Check if post has been successfully modified
-        if (intval($postID) != 0) {
+        if (intval($postModified) != 0) {
             // Store previous version of a post
             $this->database->create(
                 'post_id, user_id, ip, datetime, content',
@@ -278,7 +278,6 @@ class Post
     }
 
     /**
-     * [NEW METHOD STYLE] + [PENDING FEATURES]
      * Report a post that should be removed
      *
      * @since Release 0.1.0
@@ -507,6 +506,40 @@ class Post
         }
 
         return $postsCount;
+    }
+
+    /**
+    * Get an array with previous versions of a post
+    *
+    * @since Release 0.1.0
+    * @var integer $postID ID of a post
+    * @return array Array containing details about each version of a post
+    */
+    public function getEditHistory($postID)
+    {
+        // Define an array for holding error messages
+        $method_errors = [];
+
+        // Change post ID from string to the integer
+        $postID = intval($postID);
+
+        // Check if post ID is an valid integer (higher than 0)
+        if (empty($postID)) {
+            $method_errors[] = 'Post history can\'t be viewed because post ID number is not valid.';
+            $this->flash->error($method_errors[0]);
+
+            return false;
+        }
+
+        // Get an edit history for a selected post
+        $edit_history = $this->database->read(
+            'id, post_id, user_id, datetime, content, like_count, comment_count',
+            'posts_edits',
+            'WHERE post_id = ?',
+            [$postID]
+        );
+
+        return $edit_history;
     }
 
     /**

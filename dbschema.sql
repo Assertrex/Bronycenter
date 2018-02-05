@@ -51,8 +51,8 @@ CREATE TABLE `posts` (
   `ip` varchar(45) DEFAULT NULL,
   `datetime` datetime NOT NULL,
   `content` text,
-  `like_count` int(11) NOT NULL DEFAULT '0',
-  `comment_count` smallint(5) UNSIGNED NOT NULL DEFAULT '0',
+  `like_count` mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
+  `comment_count` mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
   `edit_count` smallint(5) UNSIGNED NOT NULL DEFAULT '0',
   `type` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
   `status` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
@@ -77,7 +77,9 @@ CREATE TABLE `posts_edits` (
   `user_id` int(10) UNSIGNED NOT NULL,
   `ip` varchar(45) DEFAULT NULL,
   `datetime` datetime NOT NULL,
-  `content` text
+  `content` text,
+  `like_count` mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
+  `comment_count` mediumint(8) UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `posts_likes` (

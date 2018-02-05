@@ -115,7 +115,7 @@ foreach ($listPosts as $post) {
                     // Display edit history for posts that have been edited at least once
                     if ($post['was_edited']) {
                     ?>
-                    <button class="dropdown-item btn-postedithistory" type="button" role="button" data-toggle="modal" data-target="#mainModal" data-postid="<?php echo $post['id']; ?>" disabled>
+                    <button class="dropdown-item btn-showedithistorymodal" type="button" role="button" data-toggle="modal" data-target="#mainModal" data-postid="<?php echo $post['id']; ?>">
                         <div class="d-flex align-items-center" style="font-size: .875em;">
                             <i class="fa fa-history" style="margin-right: 12px;" aria-hidden="true"></i>
                             <span style="flex: 1;">Edit history</span>

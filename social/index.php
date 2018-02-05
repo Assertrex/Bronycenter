@@ -515,6 +515,78 @@ require('partials/head.php');
         });
     }
 
+    // Listen to a post edit history show modal button
+    function listenToPostsEditHistoryShowModalButton(containerName) {
+        $(containerName + ' .btn-showedithistorymodal').click((e) => {
+            let postID = e.currentTarget.getAttribute('data-postid');
+
+            displayModal(
+                'Edit history',
+                `
+                <div id="result-post-edit-history"></div>
+                `,
+                '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>'
+            );
+
+            // Send a new post content
+            $.post("ajax/getPostEditHistory.php", { id: postID }, function(response) {
+                let result;
+
+                // Try to parse a JSON
+                try {
+                    result = JSON.parse(response);
+                } catch (e) {
+                    showFlashMessages();
+                    return false;
+                }
+
+                // Return a flash message error if edit history couldn't be fetched
+                if (result.status != 'success') {
+                    showFlashMessages();
+                    return false;
+                }
+
+                let lastHistoryIndex = result.edit_history.length - 1;
+
+                // Display each edit history item in a div
+                result.edit_history.forEach((element, index, array) => {
+                    let editHistoryBoxClass = 'class="pb-3 mb-3" style="border-bottom: 1px solid #E9ECEF;"';
+
+                    // Don't add margins and paddings to the last item
+                    if (lastHistoryIndex == index) {
+                        editHistoryBoxClass = '';
+                    }
+
+                    $("#mainModal #result-post-edit-history").append(
+                        `
+                        <div ${editHistoryBoxClass}>
+                            <div class="d-flex justify-content-between mb-2">
+                                <div>
+                                    #${index + 1}: <span data-toggle="tooltip" style="cursor: help;" title="${element.datetime} (UTC)">${element.datetime_interval}</span>
+                                </div>
+                                <div>
+                                    <i class="fa fa-thumbs-o-up" aria-hidden="true"></i> ${element.like_count}
+                                    <i class="fa fa-comment-o ml-2" aria-hidden="true"></i> ${element.comment_count}
+                                </div>
+                            </div>
+                            <div>
+                                ${element.content}
+                            </div>
+                        </div>
+                        `
+                    );
+                });
+
+                // Add tooltips to the new items
+                $(function () {
+                    $('#result-post-edit-history [data-toggle="tooltip"]').tooltip();
+                });
+
+                return true;
+            });
+        });
+    }
+
     // Function used to bind all listeners to a selected posts container
     function bindListeners(containerName) {
         listenToPostsLikeButton(containerName);
@@ -522,6 +594,7 @@ require('partials/head.php');
         listenToPostsCommentButton(containerName);
         listenToPostsMoreCommentsButton(containerName);
         listenToPostsEditButton(containerName);
+        listenToPostsEditHistoryShowModalButton(containerName);
         listenToPostsDeleteButton(containerName);
         listenToPostsReportShowModalButton(containerName);
 
