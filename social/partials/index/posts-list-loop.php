@@ -136,7 +136,7 @@ foreach ($listPosts as $post) {
                         </div>
                     </button>
 
-                    <button class="dropdown-item btn-deletepost" type="button" role="button" data-postid="<?php echo $post['id']; ?>">
+                    <button class="dropdown-item btn-showdeletepostmodal" type="button" role="button" data-toggle="modal" data-target="#mainModal" data-postid="<?php echo $post['id']; ?>">
                         <div class="d-flex align-items-center" style="font-size: .875em;">
                             <i class="fa fa-trash-o" style="margin-right: 12px;" aria-hidden="true"></i>
                             <span style="flex: 1;">Delete</span>
@@ -161,7 +161,7 @@ foreach ($listPosts as $post) {
                     ?>
                     <h6 class="dropdown-header" style="font-size: .813rem;">Moderate</h6>
 
-                    <button class="dropdown-item btn-deletepost" type="button" role="button" data-postid="<?php echo $post['id']; ?>" data-moderate="true">
+                    <button class="dropdown-item btn-showdeletepostmodal" type="button" role="button" data-toggle="modal" data-target="#mainModal" data-postid="<?php echo $post['id']; ?>" data-moderate="true">
                         <div class="d-flex align-items-center" style="font-size: .875em;">
                             <i class="fa fa-ban" style="margin-right: 12px;" aria-hidden="true"></i>
                             <span style="flex: 1;">Delete</span>

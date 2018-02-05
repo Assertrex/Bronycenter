@@ -252,7 +252,8 @@ class Post
 
         // Check if post has been created by a moderator
         if ($_SESSION['account']['id'] != $postDetails[0]['user_id'] && (
-            $postDetails[0]['account_type'] == 8 || $postDetails[0]['account_type'] == 9)) {
+            $postDetails[0]['account_type'] == 8 || $postDetails[0]['account_type'] == 9) &&
+            $_SESSION['account']['type'] != 9) {
             $this->flash->error('You can\'t remove post created by a different moderator.');
             return false;
         }

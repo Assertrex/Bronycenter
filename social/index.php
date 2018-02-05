@@ -406,62 +406,80 @@ require('partials/head.php');
 
     // Listen to a post delete button click
     function listenToPostsDeleteButton(containerName) {
-        $(containerName + ' .btn-deletepost').click(function() {
+        $(containerName + ' .btn-showdeletepostmodal').click(function() {
             let button = $(this);
             let postID = $(button).data('postid');
             let userModerator = $(button).data('moderate');
+            let deleteReason = '';
 
-            // Display reason form if moderator tries to remove a post
-            // TODO Display a fancy modal instead of native JS function
+            // Display a reason form if moderator wants to remove a post
             if (userModerator) {
-                let reason;
-
-                if (reason = prompt('Why do you think that this post needs to be removed? (This will be shown to post author and moderators)')) {
-                    $.ajax({
-                        'url': 'ajax/doPostDelete.php?id=' + postID + '&reason=' + reason,
-                        'method': 'GET',
-                        'success': function(result) {
-                            $('#post-' + postID).hide('slow', function() {
-                                let containerParent = $('#post-' + postID).parent();
-
-                                // Remove the whole container if it is the last fetched post
-                                if (containerParent[0].className == 'posts-container-from' &&
-                                    containerParent.children().length == 1) {
-                                    $(this).remove();
-                                    containerParent.remove();
-                                } else {
-                                    $(this).remove();
-                                }
-
-                                showFlashMessages();
-                            });
-                        }
-                    });
-                }
+                displayModal(
+                    'Remove a post (as moderator)',
+                    `
+                    <div class="form-group">
+                        <label for="input-post-report-reason">Provide a reason for removing this post <small class="text-muted">(optional)</small></label>
+                        <textarea class="form-control" id="input-post-delete-reason" maxlength="64"></textarea>
+                    </div>
+                    `,
+                    '<button type="button" class="btn btn-danger" id="btn-postdeleteconfirm" data-dismiss="modal" data-postid="' + postID + '">Remove</button>' +
+                    '<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>'
+                );
             } else {
-                if (confirm('Are you sure that you want to remove your post?')) {
-                    $.ajax({
-                        'url': 'ajax/doPostDelete.php?id=' + postID,
-                        'method': 'GET',
-                        'success': function(result) {
-                            $('#post-' + postID).hide('slow', function() {
-                                let containerParent = $('#post-' + postID).parent();
+                displayModal(
+                    'Remove own post',
+                    `
+                    Are you sure that you want to remove your post?
+                    `,
+                    '<button type="button" class="btn btn-danger" id="btn-postdeleteconfirm" data-dismiss="modal" data-postid="' + postID + '">Remove</button>' +
+                    '<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>'
+                );
+            }
 
-                                // Remove the whole container if it is the last fetched post
-                                if (containerParent[0].className == 'posts-container-from' &&
-                                    containerParent.children().length == 1) {
-                                    $(this).remove();
-                                    containerParent.remove();
-                                } else {
-                                    $(this).remove();
-                                }
+            // Listen for an apply button click
+            $('#mainModal #btn-postdeleteconfirm').click((e) => {
+                let postID = e.currentTarget.getAttribute('data-postid');
 
-                                showFlashMessages();
-                            });
+                if ($("#mainModal #input-post-delete-reason").length) {
+                    deleteReason = $("#mainModal #input-post-delete-reason").val();
+                }
+
+                // Send a new post content
+                $.post("ajax/doPostDelete.php", { id: postID, reason: deleteReason }, function(response) {
+                    let result;
+
+                    // Try to parse a JSON
+                    try {
+                        result = JSON.parse(response);
+                    } catch (e) {
+                        showFlashMessages();
+                        return false;
+                    }
+
+                    // Return false if post haven't been deleted
+                    if (result.status != 'success') {
+                        showFlashMessages();
+                        return false;
+                    }
+
+                    // Remove a post from a page
+                    $('#post-' + postID).hide('slow', function() {
+                        let containerParent = $('#post-' + postID).parent();
+
+                        // Remove the whole container if it is the last fetched post
+                        if (containerParent[0].className == 'posts-container-from' &&
+                            containerParent.children().length == 1) {
+                            $(this).remove();
+                            containerParent.remove();
+                        } else {
+                            $(this).remove();
                         }
                     });
-                }
-            }
+
+                    showFlashMessages();
+                    return true;
+                });
+            });
         });
     }
 

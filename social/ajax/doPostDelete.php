@@ -11,13 +11,22 @@ use BronyCenter\Post;
 $posts = Post::getInstance();
 
 // Try to remove a post
-$postID = $posts->delete($_GET['id'], $_GET['reason'] ?? null);
+$postID = $posts->delete($_POST['id'], $_POST['reason'] ?? null);
 
-// Check if post has been deleted
+// Prepare array with result
 if (!empty($postID)) {
-    echo $postID;
+    $JSON = [
+        'status' => 'success',
+        'post' => $postID
+    ];
 } else {
-    echo 'false';
+    $JSON = [
+        'status' => 'error'
+    ];
 }
 
-// TODO Return error in JSON if not
+// Format array into JSON
+$JSON = json_encode($JSON);
+
+// Display JSON result
+echo $JSON;
