@@ -59,7 +59,7 @@ CREATE TABLE `posts` (
   `delete_id` int(10) UNSIGNED DEFAULT NULL,
   `delete_ip` varchar(45) DEFAULT NULL,
   `delete_datetime` datetime DEFAULT NULL,
-  `delete_reason` varchar(64) DEFAULT NULL
+  `delete_reason` tinytext
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `posts_comments` (

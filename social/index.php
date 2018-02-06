@@ -291,7 +291,11 @@ require('partials/head.php');
                 inputWrapper.show('fast');
                 inputField.focus();
                 sendButton.click(function(e) {
-                    sendCommentPost(postID, inputField);
+                    if (inputField.val().length != 0) {
+                        sendCommentPost(postID, inputField);
+                        $(inputField).val('');
+                        $('#post-comment-input-lettercounter-' + postID).text('0');
+                    }
                 });
             } else {
                 switchActive = 'false';
@@ -365,10 +369,16 @@ require('partials/head.php');
             displayModal(
                 'Post editor',
                 `<p><small>You can now edit your post, but your post edit history will be available for everypony.</small></p>
-                 <textarea class="std-textarea textarea-posteditcontent" style="height: 126px; background-color: #EEEEEE; padding: .5rem 1rem; border-radius: 8px;">${editTextareaContent}</textarea>`,
+                 <textarea class="std-textarea textarea-posteditcontent" id="input-post-edit-content" style="height: 126px; background-color: #EEEEEE; padding: .5rem 1rem; border-radius: 8px;" maxlength="1000">${editTextareaContent}</textarea>
+                 <small class="d-block text-muted text-right mt-1">
+                     <span id="post-edit-content-lettercounter">0</span> / 1000
+                 </small>`,
                 `<button type="button" class="btn btn-primary btn-posteditconfirm" data-dismiss="modal" data-postid="${editContentID}">Apply</button>
                  <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>`
             );
+
+            // Add letters counter to the edit content textarea
+            addLettersCounter("input-post-edit-content", "post-edit-content-lettercounter");
 
             // Listen for an apply button click
             $('#mainModal .btn-posteditconfirm').click((e) => {
@@ -418,13 +428,19 @@ require('partials/head.php');
                     'Remove a post (as moderator)',
                     `
                     <div class="form-group">
-                        <label for="input-post-report-reason">Provide a reason for removing this post <small class="text-muted">(optional)</small></label>
-                        <textarea class="form-control" id="input-post-delete-reason" maxlength="64"></textarea>
+                        <label for="input-post-delete-reason">Provide a reason for removing this post <small class="text-muted">(optional)</small></label>
+                        <textarea class="form-control" id="input-post-delete-reason" maxlength="255" rows="4"></textarea>
+                        <small class="d-block text-muted text-right mt-1">
+                            <span id="post-delete-reason-lettercounter">0</span> / 255
+                        </small>
                     </div>
                     `,
                     '<button type="button" class="btn btn-danger" id="btn-postdeleteconfirm" data-dismiss="modal" data-postid="' + postID + '">Remove</button>' +
                     '<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>'
                 );
+
+                // Add letters counter to the delete reason textarea
+                addLettersCounter("input-post-delete-reason", "post-delete-reason-lettercounter");
             } else {
                 displayModal(
                     'Remove own post',
@@ -501,12 +517,18 @@ require('partials/head.php');
                 </div>
                 <div class="form-group">
                     <label for="input-post-report-reason">Write a message to the moderators <small class="text-muted">(optional)</small></label>
-                    <textarea class="form-control" id="input-post-report-reason" maxlength="255"></textarea>
+                    <textarea class="form-control" id="input-post-report-reason" maxlength="255" rows="4"></textarea>
+                    <small class="d-block text-muted text-right mt-1">
+                        <span id="post-report-reason-lettercounter">0</span> / 255
+                    </small>
                 </div>
                 `,
                 '<button type="button" class="btn btn-danger" id="btn-postreportconfirm" data-dismiss="modal" data-postid="' + postID + '">Report</button>' +
                 '<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>'
             );
+
+            // Add letters counter to the report reason textarea
+            addLettersCounter("input-post-report-reason", "post-report-reason-lettercounter");
 
             // Listen for an apply button click
             $('#mainModal #btn-postreportconfirm').click((e) => {
@@ -605,6 +627,17 @@ require('partials/head.php');
         });
     }
 
+    // Enable a characters counter for every post comment creator input
+    function enablePostsCommentsInputCounter(containerName) {
+        $(containerName + ' .post-comment-input-wrapper').each((index, element) => {
+            let postID = element.getAttribute('data-postid');
+            let onlyContainerName = containerName.substr(1);
+
+            // Add letters counter to the selected comment creator input
+            addLettersCounter(onlyContainerName + ' #post-comment-input-' + postID, onlyContainerName + ' #post-comment-input-lettercounter-' + postID);
+        });
+    }
+
     // Function used to bind all listeners to a selected posts container
     function bindListeners(containerName) {
         listenToPostsLikeButton(containerName);
@@ -615,6 +648,7 @@ require('partials/head.php');
         listenToPostsEditHistoryShowModalButton(containerName);
         listenToPostsDeleteButton(containerName);
         listenToPostsReportShowModalButton(containerName);
+        enablePostsCommentsInputCounter(containerName);
 
         // Add tooltips to the new container
         if (containerName != '#posts-list') {

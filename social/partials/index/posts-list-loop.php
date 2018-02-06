@@ -76,29 +76,16 @@ foreach ($listPosts as $post) {
             </div>
 
             <div class="d-flex post-actions" data-postid="<?php echo $post['id']; ?>">
-                <?php
-                // Display not active like button if user has not liked a post
-                if (!$post['current_user_liked']) {
-                ?>
+                <?php if (!$post['current_user_liked']) { ?>
                 <button type="button" class="btn btn-outline-secondary btn-sm btn-postlike mr-1" data-postid="<?php echo $post['id']; ?>" data-hasliked="false">
-                    <span class="d-inline-block" style="width: 14px; height: 12px; text-align: center;">
-                        <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
-                    </span>
-                    <span style="vertical-align: middle;">Like</span>
-                </button>
-                <?php
-                // Display active like button if user has already liked a post
-                } else {
-                ?>
+                <?php } else { ?>
                 <button type="button" class="btn btn-outline-primary btn-sm btn-postlike mr-1" data-postid="<?php echo $post['id']; ?>" data-hasliked="true">
+                <?php } ?>
                     <span class="d-inline-block" style="width: 14px; height: 12px; text-align: center;">
                         <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
                     </span>
                     <span style="vertical-align: middle;">Like</span>
                 </button>
-                <?php
-                }
-                ?>
 
                 <button type="button" class="btn btn-outline-secondary btn-sm btn-postcommentswitch mr-1" data-active="false">
                     <span class="d-inline-block" style="width: 14px; height: 12px; text-align: center;">
@@ -254,14 +241,16 @@ foreach ($listPosts as $post) {
                 </div>
             </div>
 
-            <div id="post-comment-input-wrapper-<?php echo $post['id']; ?>" style="display: none;">
+            <div class="post-comment-input-wrapper" id="post-comment-input-wrapper-<?php echo $post['id']; ?>" style="display: none;" data-postid="<?php echo $post['id']; ?>">
                 <div class="d-flex pt-3">
                     <div class="pr-2">
                         <img src="../media/avatars/<?php echo $_SESSION['user']['avatar']; ?>/minres.jpg" class="rounded" style="display: block; width: 26px; height: 26px;" />
                     </div>
                     <div class="pr-2" style="flex: 100%; text-align: right;">
-                        <input type="text" class="form-control form-control-sm post-comment-input" placeholder="Write a comment..." maxlength="500" style="font-size: 12px;" />
-                        <small class="text-muted"><span class="text-danger">Letter counter not available yet!</span></small>
+                        <input type="text" class="form-control form-control-sm post-comment-input" id="post-comment-input-<?php echo $post['id']; ?>" placeholder="Write a comment..." maxlength="500" style="font-size: 12px;" />
+                        <small class="d-block text-muted text-right mt-1">
+                            <span class="post-comment-input-lettercounter" id="post-comment-input-lettercounter-<?php echo $post['id']; ?>">0</span> / 500
+                        </small>
                     </div>
                     <div>
                         <button type="button" class="btn btn-outline-primary btn-sm btn-postcommentsend" role="button"><i class="fa fa-paper-plane-o" aria-hidden="true"></i> Send</button>
