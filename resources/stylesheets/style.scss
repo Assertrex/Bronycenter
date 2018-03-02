@@ -41,7 +41,7 @@ section {
     cursor: pointer;
 }
 
-.container {
+.container, .container-full {
     padding-top: calc(108px + 1rem);
     padding-bottom: 1rem;
 
@@ -133,7 +133,12 @@ textarea.std-textarea {
     }
 
     .container {
-        padding-top: calc(57px + 1rem);
+        padding-top: calc(56px + 1rem);
+    }
+
+    .container-full {
+        padding-top: 56px;
+        padding-bottom: 0;
     }
 
     #button-scroll-top {

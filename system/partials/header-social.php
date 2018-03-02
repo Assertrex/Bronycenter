@@ -35,9 +35,6 @@
                 <li class="nav-item d-lg-none">
                     <a class="d-block nav-link" href="members.php">Members</a>
                 </li>
-                <!-- <li class="nav-item d-lg-none">
-                    <a class="d-block nav-link" href="messages.php">Messages</a>
-                </li> -->
                 <li class="nav-item d-lg-none">
                     <a class="d-block nav-link" href="achievements.php">Statistics</a>
                 </li>
@@ -96,12 +93,14 @@
                                 <!-- <span class="badge badge-danger" style="right: -4px;">1</span> -->
                             </div>
                         </li>
+                        <a href="messages.php">
                         <li>
                             <i class="fa fa-comments-o" style="margin-top: -2px; font-size: 25px;" aria-hidden="true"></i>
                             <div class="notifications-badge-wrapper">
                                 <!-- <span class="badge badge-danger" style="right: -4px;">1</span> -->
                             </div>
                         </li>
+                        </a>
                         <li>
                             <i class="fa fa-bell-o" style="font-size: 22px;" aria-hidden="true"></i>
                             <div class="notifications-badge-wrapper">

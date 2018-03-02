@@ -38,6 +38,9 @@ require(__DIR__ . '../../class/post.php');
 // Require statistics class for counting users actions
 require(__DIR__ . '../../class/statistics.php');
 
+// Require message class for actions with messages
+require(__DIR__ . '../../class/message.php');
+
 // Create an instance of a config class to get details about website version
 $config = BronyCenter\Config::getInstance();
 
@@ -57,8 +60,14 @@ $session = BronyCenter\Session::getInstance();
 // Create an instance of a statistics class to count users actions
 $statistics = BronyCenter\Statistics::getInstance();
 
+// Create an instance of a message class for actions with messages
+$o_message = BronyCenter\Message::getInstance();
+
 // Get details about website version
 $websiteVersion = $config->getVersion();
+
+// Store a messages encryption key
+$messageEncryptionKey = $config->getSection('messages')['key'];
 
 // Check if user is currently logged in
 if ($session->verify()) {

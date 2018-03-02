@@ -131,11 +131,15 @@ require('partials/head.php');
                     </div>
                 </section>
 
-                <section class="d-none fancybox">
+                <section class="fancybox">
                     <h6 class="text-center mb-0">Quick actions</h6>
 
                     <div class="px-4 my-3">
-                        <button type="button" class="btn btn-outline-primary btn-sm btn-block">Send a message</button>
+                        <?php if ($profileDetails['id'] == $_SESSION['account']['id']) { ?>
+                        <button type="button" role="button" class="btn btn-outline-primary btn-sm btn-block" style="cursor: not-allowed" disabled>Send a message</button>
+                        <?php } else { ?>
+                        <button type="button" role="button" data-toggle="modal" data-target="#mainModal" id="btn-profile-sendmessage" class="btn btn-outline-primary btn-sm btn-block" data-userid="<?php echo $profileDetails['id']; ?>"  data-userdisplayname="<?php echo $profileDetails['display_name']; ?>">Send a message</button>
+                        <?php } // if ?>
                     </div>
                 </section>
             </aside>
@@ -292,6 +296,63 @@ require('partials/head.php');
 
             changeProfileTab(selectedTab);
         }
+
+        // Listen to a send message button
+        $('#btn-profile-sendmessage').click((e) => {
+            let userID = e.currentTarget.getAttribute('data-userid');
+            let userDisplayname = e.currentTarget.getAttribute('data-userdisplayname');
+
+            // Display a modal for writing a message
+            displayModal(
+                'Send a message',
+                `
+                <p>Write a message that you want to send to: <br /><b>${userDisplayname}</b></p>
+                <div class="form-group">
+                    <label for="input-profile-sendmessage-content">Your message:</label>
+                    <textarea class="form-control" id="input-profile-sendmessage-content" rows="3" maxlength="1000"></textarea>
+                    <small class="d-block text-muted text-right mt-1">
+                        <span id="input-profile-sendmessage-content-counter">0</span> / 1000
+                    </small>
+                </div>
+                `,
+                `
+                <button type="button" class="btn btn-primary" id="btn-profile-sendmessage-confirm" data-dismiss="modal" data-userid="${userID}">Send</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                `
+            );
+
+            // Listen to the form input and update it's letters counter
+            addLettersCounter('input-profile-sendmessage-content', 'input-profile-sendmessage-content-counter');
+
+            // Listen to a send button
+            $('#btn-profile-sendmessage-confirm').click((e) => {
+                let messageContent = $('#input-profile-sendmessage-content').val();
+                let messageRecipent = e.currentTarget.getAttribute('data-userid');
+
+                // Send a new message
+                $.post("ajax/doSendMessage.php", { id: messageRecipent, content: messageContent }, function(response) {
+                    let json;
+
+                    // Try to parse a JSON
+                    try {
+                        json = JSON.parse(response);
+                    } catch (e) {
+                        // Return a failed system message
+                        showFlashMessages();
+                        return false;
+                    }
+
+                    // Modify post content if it has been modified successfully
+                    if (json.status == 'success') {
+                        // TODO FILL THIS WITH SOMETHING
+                    }
+
+                    // Return a successful system message
+                    showFlashMessages();
+                    return true;
+                });
+            });
+        });
 
         // Listen for profile tab clicks
         $("#aside-tabs").click((e) => {
