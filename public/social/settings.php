@@ -190,7 +190,7 @@ require('../../application/partials/social/head.php');
 
             // Request change of a password
             $.post(
-                "ajax/doChangeSettingsPassword.php",
+                "../ajax/changeSettingsPassword.php",
                 { oldpassword: oldPassword, newpassword: newPassword, repeatpassword: repeatPassword },
                 () => {
                     $("#content-input-oldpassword").focus();
