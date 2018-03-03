@@ -235,10 +235,10 @@ class Message
         // Create a new conversation if this is a first message
         if (empty($conversation)) {
             $conversationID = $this->database->create(
-                'user_one_id, user_two_id',
+                'user_one_id, user_two_id, last_message_datetime',
                 'messages_simple_conversations',
                 '',
-                [$senderID, $recipentID]
+                [$senderID, $recipentID, '0000-00-00 00:00:00']
             );
         } else {
             $conversationID = $conversation['id'];

@@ -87,19 +87,21 @@
             <ul class="navbar-nav align-items-center d-none d-lg-flex">
                 <div id="header-notifications-bar">
                     <ul>
-                        <li>
-                            <i class="fa fa-user-circle-o" style="font-size: 22px;" aria-hidden="true"></i>
-                            <div class="notifications-badge-wrapper">
-                                <!-- <span class="badge badge-danger" style="right: -4px;">1</span> -->
-                            </div>
-                        </li>
+                        <a href="members.php">
+                            <li>
+                                <i class="fa fa-user-circle-o" style="font-size: 22px;" aria-hidden="true"></i>
+                                <div class="notifications-badge-wrapper">
+                                    <!-- <span class="badge badge-danger" style="right: -4px;">1</span> -->
+                                </div>
+                            </li>
+                        </a>
                         <a href="messages.php">
-                        <li>
-                            <i class="fa fa-comments-o" style="margin-top: -2px; font-size: 25px;" aria-hidden="true"></i>
-                            <div class="notifications-badge-wrapper">
-                                <!-- <span class="badge badge-danger" style="right: -4px;">1</span> -->
-                            </div>
-                        </li>
+                            <li>
+                                <i class="fa fa-comments-o" style="margin-top: -2px; font-size: 25px;" aria-hidden="true"></i>
+                                <div class="notifications-badge-wrapper">
+                                    <!-- <span class="badge badge-danger" style="right: -4px;">1</span> -->
+                                </div>
+                            </li>
                         </a>
                         <li>
                             <i class="fa fa-bell-o" style="font-size: 22px;" aria-hidden="true"></i>

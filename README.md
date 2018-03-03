@@ -20,9 +20,9 @@ I don't really know yet, but I'm testing it on a lastest versions of:
 * **Apache/Nginx** webserver
 * **MariaDB** database
 * **PHP** 7.2.x
- * Changing avatars requires **Imagick** PHP extension. If you've never set it up
-then good luck. I always forget how I install it and I have to waste about 30
-minutes to set it up correctly.
+  * Changing avatars requires **Imagick** PHP extension. If you've never set it up
+before then good luck. I always forget how I've installed it and I have to waste
+about 30 minutes to set it up correctly again (at least on Windows).
 
 ## Configuration
 
@@ -31,8 +31,8 @@ If you have an Apache, then .htaccess files will use **public/** directory as
 a document root (by doing a rewrite). This will prevent access to the files
 that shouldn't be accessable from the outside.
 
-If you don't use Apache or you don't want to use .htaccess files, then I will
-write something here someday in the future, as I have Nginx on a main server.
+If you use Nginx or you don't want to use .htaccess files in Apache, then remove
+them and point your document root to the **public/** directory.
 
 ### Database
 Database schema is exported to a **dbschema.sql** file. Create a database and

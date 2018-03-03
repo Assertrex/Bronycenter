@@ -4,19 +4,19 @@
 session_start();
 
 // Require config class to read configuration of an application
-require(__DIR__ . '../../core/config.php');
+require('../../application/core/config.php');
 
 // Require utilities class to share many commonly used functions
-require(__DIR__ . '../../core/utilities.php');
+require('../../application/core/utilities.php');
 
 // Require database class to create a connection
-require(__DIR__ . '../../core/database.php');
+require('../../application/core/database.php');
 
 // Require flash class to use flash session messages
-require(__DIR__ . '../../core/flash.php');
+require('../../application/core/flash.php');
 
 // Require session class to manage user session
-require(__DIR__ . '../../core/session.php');
+require('../../application/core/session.php');
 
 // Check if user is logged in and verify a session
 $session = BronyCenter\Session::getInstance();

@@ -330,7 +330,7 @@ require('../../application/partials/social/head.php');
                 let messageRecipent = e.currentTarget.getAttribute('data-userid');
 
                 // Send a new message
-                $.post("../ajax/doMessageSend.php", { id: messageRecipent, content: messageContent }, function(response) {
+                $.post("../ajax/doMessageSend.php", { id: messageRecipent, message: messageContent }, function(response) {
                     let json;
 
                     // Try to parse a JSON
