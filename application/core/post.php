@@ -152,7 +152,7 @@ class Post
 
         // Get few details about a post
         $postDetails = $this->database->read(
-            'user_id, content, edit_count, type',
+            'user_id, content, edit_count, type, like_count, comment_count',
             'posts',
             'WHERE id = ?',
             [$postID],
@@ -194,10 +194,10 @@ class Post
         if (intval($postModified) != 0) {
             // Store previous version of a post
             $this->database->create(
-                'post_id, user_id, ip, datetime, content',
+                'post_id, user_id, ip, datetime, content, like_count, comment_count',
                 'posts_edits',
                 '',
-                [$postID, $postDetails['user_id'], $currentIP, $currentDatetime, $postDetails['content']]
+                [$postID, $postDetails['user_id'], $currentIP, $currentDatetime, $postDetails['content'], $postDetails['like_count'], $postDetails['comment_count']]
             );
 
             return $postContent;
