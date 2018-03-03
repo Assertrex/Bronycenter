@@ -14,20 +14,33 @@ I know that I should use a MVC framework, but it takes me too much time to
 learn it and I don't really know what's happening in my code then. Anyway, I try
 to make my code as much readable as I can.
 
-## Security
-If you really want to use this code, please, don't forget to secure
-**/system/config/settings.ini** from remote access if you're using Nginx.
+### Requirements
+I don't really know yet, but I'm testing it on a lastest versions of:
 
-#### Nginx
-Add code below to this file (inside server block):
-/etc/nginx/sites-available/[name-of-your-website]
+* **Apache/Nginx** webserver
+* **MariaDB** database
+* **PHP** 7.2.x
+ * Changing avatars requires **Imagick** PHP extension. If you've never set it up
+then good luck. I always forget how I install it and I have to waste about 30
+minutes to set it up correctly.
 
-```
-location /system/config/ {
-    deny all;
-    return 403;
-}
-```
+## Configuration
 
-#### Apache
-You don't have to add anything, as *.htaccess* file will do that for you (added in commit 48).
+### Document root & Security
+If you have an Apache, then .htaccess files will use **public/** directory as
+a document root (by doing a rewrite). This will prevent access to the files
+that shouldn't be accessable from the outside.
+
+If you don't use Apache or you don't want to use .htaccess files, then I will
+write something here someday in the future, as I have Nginx on a main server.
+
+### Database
+Database schema is exported to a **dbschema.sql** file. Create a database and
+import this file with PHPMyAdmin or copy & paste it directly into MySQL console.
+It should work, I guess...
+
+You have to fill **settings.ini** file with your database credentials.
+
+### Updates
+Don't update it. Each update can have different database schema, and it just
+won't work without changes to the database. Yes, I have no idea what I am doing.
