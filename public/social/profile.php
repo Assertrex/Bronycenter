@@ -131,6 +131,7 @@ require('../../application/partials/social/head.php');
                     </div>
                 </section>
 
+                <?php if ($loggedIn) { ?>
                 <section class="fancybox">
                     <h6 class="text-center mb-0">Quick actions</h6>
 
@@ -142,6 +143,7 @@ require('../../application/partials/social/head.php');
                         <?php } // if ?>
                     </div>
                 </section>
+                <?php } // if ?>
             </aside>
 
             <div class="col-12 col-lg-8">
