@@ -7,7 +7,7 @@ $loginRequired = true;
 require_once('../../application/partials/init.php');
 
 // Try to get recent messages from a conversation
-$messages = $o_message->getConversationMessages($_GET['id'], $messageEncryptionKey);
+$messages = $o_message->getConversationMessages($_GET['id'], $websiteEncryptionKey);
 
 // Prepare array with result
 if (!empty($messages)) {

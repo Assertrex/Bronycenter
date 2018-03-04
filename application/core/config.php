@@ -18,13 +18,6 @@ class Config
     private static $instance = null;
 
     /**
-     * Place for instance of a flash class
-     *
-     * @since Release 0.1.0
-     */
-    private $flash = null;
-
-    /**
      * Place for array of configuration file contents
      *
      * @since Release 0.1.0
@@ -38,8 +31,6 @@ class Config
      */
     public function __construct()
     {
-        $this->flash = Flash::getInstance();
-
         $this->configuration = parse_ini_file(__DIR__ . '/../../settings.ini', true);
     }
 

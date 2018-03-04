@@ -7,7 +7,7 @@ $loginRequired = true;
 require_once('../../application/partials/init.php');
 
 // Try to get recent messages from a conversation
-$result = $o_message->doSend($_POST['id'], $_POST['message'], $messageEncryptionKey);
+$result = $o_message->doSend($_POST['id'], $_POST['message'], $websiteEncryptionKey);
 
 // Prepare array with result
 if (!empty(intval($result))) {

@@ -1,48 +1,39 @@
 <?php
 
-// Force PHP to display all errors
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 // Start a new session or use an existing one
 session_start();
 
-// Require config class to read configuration of an application
+// Create an instance of a config class
 require(__DIR__ . '/../core/config.php');
-
-// Require utilities class to share many commonly used functions
-require(__DIR__ . '/../core/utilities.php');
-
-// Require database class to create a connection
-require(__DIR__ . '/../core/database.php');
-
-// Require account class for managing user's account
-require(__DIR__ . '/../core/account.php');
-
-// Require session class to manage user session
-require(__DIR__ . '/../core/session.php');
-
-// Require flash class to use flash session messages
-require(__DIR__ . '/../core/flash.php');
-
-// Require validator class for validating user input
-require(__DIR__ . '/../core/validator.php');
-
-// Require post class for handling users details
-require(__DIR__ . '/../core/user.php');
-
-// Require post class for handling users posts
-require(__DIR__ . '/../core/post.php');
-
-// Require statistics class for counting users actions
-require(__DIR__ . '/../core/statistics.php');
-
-// Require message class for actions with messages
-require(__DIR__ . '/../core/message.php');
-
-// Create an instance of a config class to get details about website version
 $config = BronyCenter\Config::getInstance();
+
+// Get website's settings
+$websiteSettings = $config->getSection('system');
+$websiteVersion = $config->getVersion();
+$websiteEncryptionKey = $config->getSection('messages')['key'];
+
+// Enable error reporting if debugging is enabled
+if ($websiteSettings['enableDebug']) {
+    ini_set('display_errors', 1);
+    ini_set('display_startup_errors', 1);
+    error_reporting(E_ALL);
+} else {
+    ini_set('display_errors', 0);
+    ini_set('display_startup_errors', 0);
+    error_reporting(0);
+}
+
+// Require all classes
+require(__DIR__ . '/../core/database.php');
+require(__DIR__ . '/../core/utilities.php');
+require(__DIR__ . '/../core/account.php');
+require(__DIR__ . '/../core/session.php');
+require(__DIR__ . '/../core/flash.php');
+require(__DIR__ . '/../core/validator.php');
+require(__DIR__ . '/../core/user.php');
+require(__DIR__ . '/../core/post.php');
+require(__DIR__ . '/../core/statistics.php');
+require(__DIR__ . '/../core/message.php');
 
 // Create an instance of an utilities class to share common functions
 $utilities = BronyCenter\Utilities::getInstance();
@@ -62,12 +53,6 @@ $statistics = BronyCenter\Statistics::getInstance();
 
 // Create an instance of a message class for actions with messages
 $o_message = BronyCenter\Message::getInstance();
-
-// Get details about website version
-$websiteVersion = $config->getVersion();
-
-// Store a messages encryption key
-$messageEncryptionKey = $config->getSection('messages')['key'];
 
 // Check if user is currently logged in
 if ($session->verify()) {
