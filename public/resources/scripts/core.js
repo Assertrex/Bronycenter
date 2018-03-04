@@ -14,9 +14,16 @@ $(document).ready(function() {
 
     // Extend account session every X seconds
     setInterval(() => {
-        // TODO Handle a false return
-        // FIXME Fix path for pages outside social/ directory
-        $.get('../ajax/doSessionExtend.php');
+        // Use default path to the extend session AJAX file
+        let extendSessionFilePath = 'ajax/doSessionExtend.php';
+
+        // Use social path to the extend session AJAX file
+        if (window.location.pathname.split('/').includes('social')) {
+            extendSessionFilePath = '../ajax/doSessionExtend.php';
+        }
+
+        // TODO: Handle an error
+        $.get(extendSessionFilePath);
     }, 30000);
 
     // Check current Y position of a window
