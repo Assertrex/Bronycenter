@@ -227,6 +227,9 @@ class Utilities
             case '8':
                 $badges['account_type_badge'] = '<span class="' . $class . '-info" style="' . $style . '">Mod</span>';
                 break;
+            case '1':
+                $badges['account_type_badge'] = '<span class="' . $class . '-primary" style="' . $style . '">Member</span>';
+                break;
             case '0':
                 $badges['account_type_badge'] = '<span class="' . $class . '-secondary" style="' . $style . '">Unverified</span>';
                 break;
