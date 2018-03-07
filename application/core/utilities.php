@@ -20,13 +20,20 @@ class Utilities
     private static $instance = null;
 
     /**
+     * Place for instance of a config class
+     *
+     * @since Release 0.1.0
+     */
+    private $config = null;
+
+    /**
      * Initialize required classes
      *
      * @since Release 0.1.0
      */
     public function __construct()
     {
-
+        $this->config = Config::getInstance();
     }
 
     /**
@@ -94,14 +101,39 @@ class Utilities
      * Redirect to selected page and stop script execution
      *
      * @since 0.1.0
-     * @var string Redirect path
-     * @return boolean
+     * @var string $path Redirect path
      */
     public function redirect($path)
 	{
 		header('Location: ' . $path);
         die();
 	}
+
+    /**
+     * Hash a password using an available algorithm
+     *
+     * @since 0.1.0
+     * @var string $password Password to be hashed
+     * @return string Hashed version of a password
+     */
+    public function doHashPassword($password)
+    {
+        // Get website's settings
+        $websiteSettings = $this->config->getSection('system');
+
+        // Hash a password, fallback to BCrypt if PHP version is older than 7.2
+        if (version_compare(PHP_VERSION, '7.2.0') >= 0) {
+            return password_hash($password, PASSWORD_ARGON2I, [
+                'memory_cost' => $websiteSettings['argon2_memory_cost'],
+                'time_cost' => $websiteSettings['argon2_time_cost'],
+                'threads' => $websiteSettings['argon2_threads']
+            ]);
+        } else {
+            return password_hash($password, PASSWORD_BCRYPT, [
+                'cost' => $websiteSettings['bcrypt_cost']
+            ]);
+        }
+    }
 
     /**
      * Escape not escaped user value from database

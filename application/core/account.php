@@ -135,7 +135,7 @@ class Account
         // Check if any user has been found
 		if (count($user) != 1) {
             // Hash a fake password to prevent timing attacks
-            password_hash(md5(rand()), PASSWORD_BCRYPT, ['cost' => 13]);
+            $this->utilities->doHashPassword(md5(rand()));
 
             $this->flash->error('Wrong username/e-mail or password.');
 			return false;
@@ -281,12 +281,7 @@ class Account
         $o_geoip->getDetails($currentIP);
 
         // Hash a password
-        // Fallback from Argon2 to BCrypt if PHP version is lower than 7.2
-        if (version_compare(PHP_VERSION, '7.2.0') >= 0) {
-            $password = password_hash($password, PASSWORD_ARGON2I);
-        } else {
-            $password = password_hash($password, PASSWORD_BCRYPT);
-        }
+        $password = $this->utilities->doHashPassword($password);
 
         // Insert new user into database if nothing has returned an error
         $accountID = $this->database->create(
@@ -429,7 +424,7 @@ class Account
         }
 
         // Make a hash from new password
-        $newPassword = password_hash($newPassword, PASSWORD_BCRYPT, ['cost' => 13]);
+        $newPassword = $this->utilities->doHashPassword($newPassword);
 
         // Replace user's password with new one in database
         $hasChanged = $this->database->update(
