@@ -10,9 +10,9 @@ foreach ($listPosts as $post) {
     <div class="d-flex">
         <div class="mr-3 post-author-details">
             <img class="rounded mb-1" src="../media/avatars/<?php echo $post['author']['avatar']; ?>/minres.jpg" alt="User's avatar">
-            <?php echo $post['author']['is_online'] ? $post['author']['is_online_badge'] : ''; ?>
             <?php echo $post['author']['account_type_badge'] ?? ''; ?>
             <?php echo $post['author']['account_standing_badge'] ?? ''; ?>
+            <?php echo $post['author']['is_online'] ? $post['author']['is_online_badge'] : ''; ?>
         </div>
 
         <div class="d-flex flex-column" style="flex: 1;">

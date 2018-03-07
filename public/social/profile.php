@@ -31,7 +31,7 @@ $profileDetails = array_merge(
     $profileDetails,
     $utilities->generateUserBadges(
         $profileDetails,
-        'mx-1 badge badge'
+        'badge badge'
     )
 );
 
@@ -78,9 +78,9 @@ require('../../application/partials/social/head.php');
 
                     <p class="mb-0 text-muted" style="margin-top: -2px;"><small>@<?php echo $profileDetails['username']; ?></small></p>
                     <p class="mb-0 mt-2">
-                        <?php echo $profileDetails['is_online_badge']; ?>
                         <?php echo $profileDetails['account_type_badge'] ?? ''; ?>
                         <?php echo $profileDetails['account_standing_badge'] ?? ''; ?>
+                        <?php echo $profileDetails['is_online_badge']; ?>
                     </p>
 
                     <?php if (!empty($profileDetails['short_description'])) { ?>

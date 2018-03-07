@@ -225,7 +225,7 @@ class Utilities
                 $badges['account_type_badge'] = '<span class="' . $class . '-danger" style="' . $style . '">Admin</span>';
                 break;
             case '8':
-                $badges['account_type_badge'] = '<span class="' . $class . '-info" style="' . $style . '">Mod</span>';
+                $badges['account_type_badge'] = '<span class="' . $class . '-warning" style="' . $style . '">Moderator</span>';
                 break;
             case '1':
                 $badges['account_type_badge'] = '<span class="' . $class . '-primary" style="' . $style . '">Member</span>';
@@ -233,6 +233,8 @@ class Utilities
             case '0':
                 $badges['account_type_badge'] = '<span class="' . $class . '-secondary" style="' . $style . '">Unverified</span>';
                 break;
+            default:
+                $badges['account_type_badge'] = '<span class="' . $class . '-dark" style="' . $style . '">???</span>';
         }
 
         // Store user's account standing badge

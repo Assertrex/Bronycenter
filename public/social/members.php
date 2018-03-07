@@ -55,10 +55,10 @@ require('../../application/partials/social/head.php');
                             <div style="width: 64px;">
                                 <img src="../media/avatars/<?php echo $member['avatar']; ?>/minres.jpg" class="rounded" />
                             </div>
-                            <div class="ml-2" style="width: 64px;">
-                                <?php echo !empty($member['is_online_badge']) ? '<div class="mx-2">' . $member['is_online_badge'] . '</div>' : ''; ?>
+                            <div class="ml-2" style="width: 82px;">
                                 <?php echo !empty($member['account_type_badge']) ? '<div class="mx-2">' . $member['account_type_badge'] . '</div>' : ''; ?>
                                 <?php echo !empty($member['account_standing_badge']) ? '<div class="mx-2">' . $member['account_standing_badge'] . '</div>' : ''; ?>
+                                <?php echo !empty($member['is_online_badge']) ? '<div class="mx-2">' . $member['is_online_badge'] . '</div>' : ''; ?>
                             </div>
                             <div class="text-center pl-2" style="flex: 1; line-height: 1.1;">
                                 <div>
