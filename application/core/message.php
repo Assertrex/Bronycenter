@@ -253,7 +253,7 @@ class Message
         $conversations = $this->database->read(
             'c.id, c.user_one_id, c.user_two_id, c.last_message_datetime, c.messages_count, m.sender_id, m.datetime, m.message, m.seen',
             'messages_simple_conversations c',
-            'INNER JOIN (SELECT conversation_id, sender_id, datetime, message, seen FROM messages_simple_messages ORDER BY id DESC) m ON m.conversation_id = c.id WHERE c.user_one_id = ? OR c.user_two_id = ? GROUP BY m.conversation_id ORDER BY c.last_message_datetime DESC',
+            'INNER JOIN (SELECT DISTINCT conversation_id, sender_id, datetime, message, seen FROM messages_simple_messages ORDER BY id DESC) m ON m.conversation_id = c.id WHERE c.user_one_id = ? OR c.user_two_id = ? GROUP BY m.conversation_id ORDER BY c.last_message_datetime DESC',
             [$_SESSION['account']['id'], $_SESSION['account']['id']]
         );
 
