@@ -108,15 +108,22 @@ class Utilities
      *
      * @since 0.1.0
      * @var string $string Not escaped user value
+     * @var boolean|null $linebreaks False if string should be returned without line breaks
      * @return string Escaped user value
      */
-    public function doEscapeString($string)
+    public function doEscapeString($string, $linebreaks = true)
 	{
         // Escape HTML tags into HTML entities
         $string = htmlspecialchars($string);
 
-        // Replace textarea new lines with HTML new lines
-        $string = nl2br($string);
+        // Display line breaks as HTML new lines
+        if ($linebreaks) {
+            // Remove multiple line breaks
+            $string = preg_replace('/[\r\n][\r\n]+/', '<br /><br />', $string);
+
+            // Replace textarea new lines with HTML new lines
+            $string = nl2br($string);
+        }
 
         // Return escaped string
 		return $string;

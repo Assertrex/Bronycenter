@@ -30,7 +30,7 @@
                 </div>
 
                 <li class="nav-item d-lg-none">
-                    <a class="d-block nav-link" href="profile.php?u=<?php echo $_SESSION['account']['id']; ?>">Profile</a>
+                    <a class="d-block nav-link" href="profile.php?u=<?= $_SESSION['account']['id']; ?>">Profile</a>
                 </li>
                 <li class="nav-item d-lg-none">
                     <a class="d-block nav-link" href="members.php">Members</a>
@@ -116,11 +116,11 @@
                     <div class="dropdown" id="profile-actions-dropdown">
                         <a href="#" class="nav-link d-flex align-items-center py-1 dropdown-toggle" role="button" id="profile-actions-dropdown-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <div class="pr-2" id="profile-actions-dropdown-avatar">
-                                <img class="rounded" id="header-user-avatar" src="../media/avatars/<?php echo $_SESSION['user']['avatar']; ?>/minres.jpg" alt="Your avatar" />
+                                <img class="rounded" id="header-user-avatar" src="../media/avatars/<?= $_SESSION['user']['avatar']; ?>/minres.jpg" alt="Your avatar" />
                             </div>
                             <div class="pr-2" id="profile-actions-dropdown-button-username">
-                                <?php echo htmlspecialchars($_SESSION['user']['displayname']); ?><br />
-                                <small>@<?php echo $_SESSION['account']['username']; ?></small>
+                                <?= $utilities->doEscapeString($_SESSION['user']['displayname'], false); ?><br />
+                                <small>@<?= $_SESSION['account']['username']; ?></small>
                             </div>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profile-actions-dropdown-button">

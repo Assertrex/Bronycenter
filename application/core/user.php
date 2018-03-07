@@ -272,8 +272,8 @@ class User
         // Store user details in an tooltip
         $details['tooltip'] = '
         <div style=\'padding: .5rem .25rem; line-height: 1.2;\'>
-            <div>' . $this->utilities->doEscapeString($details['display_name']) . '</div>
-            <div><small class=\'text-muted\'>@' . $this->utilities->doEscapeString($details['username']) . '</small></div>
+            <div>' . $this->utilities->doEscapeString($details['display_name'], false) . '</div>
+            <div><small class=\'text-muted\'>@' . $details['username'] . '</small></div>
 
             <div style=\'padding-top: 8px; text-align: left;\'>
                 <div style=\'margin-bottom: 1px;\'>

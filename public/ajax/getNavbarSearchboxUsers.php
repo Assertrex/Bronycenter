@@ -28,6 +28,9 @@ for ($i = 0; $i < count($matchedUsers); $i++) {
 
     // Format activity datetimes
     $matchedUsers[$i]['last_online'] = $utilities->getDateIntervalString($utilities->countDateInterval($matchedUsers[$i]['last_online']));
+
+    // Escape users display name
+    $matchedUsers[$i]['display_name'] = $utilities->doEscapeString($matchedUsers[$i]['display_name'], false);
 }
 
 // Prepare array with result

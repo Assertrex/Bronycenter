@@ -23,7 +23,7 @@ require('../../application/partials/social/head.php');
     require('../../application/partials/social/header.php');
     ?>
 
-    <div class="container <?php echo $loggedIn ?: 'guest'; ?>">
+    <div class="container <?= $loggedIn ?: 'guest'; ?>">
         <?php
         // Include system messages if any exists
         require('../../application/partials/flash.php');
@@ -51,25 +51,25 @@ require('../../application/partials/social/head.php');
                             );
                         ?>
 
-                        <a class="d-flex align-items-center p-2 px-lg-3" href="profile.php?u=<?php echo $member['id']; ?>">
+                        <a class="d-flex align-items-center p-2 px-lg-3" href="profile.php?u=<?= $member['id']; ?>">
                             <div style="width: 64px;">
-                                <img src="../media/avatars/<?php echo $member['avatar']; ?>/minres.jpg" class="rounded" />
+                                <img src="../media/avatars/<?= $member['avatar']; ?>/minres.jpg" class="rounded" />
                             </div>
                             <div class="ml-2" style="width: 82px;">
-                                <?php echo !empty($member['account_type_badge']) ? '<div class="mx-2">' . $member['account_type_badge'] . '</div>' : ''; ?>
-                                <?php echo !empty($member['account_standing_badge']) ? '<div class="mx-2">' . $member['account_standing_badge'] . '</div>' : ''; ?>
-                                <?php echo !empty($member['is_online_badge']) ? '<div class="mx-2">' . $member['is_online_badge'] . '</div>' : ''; ?>
+                                <?= !empty($member['account_type_badge']) ? '<div class="mx-2">' . $member['account_type_badge'] . '</div>' : ''; ?>
+                                <?= !empty($member['account_standing_badge']) ? '<div class="mx-2">' . $member['account_standing_badge'] . '</div>' : ''; ?>
+                                <?= !empty($member['is_online_badge']) ? '<div class="mx-2">' . $member['is_online_badge'] . '</div>' : ''; ?>
                             </div>
                             <div class="text-center pl-2" style="flex: 1; line-height: 1.1;">
                                 <div>
-                                    <?php echo $utilities->doEscapeString($member['display_name']); ?>
+                                    <?= $utilities->doEscapeString($member['display_name'], false); ?>
                                 </div>
                                 <div>
-                                    <small class="text-muted">@<?php echo $member['username']; ?></small>
+                                    <small class="text-muted">@<?= $member['username']; ?></small>
                                 </div>
                                 <?php if (!empty($member['short_description'])) { ?>
                                 <div class="mt-2">
-                                    <small>"<?php echo $utilities->doEscapeString($member['short_description']); ?>"</small>
+                                    <small>"<?= $utilities->doEscapeString($member['short_description'], false); ?>"</small>
                                 </div>
                                 <?php } // if ?>
                             </div>

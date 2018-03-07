@@ -59,7 +59,7 @@ require('../../application/partials/social/head.php');
     require('../../application/partials/social/header.php');
     ?>
 
-    <div class="container <?php echo $profileDetails['is_online'] ?: 'guest'; ?>">
+    <div class="container <?= $profileDetails['is_online'] ?: 'guest'; ?>">
         <?php
         // Include system messages if any exists
         require('../../application/partials/flash.php');
@@ -68,24 +68,24 @@ require('../../application/partials/social/head.php');
         <div class="row">
             <aside class="col-12 col-lg-4">
                 <section class="fancybox text-center p-4 mt-0">
-                    <img src="../media/avatars/<?php echo $profileDetails['avatar']; ?>/defres.jpg" class="rounded mb-3">
+                    <img src="../media/avatars/<?= $profileDetails['avatar']; ?>/defres.jpg" class="rounded mb-3">
 
                     <?php if (!empty($profileDetails['recent_displaynames_divs'])) { ?>
-                    <h5 class="mb-0" style="cursor: help;" data-toggle="tooltip" data-html="true" title="<div class='my-1'>Previous display name:</div><div class='mb-2' style='color: #BDBDBD;'><?php echo $utilities->doEscapeString($profileDetails['recent_displaynames_divs']); ?></div>"><?php echo $utilities->doEscapeString($profileDetails['display_name']); ?></h5>
+                    <h5 class="mb-0" style="cursor: help;" data-toggle="tooltip" data-html="true" title="<div class='my-1'>Previous display name:</div><div class='mb-2' style='color: #BDBDBD;'><?= $utilities->doEscapeString($profileDetails['recent_displaynames_divs'], false); ?></div>"><?= $utilities->doEscapeString($profileDetails['display_name'], false); ?></h5>
                     <?php } else { ?>
-                    <h5 class="mb-0"><?php echo $utilities->doEscapeString($profileDetails['display_name']); ?></h5>
+                    <h5 class="mb-0"><?= $utilities->doEscapeString($profileDetails['display_name'], false); ?></h5>
                     <?php } ?>
 
-                    <p class="mb-0 text-muted" style="margin-top: -2px;"><small>@<?php echo $profileDetails['username']; ?></small></p>
+                    <p class="mb-0 text-muted" style="margin-top: -2px;"><small>@<?= $profileDetails['username']; ?></small></p>
                     <p class="mb-0 mt-2">
-                        <?php echo $profileDetails['account_type_badge'] ?? ''; ?>
-                        <?php echo $profileDetails['account_standing_badge'] ?? ''; ?>
-                        <?php echo $profileDetails['is_online_badge']; ?>
+                        <?= $profileDetails['account_type_badge'] ?? ''; ?>
+                        <?= $profileDetails['account_standing_badge'] ?? ''; ?>
+                        <?= $profileDetails['is_online_badge']; ?>
                     </p>
 
                     <?php if (!empty($profileDetails['short_description'])) { ?>
                     <p class="mt-3 mb-0" style="font-size: 90%; line-height: 1.4;">
-                        <?php echo $utilities->doEscapeString($profileDetails['short_description']); ?>
+                        <?= $utilities->doEscapeString($profileDetails['short_description'], false); ?>
                     </p>
                     <?php } // if ?>
                 </section>
@@ -98,14 +98,14 @@ require('../../application/partials/social/head.php');
                             <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="Location">
                                 <i class="fa fa-map-marker text-primary" aria-hidden="true"></i>
                             </span>
-                            <?php echo $profileDetails['city'] ? $utilities->doEscapeString($profileDetails['city']) . ', ' : ''; ?><?php echo $profileDetails['country_name'] ?? '<span class="text-danger">Unknown country</span>'; ?>
+                            <?= $profileDetails['city'] ? $utilities->doEscapeString($profileDetails['city'], false) . ', ' : ''; ?><?= $profileDetails['country_name'] ?? '<span class="text-danger">Unknown country</span>'; ?>
                         </p>
                         <?php if (!empty($profileDetails['gender'])) { ?>
                         <p class="mb-0">
                             <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="Gender">
                                 <i class="fa fa-transgender text-primary" aria-hidden="true"></i>
                             </span>
-                            <?php echo $profileDetails['gender_name']; ?>
+                            <?= $profileDetails['gender_name']; ?>
                         </p>
                         <?php } // if ?>
                         <?php if (!empty($profileDetails['birthdate'])) { ?>
@@ -113,21 +113,21 @@ require('../../application/partials/social/head.php');
                             <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="Age">
                                 <i class="fa fa-user-o text-primary" aria-hidden="true"></i>
                             </span>
-                            <?php echo $profileDetails['birthdate_years']; ?>
+                            <?= $profileDetails['birthdate_years']; ?>
                         </p>
                         <?php } // if ?>
                         <p class="mb-0">
                             <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="Account created">
                                 <i class="fa fa-address-book-o text-primary" aria-hidden="true"></i>
                             </span>
-                            <span style="cursor: help;" data-toggle="tooltip" data-placement="top" title="<?php echo $profileDetails['registration_datetime']; ?> (UTC)"><?php echo $profileDetails['registration_interval']; ?></span>
+                            <span style="cursor: help;" data-toggle="tooltip" data-placement="top" title="<?= $profileDetails['registration_datetime']; ?> (UTC)"><?= $profileDetails['registration_interval']; ?></span>
                         </p>
                         <?php if (!empty($profileDetails['last_online'])) { ?>
                         <p class="mb-0">
                             <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="Last seen">
                                 <i class="fa fa-clock-o text-primary" aria-hidden="true"></i>
                             </span>
-                            <span style="cursor: help;" data-toggle="tooltip" data-placement="top" title="<?php echo $profileDetails['last_online']; ?> (UTC)"><?php echo $profileDetails['is_online'] ? 'Just now ' : $profileDetails['last_online_interval']; ?></span>
+                            <span style="cursor: help;" data-toggle="tooltip" data-placement="top" title="<?= $profileDetails['last_online']; ?> (UTC)"><?= $profileDetails['is_online'] ? 'Just now ' : $profileDetails['last_online_interval']; ?></span>
                         </p>
                         <?php } // if ?>
                     </div>
@@ -141,7 +141,7 @@ require('../../application/partials/social/head.php');
                         <?php if ($profileDetails['id'] == $_SESSION['account']['id']) { ?>
                         <button type="button" role="button" class="btn btn-outline-primary btn-sm btn-block" style="cursor: not-allowed" disabled>Send a message</button>
                         <?php } else { ?>
-                        <button type="button" role="button" data-toggle="modal" data-target="#mainModal" id="btn-profile-sendmessage" class="btn btn-outline-primary btn-sm btn-block" data-userid="<?php echo $profileDetails['id']; ?>"  data-userdisplayname="<?php echo $profileDetails['display_name']; ?>">Send a message</button>
+                        <button type="button" role="button" data-toggle="modal" data-target="#mainModal" id="btn-profile-sendmessage" class="btn btn-outline-primary btn-sm btn-block" data-userid="<?= $profileDetails['id']; ?>"  data-userdisplayname="<?= $utilities->doEscapeString($profileDetails['display_name']); ?>">Send a message</button>
                         <?php } // if ?>
                     </div>
                 </section>
@@ -182,35 +182,35 @@ require('../../application/partials/social/head.php');
                                 <?php if (!empty($profileDetails['full_description'])) { ?>
                                 <div class="aside-content-blocks mb-3">
                                     <p class="aside-content-titles mb-2">Something about me</p>
-                                    <div><?php echo $utilities->doEscapeString($profileDetails['full_description']); ?></div>
+                                    <div><?= $utilities->doEscapeString($profileDetails['full_description']); ?></div>
                                 </div>
                                 <?php } // if ?>
 
                                 <?php if (!empty($profileDetails['contact_methods'])) { ?>
                                 <div class="aside-content-blocks mb-3">
                                     <p class="aside-content-titles mb-2">You can find me there</p>
-                                    <div><?php echo $utilities->doEscapeString($profileDetails['contact_methods']); ?></div>
+                                    <div><?= $utilities->doEscapeString($profileDetails['contact_methods']); ?></div>
                                 </div>
                                 <?php } // if ?>
 
                                 <?php if (!empty($profileDetails['favourite_music'])) { ?>
                                 <div class="aside-content-blocks mb-3">
                                     <p class="aside-content-titles mb-2">Favourite music</p>
-                                    <div><?php echo $utilities->doEscapeString($profileDetails['favourite_music']); ?></div>
+                                    <div><?= $utilities->doEscapeString($profileDetails['favourite_music']); ?></div>
                                 </div>
                                 <?php } // if ?>
 
                                 <?php if (!empty($profileDetails['favourite_movies'])) { ?>
                                 <div class="aside-content-blocks mb-3">
                                     <p class="aside-content-titles mb-2">Favourite movies</p>
-                                    <div><?php echo $utilities->doEscapeString($profileDetails['favourite_movies']); ?></div>
+                                    <div><?= $utilities->doEscapeString($profileDetails['favourite_movies']); ?></div>
                                 </div>
                                 <?php } // if ?>
 
                                 <?php if (!empty($profileDetails['favourite_games'])) { ?>
                                 <div class="aside-content-blocks mb-3">
                                     <p class="aside-content-titles mb-2">Favourite games</p>
-                                    <div><?php echo $utilities->doEscapeString($profileDetails['favourite_games']); ?></div>
+                                    <div><?= $utilities->doEscapeString($profileDetails['favourite_games']); ?></div>
                                 </div>
                                 <?php } // if ?>
                             </div>
@@ -236,21 +236,21 @@ require('../../application/partials/social/head.php');
                                 <?php if (!empty($profileDetails['fandom_becameabrony'])) { ?>
                                 <div class="aside-content-blocks mb-3">
                                     <p class="aside-content-titles mb-2">When I've became a brony/pegasister</p>
-                                    <div><?php echo $utilities->doEscapeString($profileDetails['fandom_becameabrony']); ?></div>
+                                    <div><?= $utilities->doEscapeString($profileDetails['fandom_becameabrony']); ?></div>
                                 </div>
                                 <?php } // if ?>
 
                                 <?php if (!empty($profileDetails['fandom_favouritepony'])) { ?>
                                 <div class="aside-content-blocks mb-3">
                                     <p class="aside-content-titles mb-2">Favourite pony</p>
-                                    <div><?php echo $utilities->doEscapeString($profileDetails['fandom_favouritepony']); ?></div>
+                                    <div><?= $utilities->doEscapeString($profileDetails['fandom_favouritepony']); ?></div>
                                 </div>
                                 <?php } // if ?>
 
                                 <?php if (!empty($profileDetails['fandom_favouriteepisode'])) { ?>
                                 <div class="aside-content-blocks mb-3">
                                     <p class="aside-content-titles mb-2">Favourite episode</p>
-                                    <div><?php echo $utilities->doEscapeString($profileDetails['fandom_favouriteepisode']); ?></div>
+                                    <div><?= $utilities->doEscapeString($profileDetails['fandom_favouriteepisode']); ?></div>
                                 </div>
                                 <?php } // if ?>
                             </div>
@@ -269,7 +269,7 @@ require('../../application/partials/social/head.php');
 
                                 <div class="aside-content-blocks mb-3">
                                     <p class="aside-content-titles mb-2">Look what I've made</p>
-                                    <div><?php echo $utilities->doEscapeString($profileDetails['creations_links']); ?></div>
+                                    <div><?= $utilities->doEscapeString($profileDetails['creations_links']); ?></div>
                                 </div>
 
                             </div>

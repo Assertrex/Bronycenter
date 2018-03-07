@@ -272,7 +272,7 @@ class Message
             // Return decrypted message if decryption is possible
             if (hash_hmac('sha256', $ciphertext, $key, true) == $hash) {
                 $conversations[$i]['message'] = openssl_decrypt($ciphertext, $method, $key, OPENSSL_RAW_DATA, $iv);
-                $conversations[$i]['message'] = htmlspecialchars($conversations[$i]['message']);
+                $conversations[$i]['message'] = $this->utilities->doEscapeString($conversations[$i]['message'], false);
             } else {
                 $conversations[$i]['message'] = 'Sorry, this message couldn\'t be decrypted!';
             }
@@ -292,6 +292,9 @@ class Message
 
             // Get details about person in this conversation
             $conversations[$i]['user_details'] = $this->user->generateUserDetails($conversations[$i]['person_id']);
+
+            // Escape HTML characters
+            $conversations[$i]['user_details']['display_name'] = $this->utilities->doEscapeString($conversations[$i]['user_details']['display_name'], false);
         }
 
         return $conversations;
