@@ -208,6 +208,7 @@ class Message
             // Return decrypted message if decryption is possible
             if (hash_hmac('sha256', $ciphertext, $key, true) == $hash) {
                 $messages[$i]['message'] = openssl_decrypt($ciphertext, $method, $key, OPENSSL_RAW_DATA, $iv);
+                $messages[$i]['message'] = $this->utilities->doEscapeString($messages[$i]['message']);
             } else {
                 $messages[$i]['message'] = 'Sorry, this message couldn\'t be decrypted!';
             }
@@ -271,6 +272,7 @@ class Message
             // Return decrypted message if decryption is possible
             if (hash_hmac('sha256', $ciphertext, $key, true) == $hash) {
                 $conversations[$i]['message'] = openssl_decrypt($ciphertext, $method, $key, OPENSSL_RAW_DATA, $iv);
+                $conversations[$i]['message'] = $this->utilities->doEscapeString($conversations[$i]['message']);
             } else {
                 $conversations[$i]['message'] = 'Sorry, this message couldn\'t be decrypted!';
             }
