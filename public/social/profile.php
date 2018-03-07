@@ -98,7 +98,7 @@ require('../../application/partials/social/head.php');
                             <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="Location">
                                 <i class="fa fa-map-marker text-primary" aria-hidden="true"></i>
                             </span>
-                            <?php echo $profileDetails['city'] ? $utilities->doEscapeString($profileDetails['city']) . ', ' : ''; ?><?php echo $profileDetails['country_name']; ?>
+                            <?php echo $profileDetails['city'] ? $utilities->doEscapeString($profileDetails['city']) . ', ' : ''; ?><?php echo $profileDetails['country_name'] ?? '<span class="text-danger">Unknown country</span>'; ?>
                         </p>
                         <?php if (!empty($profileDetails['gender'])) { ?>
                         <p class="mb-0">
@@ -122,12 +122,14 @@ require('../../application/partials/social/head.php');
                             </span>
                             <span style="cursor: help;" data-toggle="tooltip" data-placement="top" title="<?php echo $profileDetails['registration_datetime']; ?> (UTC)"><?php echo $profileDetails['registration_interval']; ?></span>
                         </p>
+                        <?php if (!empty($profileDetails['last_online'])) { ?>
                         <p class="mb-0">
                             <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="Last seen">
                                 <i class="fa fa-clock-o text-primary" aria-hidden="true"></i>
                             </span>
                             <span style="cursor: help;" data-toggle="tooltip" data-placement="top" title="<?php echo $profileDetails['last_online']; ?> (UTC)"><?php echo $profileDetails['is_online'] ? 'Just now ' : $profileDetails['last_online_interval']; ?></span>
                         </p>
+                        <?php } // if ?>
                     </div>
                 </section>
 

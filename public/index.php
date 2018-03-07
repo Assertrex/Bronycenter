@@ -39,12 +39,24 @@ require('../application/partials/init.php');
         require('../application/partials/flash.php');
         ?>
 
-        <section id="description">
+        <section id="description" class="mb-4">
             <p class="text-center">
                 Website is currently at early development stage and it's not ready for open registration.<br />
                 If you'd like to join and to test things out, please <a href="contact.php">contact</a> the administrator.<br />
                 We'll be happy to see you there!
             </p>
+        </section>
+
+        <section id="registration" class="mb-4">
+            <?php
+            // Include partial containing a post creator
+            require('../application/partials/index/form-registration.php');
+            ?>
+        </section>
+
+        <section id="website" class="text-center mb-0">
+            <p class="mb-0">Version: <?php echo $websiteVersion['version']; ?> (<?php echo $websiteVersion['date']; ?>)</p>
+            <p class="mb-0">BronyCenter &copy; 2017 - 2018</p>
         </section>
     </div>
 

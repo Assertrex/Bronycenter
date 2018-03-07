@@ -111,8 +111,14 @@ class Session
 			'id, display_name, username, email, avatar, account_type, account_standing',
 			'users',
 			'WHERE id = ?',
-			[$_SESSION['account']['id']]
-		)[0];
+			[$_SESSION['account']['id']],
+            false
+		);
+
+        // Logout user if it has been removed from a database
+        if (empty($details)) {
+            return false;
+        }
 
         // Check if account has been banned
         // TODO Check if ban has ended and switch account standing value back to 0

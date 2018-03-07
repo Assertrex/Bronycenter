@@ -31,7 +31,13 @@ class Config
      */
     public function __construct()
     {
-        $this->configuration = parse_ini_file(__DIR__ . '/../../settings.ini', true);
+        // Use local environment configuration file if exists
+        // It is required to share a source code without leaking a mail configuration
+        if (file_exists(__DIR__ . '/../../settings.dev.ini')) {
+            $this->configuration = parse_ini_file(__DIR__ . '/../../settings.dev.ini', true);
+        } else {
+            $this->configuration = parse_ini_file(__DIR__ . '/../../settings.ini', true);
+        }
     }
 
     /**

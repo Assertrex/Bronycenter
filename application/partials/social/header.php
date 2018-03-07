@@ -152,7 +152,7 @@
             <form method="post" action="../login.php" class="form-inline justify-content-end justify-content-sm-center py-lg-0">
                 <input type="text" name="login-username" class="form-control mb-2 mb-sm-0" id="login-username" placeholder="Username or e-mail" autocomplete="username" autofocus required />
                 <input type="password" name="login-password" class="form-control mb-2 mb-sm-0 ml-sm-2 mr-lg-2" id="login-password" placeholder="Password" autocomplete="current-password" required />
-                <button type="submit" name="login-submit" class="btn mt-sm-2 mt-lg-0" id="login-submit" value="login" role="button">Login</button>
+                <button type="submit" name="login-submit" class="btn mt-sm-2 mt-lg-0" id="login-submit" value="login">Login</button>
             </form>
             <?php
             } // else

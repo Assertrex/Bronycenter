@@ -102,9 +102,10 @@ class Post
      * @since Release 0.1.0
      * @var string $postContent Post's content message
      * @var string $postType Post's type ID
+     * @var integer|null $serverPostUserID ID of a user for which a server message is made for
      * @return integer ID of a created post
      */
-    public function add($postContent, $postType)
+    public function add($postContent, $postType, $serverPostUserID = null)
     {
         // Store common system values
         $currentIP = $this->utilities->getVisitorIP();
@@ -120,7 +121,7 @@ class Post
             'user_id, ip, datetime, content, type',
             'posts',
             '',
-            [$_SESSION['account']['id'], $currentIP, $currentDatetime, $postContent, $postType]
+            [$serverPostUserID ?? $_SESSION['account']['id'], $currentIP, $currentDatetime, $postContent, $postType]
         );
 
         // Return a post ID if post has been successfully added

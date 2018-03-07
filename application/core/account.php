@@ -18,6 +18,13 @@ class Account
     private static $instance = null;
 
     /**
+     * Place for instance of a config class
+     *
+     * @since Release 0.1.0
+     */
+    private $config = null;
+
+    /**
      * Place for instance of a database class
      *
      * @since Release 0.1.0
@@ -53,17 +60,26 @@ class Account
     private $validator = null;
 
     /**
+     * Place for instance of a post class
+     *
+     * @since Release 0.1.0
+     */
+    private $post = null;
+
+    /**
      * Get instances of required classes
      *
      * @since Release 0.1.0
      */
     public function __construct()
     {
+        $this->config = Config::getInstance();
         $this->database = Database::getInstance();
         $this->flash = Flash::getInstance();
         $this->session = Session::getInstance();
         $this->utilities = Utilities::getInstance();
         $this->validator = Validator::getInstance();
+        $this->post = Post::getInstance();
     }
 
     /**
@@ -97,23 +113,15 @@ class Account
             $isEmail = true;
         }
 
-        // Set default status for username and password validators
-        $isUsernameValid = false;
-        $isPasswordValid = false;
-
         // Check if username or e-mail address is valid
         if ($isEmail) {
-            $isUsernameValid = $this->validator->checkEmail($credentials['username']);
+            if (!$this->validator->checkEmail($credentials['username'])) {
+                return false;
+            }
         } else {
-            $isUsernameValid = $this->validator->checkUsername($credentials['username']);
-        }
-
-        // Check if password is valid
-        $isPasswordValid = $this->validator->checkPassword($credentials['password']);
-
-        // Check if both input fields are valid
-        if (!$isUsernameValid || !$isPasswordValid) {
-            return false;
+            if (!$this->validator->checkUsername($credentials['username'])) {
+                return false;
+            }
         }
 
         // Get selected details about user from database
@@ -159,7 +167,7 @@ class Account
 			[$currentIP, $currentDatetime, $currentLoginCount, $currentDatetime, $user[0]['id']]
 		);
 
-        // // Log details about successful login
+        // Log details about successful login
 		$this->database->create(
 			'user_id, ip, datetime, agent',
 			'log_logins',
@@ -185,26 +193,223 @@ class Account
      * Register a new account
      *
      * @since Release 0.1.0
-     * @var array $credentials User register credentials
      * @return boolean Result of a register attempt
      */
-    public function register($credentials)
+    public function register()
     {
+        // Get website's settings
+        $websiteSettings = $this->config->getSection('system');
 
+        /**
+         * Step 1: Registration validation
+        **/
+
+        // Check if registration form has been submitted correctly
+        if (empty($_POST['submit']) || $_POST['submit'] !== 'register') {
+            $this->flash->error('Register method has been called incorrectly. Please, refresh a page and try again.');
+            return false;
+        }
+
+        // Stop executing if registration is disabled in website's settings
+        if (!$websiteSettings['enableRegistration']) {
+            $this->flash->error('Registration has been temporiary disabled. Sorry about that. Please, try again later.');
+            return false;
+        }
+
+        // Store POST values in a variables
+        $displayname = $_POST['display_name'];
+        $username = strtolower($_POST['username']);
+        $email = strtolower($_POST['email']);
+        $password = $_POST['password'];
+        $passwordRepeat = $_POST['passwordrepeat'];
+
+        // Validate new display name
+        $isDisplaynameValid = $this->validator->checkDisplayname($displayname);
+        $isUsernameValid = $this->validator->checkUsername($username);
+        $isEmailValid = $this->validator->checkEmail($email);
+        $arePasswordsValid = $this->validator->checkPasswords($password, $passwordRepeat);
+
+        // Check if all input fields are valid
+        if (!$isDisplaynameValid || !$isUsernameValid || !$isEmailValid || !$arePasswordsValid) {
+            return false;
+        }
+
+        /**
+         * Step 2: Checking uniqueness of user values
+        **/
+
+        // Get any of other users using same values in a database
+        $duplicateValues = $this->database->read(
+            'id, display_name, username, email',
+            'users',
+            'WHERE display_name = ? OR username = ? OR email = ?',
+            [$displayname, $username, $email]
+        );
+
+        // Check if any of other users is already using same values
+		if (count($duplicateValues) != 0) {
+			foreach ($duplicateValues as $duplicateAccount) {
+                // Check if user using same display name has been found
+				if ($displayname === $duplicateAccount['display_name']) {
+                    $this->flash->error('Different user is already using this display name!');
+				}
+
+                // Check if user using same username has been found
+				if ($username === $duplicateAccount['username']) {
+                    $this->flash->error('Different user is already using this username!');
+				}
+
+                // Check if user using same e-mail address has been found
+				if ($email === $duplicateAccount['email']) {
+                    $this->flash->error('Different user is already using this e-mail address!');
+				}
+			}
+
+			return false;
+		}
+
+        /**
+         * Step 3: Add a user to the database
+        **/
+
+        // Store common variables
+        $currentIP = $this->utilities->getVisitorIP();
+		$currentDatetime = $this->utilities->getDatetime();
+
+        // Get user's country code and timezone
+		$o_geoip = new GeoIP();
+        $o_geoip->getDetails($currentIP);
+
+        // Hash a password
+        // Fallback from Argon2 to BCrypt if PHP version is lower than 7.2
+        if (version_compare(PHP_VERSION, '7.2.0') >= 0) {
+            $password = password_hash($password, PASSWORD_ARGON2I);
+        } else {
+            $password = password_hash($password, PASSWORD_BCRYPT);
+        }
+
+        // Insert new user into database if nothing has returned an error
+        $accountID = $this->database->create(
+            'display_name, username, email, password, registration_ip, registration_datetime, country_code, timezone',
+            'users',
+            '',
+            [
+                $displayname,
+                $username,
+                null,
+                $password,
+                $currentIP,
+                $currentDatetime,
+                $o_geoip->getCountryCode(),
+                $o_geoip->getTimezone()
+            ]
+        );
+
+        // Check if account has been created successfully
+        if (empty($accountID)) {
+            $this->flash->error('There was an unknown error while trying to create an account. Sorry about that. Please, try again later.');
+            return false;
+        }
+
+        // Add user to additional tables
+        $this->database->create('user_id', 'users_details', '', [$accountID]);
+        $this->database->create('user_id', 'users_statistics', '', [$accountID]);
+
+        // Show successful system flash message about created account
+        $this->flash->success(
+            'Account has been created successfully.
+            Check your e-mail address and click on a link that we\'ve sent to you to activate your account.<br />
+            If you\'re not getting any, then check your <b>Spam folder</b> or log in here (with username) and click a <b>re-send e-mail button</b>.'
+        );
+
+        /**
+         * Step 4: Send an e-mail with verification link
+        **/
+
+        // Generate a token key used for e-mail verification
+        $tokenEmail = $this->utilities->getRandomHash(16);
+
+        // Insert a new row to allow e-mail address verification
+        $this->database->create(
+            'user_id, hash, email, date',
+            'key_email',
+            '',
+            [$accountID, $tokenEmail, $email, $currentDatetime]
+        );
+
+        // Send an e-mail with verification link
+        $o_mail = new Mail();
+        $o_mail->sendRegistration($email, $accountID, $displayname, $tokenEmail);
+
+        return true;
+    }
+
+    /**
+     * Verify an e-mail address
+     *
+     * @since Release 0.1.0
+     * @var string $accountID ID of a selected account
+     * @var string $tokenEmail Token sent with an e-mail used for verification
+     * @return boolean Result of a method
+     */
+    public function doVerifyEmail($accountID, $tokenEmail)
+    {
+        // Find selected account ID and e-mail token pair in database
+        $foundHash = $this->database->read(
+            'id, email',
+            'key_email',
+            'WHERE user_id = ? AND hash = ? AND used_datetime IS NULL',
+            [$accountID, $tokenEmail]
+        );
+
+        // Check if hash has been found
+        if (count($foundHash) != 1) {
+            return false;
+        }
+
+        // Store common variables
+        $currentIP = $this->utilities->getVisitorIP();
+		$currentDatetime = $this->utilities->getDatetime();
+
+        // Update user account with an e-mail address and new registration datetime
+        $hasChanged = $this->database->update(
+            'email, registration_datetime, account_type',
+            'users',
+            'WHERE id = ?',
+            [$foundHash[0]['email'], $currentDatetime, 1, $accountID]
+        );
+
+        // Update key_email table row with usage info
+        if (!empty($hasChanged)) {
+            $this->database->update(
+                'used_ip, used_datetime',
+                'key_email',
+                'WHERE id = ?',
+                [$currentIP, $currentDatetime, $foundHash[0]['id']]
+            );
+
+            // Add a post about account creation
+            $this->post->add(null, 10, $accountID);
+
+            return true;
+        }
+
+        return false;
     }
 
     /**
      * Change user's password
      *
      * @since Release 0.1.0
-     * @var string $oldPassword User's old password
+     * @var string $currentPassword User's old password
      * @var string $newPassword User's new password
+     * @var string $newPasswordRepeat User's new repeated password
      * @return boolean Result of a method
      */
-    public function changePassword($oldPassword, $newPassword)
+    public function changePassword($currentPassword, $newPassword, $newPasswordRepeat)
     {
         // Check if new password is valid
-        if (!$this->validator->checkPassword($newPassword)) {
+        if (!$this->validator->checkPasswords($newPassword, $newPasswordRepeat)) {
             return false;
         }
 
@@ -215,10 +420,10 @@ class Account
             'WHERE id = ?',
             [$_SESSION['account']['id']],
             false
-        )['password'];
+        );
 
         // Check if old password is correct
-        if (!password_verify($oldPassword, $userPassword)) {
+        if (!password_verify($currentPassword, $userPassword['password'])) {
             $this->flash->error('Old password is incorrect.');
             return false;
         }

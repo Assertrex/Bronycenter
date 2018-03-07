@@ -179,19 +179,19 @@ require('../../application/partials/social/head.php');
             e.preventDefault();
 
             // Store input values
-            let oldPassword = $("#content-input-oldpassword").val();
+            let currentPassword = $("#content-input-oldpassword").val();
             let newPassword = $("#content-input-newpassword").val();
-            let repeatPassword = $("#content-input-repeatpassword").val();
+            let newPasswordRepeat = $("#content-input-repeatpassword").val();
 
             // Check if all fields are filled
-            if (oldPassword.length === 0 || newPassword.length === 0 || repeatPassword.length === 0) {
+            if (currentPassword.length === 0 || newPassword.length === 0 || newPasswordRepeat.length === 0) {
                 return false;
             }
 
             // Request change of a password
             $.post(
                 "../ajax/changeSettingsPassword.php",
-                { oldpassword: oldPassword, newpassword: newPassword, repeatpassword: repeatPassword },
+                { currentpassword: currentPassword, newpassword: newPassword, newpasswordrepeat: newPasswordRepeat },
                 () => {
                     $("#content-input-oldpassword").focus();
 

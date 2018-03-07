@@ -1,7 +1,7 @@
 <?php
 
 /**
-* Validate user input
+* Class used for validating users input values
 *
 * @since Release 0.1.0
 */
@@ -50,6 +50,28 @@ class Validator
     }
 
     /**
+     * Check if display name is valid
+     *
+     * @since Release 0.1.0
+     * @var string $displayname Display name of a user
+     * @return boolean Result of a display name validation
+     */
+    public function checkDisplayname($displayname) {
+        // Start from a valid value
+        $isValid = true;
+
+        // Check if display name contains between 3 and 32 characters
+        if (strlen($displayname) < 3 || strlen($displayname) > 32) {
+            $this->flash->error('Display name must be between 3 and 32 characters.');
+            $isValid = false;
+        }
+
+        // TODO Cut starting and ending spaces
+
+        return $isValid;
+    }
+
+    /**
      * Check if username is valid
      *
      * @since Release 0.1.0
@@ -57,18 +79,18 @@ class Validator
      * @return boolean Result of a username validation
      */
     public function checkUsername($username) {
-        // Start from a valid value.
+        // Start from a valid value
         $isValid = true;
 
-        // Check if username is between 3 and 24 characters.
-        if (strlen($username) < 3 || strlen($username) > 20) {
-            $this->flash->error('Username must be between 3 and 16 characters.');
+        // Check if username contains between 3 and 24 characters
+        if (strlen($username) < 3 || strlen($username) > 24) {
+            $this->flash->error('Username must be between 3 and 24 characters.');
             $isValid = false;
         }
 
-        // Check if username is using only alphanumeric characters.
+        // Check if username is using only alphanumeric characters
         if (!ctype_alnum($username)) {
-            $this->flash->error('Username can contain only alphanumeric characters (a-zA-Z0-9).');
+            $this->flash->error('Username must contain only alphanumeric characters (a-z0-9).');
             $isValid = false;
         }
 
@@ -76,25 +98,25 @@ class Validator
     }
 
     /**
-     * Check if email is valid
+     * Check if e-mail address is valid
      *
      * @since Release 0.1.0
      * @var string $email E-mail address of a user
-     * @return boolean Result of an email validation
+     * @return boolean Result of an e-mail address validation
      */
     public function checkEmail($email) {
-        // Start from a valid value.
+        // Start from a valid value
         $isValid = true;
 
-        // Check if e-mail address is valid.
+        // Check if e-mail address is valid
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $this->flash->error('E-mail address is invalid.');
+            $this->flash->error('E-mail address seems to be invalid. Try to use different one.');
             $isValid = false;
         }
 
-        // Check if e-mail address contains allowed amount of characters.
+        // Check if e-mail address contains allowed amount of characters
         if (strlen($email) < 5 || strlen($email) > 64) {
-            $this->flash->error('E-mail address needs to be between 5 and 64 characters.');
+            $this->flash->error('E-mail address must be between 5 and 64 characters.');
             $isValid = false;
         }
 
@@ -102,19 +124,26 @@ class Validator
     }
 
     /**
-     * Check if password is valid
+     * Check if both passwords are valid
      *
      * @since Release 0.1.0
      * @var string $password Password of a user
-     * @return boolean Result of an password validation
+     * @var string $passwordRepeat Repeated password of a user
+     * @return boolean Result of passwords validation
      */
-    public function checkPassword($password) {
-        // Start from a valid value.
+    public function checkPasswords($password, $passwordRepeat) {
+        // Start from a valid value
         $isValid = true;
 
-        // Check if password is not too short.
+        // Check if password is not too short
         if (strlen($password) < 6) {
-            $this->flash->error('Password needs to be at least 6 characters long.');
+            $this->flash->error('To increase security, your password must be at least 6 characters long.');
+            $isValid = false;
+        }
+
+        // Check if passwords are the same
+        if ($password != $passwordRepeat) {
+            $this->flash->error('Repeated password must be the same as the first one.');
             $isValid = false;
         }
 
