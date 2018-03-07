@@ -347,7 +347,7 @@ class User
 
         // Check how many times user have changed display name
         $userDetails = $this->database->read(
-            'display_name, displayname_changes, displayname_recent',
+            'display_name, displayname_changes, displaynames_recent',
             'users',
             'WHERE id = ?',
             [$_SESSION['account']['id']],
@@ -361,18 +361,18 @@ class User
         }
 
         // Store previous display name in a string with escaped commas
-        if (is_null($userDetails['displayname_recent'])) {
-            $userDetails['displayname_recent'] = str_replace(',', '&#44;', $userDetails['display_name']);
+        if (is_null($userDetails['displaynames_recent'])) {
+            $userDetails['displaynames_recent'] = str_replace(',', '&#44;', $userDetails['display_name']);
         } else {
-            $userDetails['displayname_recent'] = $userDetails['displayname_recent'] . ',' . str_replace(',', '&#44;', $userDetails['display_name']);
+            $userDetails['displaynames_recent'] = $userDetails['displaynames_recent'] . ',' . str_replace(',', '&#44;', $userDetails['display_name']);
         }
 
         // Replace field value in database
         $hasChanged = $this->database->update(
-            'display_name, displayname_changes, displayname_recent',
+            'display_name, displayname_changes, displaynames_recent',
             'users',
             'WHERE id = ?',
-            [$value, $userDetails['displayname_changes'] + 1, $userDetails['displayname_recent'], $_SESSION['account']['id']]
+            [$value, $userDetails['displayname_changes'] + 1, $userDetails['displaynames_recent'], $_SESSION['account']['id']]
         );
 
         // Check if display name have been changed
