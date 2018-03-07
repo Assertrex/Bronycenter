@@ -125,6 +125,11 @@ textarea.std-textarea {
     cursor: pointer;
 }
 
+// Change colors of a Bootstrap badges
+.badge.badge-primary { background-color: #2962FF; }
+.badge.badge-danger { background-color: #D50000; }
+.badge.badge-purple { background-color: #6200EA; color: #FFF; }
+
 @import "scss/social-index";
 
 @media (min-width: 992px) {
