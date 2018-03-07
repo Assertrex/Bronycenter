@@ -19,7 +19,7 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'register') {
         $utilities->redirect('login.php');
     } else {
         // Get new system flash messages
-        $flashMessages = array_merge($flashMessages, $flash->get());
+        $flashMessages = $flash->merge($flashMessages);
     }
 }
 ?>

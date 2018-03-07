@@ -53,6 +53,15 @@ class Flash
         return array();
     }
 
+    /** Merge array containing flash messages with a new one
+     *
+     * @since Release 0.1.0
+     */
+    public function merge($currentArray)
+    {
+        return array_merge($currentArray, $this->get());
+    }
+
     /**
      * General function for creating flash messages
      *
