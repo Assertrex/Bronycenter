@@ -702,7 +702,7 @@ class Post
         }
 
         // Get details about random users that have liked a post
-        $loopAmount = 3;
+        $loopAmount = 4;
 
         for ($i = 1; $i < $loopAmount; $i++) {
             // Stop the loop if no users has left
@@ -713,8 +713,6 @@ class Post
             // Skip current user and get one more person
             if ($array[$i - 1]['id'] != $_SESSION['account']['id']) {
                 $randomUsers[] = $this->user->generateUserDetails($array[$i - 1]['id']);
-            } else {
-                $loopAmount = 4;
             }
         }
 
