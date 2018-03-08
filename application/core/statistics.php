@@ -1,15 +1,12 @@
 <?php
 
 /**
-* Used for counting and getting conters of users actions
-*
-* @since Release 0.1.0
-*/
+ * Used for counting and getting conters of users actions
+ *
+ * @since Release 0.1.0
+**/
 
 namespace BronyCenter;
-
-use BronyCenter\Database;
-use BronyCenter\Utilities;
 
 class Statistics
 {
@@ -17,28 +14,28 @@ class Statistics
      * Singleton instance of a current class
      *
      * @since Release 0.1.0
-     */
+    **/
     private static $instance = null;
 
     /**
      * Place for instance of a database class
      *
      * @since Release 0.1.0
-     */
+    **/
     private $database = null;
 
     /**
      * Place for instance of an utilities class
      *
      * @since Release 0.1.0
-     */
+    **/
     private $utilities = null;
 
     /**
      * Get instances of required classes
      *
      * @since Release 0.1.0
-     */
+    **/
     public function __construct()
     {
         $this->database = Database::getInstance();
@@ -49,9 +46,9 @@ class Statistics
      * Check if instance of current class is existing and create and/or return it
      *
      * @since Release 0.1.0
-     * @var boolean Set as true to reset class instance
+     * @var boolean $reset Set as true to reset class instance
      * @return object Instance of a current class
-     */
+    **/
     public static function getInstance($reset = false)
     {
         if (!self::$instance || $reset === true) {
@@ -65,97 +62,347 @@ class Statistics
      * Get user's statistics
      *
      * @since Release 0.1.0
-     * @return array User's statistics
-     */
+     * @return array|boolean User's statistics
+    **/
     public function get()
     {
+        // Get user's statistics from a database
         $array = $this->database->read(
-            'user_points, posts_created, posts_likes_given, posts_comments_given,' .
-            'posts_deleted, posts_likes_received, posts_comments_received',
+            'user_points, posts_created, posts_removed, posts_removed_mod,' .
+            'posts_likes_given, posts_comments_given, posts_likes_received,' .
+            'posts_comments_received',
             'users_statistics',
             'WHERE user_id = ?',
             [$_SESSION['account']['id']],
             false
         );
+
+        // Check if user statistics have been found
+        if (empty($array)) {
+            return false;
+        }
 
         return $array;
     }
 
     /**
-     * Count user's action
+     * Count user's action points
      *
      * @since Release 0.1.0
-     * @var string $action Name of an action done by user
-     * @var null|integer $amount Amount of actions done by user
-     * @return string Current creations links
-     */
-    public function countAction($action, $amount = 1)
+     * @var integer $userID ID of a user that should receive or lose points
+     * @var integer $amount Amount of actions to count
+     * @var integer $value Points value of an action
+     * @var string $column Name of a database column used by this action
+     * @return boolean Result of this method
+    **/
+    private function countAction($userID, $amount, $value, $column)
     {
-        $availableFields = ['posts_created', 'posts_likes_given', 'posts_comments_given', 'posts_deleted', 'posts_likes_received', 'posts_comments_received'];
-        if (!in_array($action, $availableFields)) {
-            return false;
-        }
-
         // Read current value of a field
-        $currentValue = $this->database->read(
-            "user_points, $action",
+        $currentValues = $this->database->read(
+            "user_points, $column",
             'users_statistics',
             'WHERE user_id = ?',
-            [$_SESSION['account']['id']],
+            [$userID],
             false
         );
 
-        // TODO Track achievements here
+        // Update user points values
+        $currentValues['user_points'] = $currentValues['user_points'] + $value;
+        $currentValues[$column] = $currentValues[$column] + $amount;
 
-        // Check how much user points is this action worth
-        switch ($action) {
-            case 'posts_created':
-                $pointsValue = 5;
-                break;
-            case 'posts_likes_received':
-            case 'posts_comments_received':
-                $pointsValue = 2;
-                break;
-            case 'posts_likes_given':
-            case 'posts_comments_given':
-                $pointsValue = 1;
-                break;
-            case 'posts_deleted':
-                $pointsValue = -5;
-                break;
-            default:
-                $pointsValue = 0;
-        }
-
-        // Update value with a new amount
-        $currentValue['user_points'] = $currentValue['user_points'] + $pointsValue * $amount;
-        $currentValue[$action] = $currentValue[$action] + $amount;
-
-        // Don't update a field with a negative integer as fields are of an unsigned type
-        // Temporiary fix for a broken statistics system
-        if ($currentValue['user_points'] < 0) {
-            $currentValue['user_points'] = 0;
-        }
-
-        // Don't update a field with a negative integer as fields are of an unsigned type
-        // Temporiary fix for a broken statistics system
-        if ($currentValue[$action] < 0) {
-            $currentValue[$action] = 0;
-        }
-
-        // Update field with new value
+        // Update fields with new values
         $updatedID = $this->database->update(
-            "user_points, $action",
+            "user_points, $column",
             'users_statistics',
             'WHERE user_id = ?',
-            [$currentValue['user_points'], $currentValue[$action], $_SESSION['account']['id']]
+            [$currentValues['user_points'], $currentValues[$column], $userID]
         );
 
-        // Check if value has been updated successfully
-        if (intval($updatedID) === 0) {
+        // Check if values have been updated successfully
+        if (empty(intval($updatedID))) {
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * Count an action when user has created a post
+     *
+     * @since Release 0.1.0
+     * @return boolean Result of this method
+    **/
+    public function userPostCreate()
+    {
+        // Define action details
+        $userID = intval($_SESSION['account']['id']);
+        $amount = 1;
+        $value = 10;
+        $column = 'posts_created';
+
+        // Pass details into a main method
+        if ($this->countAction($userID, $amount, $value, $column)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Count an action when user has deleted a post
+     *
+     * @since Release 0.1.0
+     * @return boolean Result of this method
+    **/
+    public function userPostDelete()
+    {
+        // Define action details
+        $userID = intval($_SESSION['account']['id']);
+        $amount = 1;
+        $value = -10;
+        $column = 'posts_removed';
+
+        // Pass details into a main method
+        if ($this->countAction($userID, $amount, $value, $column)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Count an action when moderator has deleted another user's post
+     *
+     * @since Release 0.1.0
+     * @var integer $userID ID of a user that should lose points
+     * @return boolean Result of this method
+    **/
+    public function moderatorPostDelete($userID = 0)
+    {
+        // Check if user ID has been defined
+        if (empty(intval($userID))) {
+            return false;
+        }
+
+        // Define action details
+        $userID = intval($userID);
+        $amount = 1;
+        $value = -10;
+        $column = 'posts_removed_mod';
+
+        // Pass details into a main method
+        if ($this->countAction($userID, $amount, $value, $column)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Count an action when user has liked a post
+     *
+     * @since Release 0.1.0
+     * @return boolean Result of this method
+    **/
+    public function userPostLike()
+    {
+        // Define action details
+        $userID = intval($_SESSION['account']['id']);
+        $amount = 1;
+        $value = 1;
+        $column = 'posts_likes_given';
+
+        // Pass details into a main method
+        if ($this->countAction($userID, $amount, $value, $column)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Count an action when user has unliked a post
+     *
+     * @since Release 0.1.0
+     * @return boolean Result of this method
+    **/
+    public function userPostUnlike()
+    {
+        // Define action details
+        $userID = intval($_SESSION['account']['id']);
+        $amount = -1;
+        $value = -1;
+        $column = 'posts_likes_given';
+
+        // Pass details into a main method
+        if ($this->countAction($userID, $amount, $value, $column)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Count an action when user receives a like on own post
+     *
+     * @since Release 0.1.0
+     * @var integer $userID ID of a user that should receive points
+     * @return boolean Result of this method
+    **/
+    public function userPostLikeReceive($userID = 0)
+    {
+        // Define action details
+        $userID = intval($userID);
+        $amount = 1;
+        $value = 5;
+        $column = 'posts_likes_received';
+
+        // Pass details into a main method
+        if ($this->countAction($userID, $amount, $value, $column)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Count an action when user lose a like on own post
+     *
+     * @since Release 0.1.0
+     * @var integer $userID ID of a user that should lose points
+     * @return boolean Result of this method
+    **/
+    public function userPostLikeLose($userID = 0)
+    {
+        // Define action details
+        $userID = intval($userID);
+        $amount = -1;
+        $value = -5;
+        $column = 'posts_likes_received';
+
+        // Pass details into a main method
+        if ($this->countAction($userID, $amount, $value, $column)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Count an action when user has commented a post
+     *
+     * @since Release 0.1.0
+     * @return boolean Result of this method
+    **/
+    public function userPostComment()
+    {
+        // Define action details
+        $userID = intval($_SESSION['account']['id']);
+        $amount = 1;
+        $value = 1;
+        $column = 'posts_comments_given';
+
+        // Pass details into a main method
+        if ($this->countAction($userID, $amount, $value, $column)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Count an action when user has removed a post comment
+     *
+     * @since Release 0.1.0
+     * @return boolean Result of this method
+    **/
+    public function userPostCommentRemove()
+    {
+        // Define action details
+        $userID = intval($_SESSION['account']['id']);
+        $amount = -1;
+        $value = -1;
+        $column = 'posts_comments_given';
+
+        // Pass details into a main method
+        if ($this->countAction($userID, $amount, $value, $column)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Count an action when moderator has removed a post comment of another user
+     *
+     * @since Release 0.1.0
+     * @var integer $userID ID of a user that should lose points
+     * @return boolean Result of this method
+    **/
+    public function moderatorPostCommentRemove($userID = 0)
+    {
+        // Check if user ID has been defined
+        if (empty(intval($userID))) {
+            return false;
+        }
+
+        // Define action details
+        $userID = intval($userID);
+        $amount = -1;
+        $value = -1;
+        $column = 'posts_comments_given'; // FIXME It was still given, so not really
+
+        // Pass details into a main method
+        if ($this->countAction($userID, $amount, $value, $column)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Count an action when user receives a comment on own post
+     *
+     * @since Release 0.1.0
+     * @var integer $userID ID of a user that should receive points
+     * @return boolean Result of this method
+    **/
+    public function userPostCommentReceive($userID = 0)
+    {
+        // Define action details
+        $userID = intval($userID);
+        $amount = 1;
+        $value = 3;
+        $column = 'posts_comments_received';
+
+        // Pass details into a main method
+        if ($this->countAction($userID, $amount, $value, $column)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Count an action when user lose a comment on own post
+     *
+     * @since Release 0.1.0
+     * @var integer $userID ID of a user that should lose points
+     * @return boolean Result of this method
+    **/
+    public function userPostCommentLose($userID = 0)
+    {
+        // Define action details
+        $userID = intval($userID);
+        $amount = -1;
+        $value = -3;
+        $column = 'posts_comments_received';
+
+        // Pass details into a main method
+        if ($this->countAction($userID, $amount, $value, $column)) {
+            return true;
+        }
+
+        return false;
     }
 }

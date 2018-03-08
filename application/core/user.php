@@ -9,10 +9,6 @@
 namespace BronyCenter;
 
 use DateTime;
-use BronyCenter\Database;
-use BronyCenter\Flash;
-use BronyCenter\Utilities;
-use BronyCenter\Validator;
 
 class User
 {
@@ -115,6 +111,21 @@ class User
     }
 
     /**
+     * Check if current user is a moderator
+     *
+     * @since Release 0.1.0
+     * @return boolean Moderator status of a user
+    **/
+    public function isCurrentModerator()
+    {
+        if ($_SESSION['account']['type'] == 8 || $_SESSION['account']['type'] == 9) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Get all active registered members ordered by last seen time
      *
      * @since Release 0.1.0
@@ -151,7 +162,7 @@ class User
         // Add user's statistics to the columns (usually used for statistics)
         if (!empty($settings['statistics'])) {
             $sql_columns .= ', user_points, posts_created, posts_likes_given, posts_comments_given, ' .
-                            'posts_deleted, posts_likes_received, posts_comments_receved';
+                            'posts_removed, posts_likes_received, posts_comments_receved';
             $sql_additional .= ' INNER JOIN users_statistics s ON u.id = s.user_id';
         }
 

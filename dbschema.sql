@@ -9,32 +9,6 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 
-DROP TABLE IF EXISTS `conversations`;
-CREATE TABLE IF NOT EXISTS `conversations` (
-  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `members_count` tinyint(3) UNSIGNED NOT NULL DEFAULT 0,
-  `messages_count` int(10) UNSIGNED NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-DROP TABLE IF EXISTS `conversations_members`;
-CREATE TABLE IF NOT EXISTS `conversations_members` (
-  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `conversation_id` int(10) UNSIGNED NOT NULL,
-  `user_id` int(10) UNSIGNED NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-DROP TABLE IF EXISTS `conversations_messages`;
-CREATE TABLE IF NOT EXISTS `conversations_messages` (
-  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `conversation_id` int(10) UNSIGNED NOT NULL,
-  `user_id` int(10) UNSIGNED NOT NULL,
-  `datetime` datetime NOT NULL,
-  `message` varchar(500) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 DROP TABLE IF EXISTS `key_email`;
 CREATE TABLE IF NOT EXISTS `key_email` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -200,10 +174,13 @@ CREATE TABLE IF NOT EXISTS `users_statistics` (
   `user_id` int(10) UNSIGNED NOT NULL,
   `user_points` int(10) NOT NULL DEFAULT 0,
   `posts_created` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
+  `posts_removed` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
+  `posts_removed_mod` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
   `posts_likes_given` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
-  `posts_comments_given` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
-  `posts_deleted` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
   `posts_likes_received` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
+  `posts_comments_removed` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
+  `posts_comments_removed_mod` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
+  `posts_comments_given` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
   `posts_comments_received` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_id` (`user_id`)

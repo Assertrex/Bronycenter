@@ -9,10 +9,6 @@
 namespace BronyCenter;
 
 use DateTime;
-use BronyCenter\Database;
-use BronyCenter\Flash;
-use BronyCenter\Utilities;
-use BronyCenter\Validator;
 
 class Post
 {
@@ -126,9 +122,9 @@ class Post
 
         // Return a post ID if post has been successfully added
         if (intval($postID) != 0) {
-            // Add one to user's statistics posts created counter
-            if ($postType == 1) {
-                $this->statistics->countAction('posts_created', 1);
+            // Add points to user statistics counters if it's not a server post
+            if (intval($postType) == 1) {
+                $this->statistics->userPostCreate();
             }
 
             return $postID;
@@ -218,15 +214,8 @@ class Post
      */
     public function delete($postID, $reason)
     {
-        // Remove everything from a string except integer
-        $postID = intval($postID);
-
-        // Store common system values
-        $currentIP = $this->utilities->getVisitorIP();
-        $currentDatetime = $this->utilities->getDatetime();
-
         // Check if post ID is valid
-        if (empty($postID)) {
+        if (empty(intval($postID))) {
             return false;
         }
 
@@ -235,7 +224,7 @@ class Post
             'p.id, p.user_id, u.account_type',
             'posts p',
             'INNER JOIN users u ON p.user_id = u.id WHERE p.id = ?',
-            [$postID]
+            [intval($postID)]
         );
 
         // Check if post exists
@@ -244,18 +233,15 @@ class Post
             return false;
         }
 
-        // Check if user is allowed to delete a post
-        if ($_SESSION['account']['id'] != $postDetails[0]['user_id'] && (
-            $_SESSION['account']['type'] != 8 && $_SESSION['account']['type'] != 9)) {
-            $this->flash->error('You\'re not allowed to remove this post.');
-            return false;
-        }
+        // Define required details
+        $isCurrentAuthor = $_SESSION['account']['id'] == $postDetails[0]['user_id'];
+        $isCurrentModerator = $this->user->isCurrentModerator();
+        $currentIP = $this->utilities->getVisitorIP();
+        $currentDatetime = $this->utilities->getDatetime();
 
-        // Check if post has been created by a moderator
-        if ($_SESSION['account']['id'] != $postDetails[0]['user_id'] && (
-            $postDetails[0]['account_type'] == 8 || $postDetails[0]['account_type'] == 9) &&
-            $_SESSION['account']['type'] != 9) {
-            $this->flash->error('You can\'t remove post created by a different moderator.');
+        // Check if user is allowed to delete a post
+        if (!$isCurrentAuthor && !$isCurrentModerator) {
+            $this->flash->error('You\'re not allowed to remove this post.');
             return false;
         }
 
@@ -268,15 +254,19 @@ class Post
         );
 
         // Check if post has been successfully removed
-        if (!empty(intval($postRemovedID))) {
-            // Add one to user's statistics posts deleted counter
-            // FIXME Remove points from an post author if deleted by a moderator
-            $this->statistics->countAction('posts_deleted', 1);
-            return intval($postRemovedID);
+        if (empty(intval($postRemovedID))) {
+            return false;
         }
 
-        // Return post deletion result
-        return false;
+        // Remove points from user statistics counters
+        if ($isCurrentModerator && !$isCurrentAuthor) {
+            $this->statistics->moderatorPostDelete($postDetails[0]['user_id']);
+        } else {
+            $this->statistics->userPostDelete();
+        }
+
+        return intval($postRemovedID);
+
     }
 
     /**
@@ -578,12 +568,12 @@ class Post
     }
 
     /**
-    * Like or unlike (if already liked) the selected post
-    *
-    * @since Release 0.1.0
-    * @var integer $postId ID of a post
-    * @return boolean Result of a method
-    */
+     * Like or unlike (if already liked) the selected post
+     *
+     * @since Release 0.1.0
+     * @var integer $postId ID of a post
+     * @return boolean Result of a method
+    **/
     public function addLike($postID)
     {
         // Transform ID of a post into integer for security
@@ -596,18 +586,21 @@ class Post
 
         // Find current user's like
         $post = $this->database->read(
-            'pst.id, pst.like_count, lik.id AS like_id, lik.user_id, lik.active',
+            'pst.id, pst.user_id as post_author_id, pst.like_count, lik.id AS like_id, lik.user_id, lik.active',
             'posts pst',
             'LEFT JOIN (SELECT id, post_id, user_id, active FROM posts_likes WHERE post_id = ? AND user_id = ?) AS lik ON pst.id = lik.post_id WHERE pst.id = ?',
             [$postID, $_SESSION['account']['id'], $postID]
         );
 
-       // Return error if post have not been found
-       if (count($post) === 0) {
-           return false;
-       }
+        // Return error if post have not been found
+        if (count($post) === 0) {
+            return false;
+        }
 
-       // Add like if current user has not liked this post before
+        // Remember if current user tries to like own post
+        $isCurrentAuthor = $_SESSION['account']['id'] == $post[0]['post_author_id'];
+
+        // Add like if current user has not liked this post before
         if (is_null($post[0]['user_id'])) {
             // Add new like to the database
             $hasLiked = $this->database->create(
@@ -630,9 +623,13 @@ class Post
                 [$post[0]['like_count'] + 1, $postID]
             );
 
-            // Add one to user's statistics posts likes given counter
-            $this->statistics->countAction('posts_likes_given', 1);
-        }
+            // Add points for user statistics counters
+            $this->statistics->userPostLike();
+
+            if (!$isCurrentAuthor) {
+                $this->statistics->userPostLikeReceive($post[0]['post_author_id']);
+            }
+        } // if
 
         // Add a like again if current user has unliked it before
         else if ($post[0]['active'] == false) {
@@ -652,9 +649,13 @@ class Post
                 [$post[0]['like_count'] + 1, $postID]
             );
 
-            // Add one to user's statistics posts likes given counter
-            $this->statistics->countAction('posts_likes_given', 1);
-        }
+            // Add points for user statistics counters
+            $this->statistics->userPostLike();
+
+            if (!$isCurrentAuthor) {
+                $this->statistics->userPostLikeReceive($post[0]['post_author_id']);
+            }
+        } // else if
 
         // Remove like if current user has already liked a post
         else {
@@ -674,8 +675,12 @@ class Post
                 [$post[0]['like_count'] - 1, $postID]
             );
 
-            // Remove one from user's statistics posts likes given counter
-            $this->statistics->countAction('posts_likes_given', -1);
+            // Remove points from user statistics counters
+            $this->statistics->userPostUnlike();
+
+            if (!$isCurrentAuthor) {
+                $this->statistics->userPostLikeLose($post[0]['post_author_id']);
+            }
         }
 
         return true;
@@ -788,7 +793,7 @@ class Post
 
         // Get a selected post
         $post = $this->database->read(
-            'comment_count',
+            'user_id AS post_author_id, comment_count',
             'posts',
             'WHERE id = ?',
             [$postID]
@@ -815,8 +820,9 @@ class Post
             [intval($post[0]['comment_count']) + 1, $postID]
         );
 
-        // Add one to user's statistics posts comments given counter
-        $this->statistics->countAction('posts_comments_given', 1);
+        // Add points to user statistics counters
+        $this->statistics->userPostComment();
+        $this->statistics->userPostCommentReceive($post[0]['post_author_id']);
 
         return $commentID;
     }
