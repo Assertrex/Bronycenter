@@ -52,7 +52,7 @@ echo '[Step 2]: Counting details about created and removed posts.' . PHP_EOL;
 $arr_posts = $class_database->read(
     'user_id, type, status, delete_moderator, delete_id',
     'posts',
-    '',
+    'WHERE type = 1',
     []
 );
 
@@ -104,7 +104,7 @@ echo '[Step 3]: Counting details about existing posts likes.' . PHP_EOL;
 $arr_posts_likes = $class_database->read(
     'l.id, l.post_id, p.user_id AS post_author_id, l.user_id, l.active',
     'posts_likes l',
-    'INNER JOIN `posts` p ON p.id = l.post_id WHERE l.active = 1',
+    'INNER JOIN `posts` p ON p.id = l.post_id WHERE l.active = 1 AND p.status != 9',
     []
 );
 
@@ -141,7 +141,7 @@ echo '[Step 4]: Counting details about existing posts comments.' . PHP_EOL;
 // Get all existing posts comments
 $arr_posts_comments = $class_database->read(
     'c.id, c.post_id, p.user_id AS post_author_id, c.user_id, c.active',
-    'posts_likes c',
+    'posts_comments c',
     'INNER JOIN `posts` p ON p.id = c.post_id WHERE c.active = 1 AND p.status != 9',
     []
 );
@@ -150,7 +150,7 @@ $arr_posts_comments = $class_database->read(
 foreach ($arr_posts_comments as $arr_posts_comments_item) {
     $authorID = $arr_posts_comments_item['post_author_id'];
     $commentByID = $arr_posts_comments_item['user_id'];
-    $ownPost = ($authorID == $likeByID);
+    $ownPost = ($authorID == $commentByID);
 
     // Check if post has not been commented by it's author
     if (!$ownPost) {
