@@ -102,24 +102,42 @@ class Account
      * Check if user login credentials are valid and create a session
      *
      * @since Release 0.1.0
-     * @var array $credentials User login credentials
      * @return boolean Result of a login attempt
      */
-    public function login($credentials)
+    public function login()
     {
+        // Get website's settings
+        $websiteSettings = $this->config->getSection('system');
+
+        // Check if login form has been submitted correctly
+        if (empty($_POST['submit']) || $_POST['submit'] !== 'login') {
+            $this->flash->error('Login method has been called incorrectly. Please, refresh a page and try again.');
+            return false;
+        }
+
+        // Stop executing if login is disabled in website's settings
+        if (!$websiteSettings['enableLogin']) {
+            $this->flash->error('Login has been temporary disabled. Sorry about that. Please, try again later.');
+            return false;
+        }
+
+        // Store user input values
+        $username = $_POST['username'];
+        $password = $_POST['password'];
+
         // Check if username is an e-mail address
         $isEmail = false;
-        if (filter_var($credentials['username'], FILTER_VALIDATE_EMAIL)) {
+        if (filter_var($username, FILTER_VALIDATE_EMAIL)) {
             $isEmail = true;
         }
 
         // Check if username or e-mail address is valid
         if ($isEmail) {
-            if (!$this->validator->checkEmail($credentials['username'])) {
+            if (!$this->validator->checkEmail($username)) {
                 return false;
             }
         } else {
-            if (!$this->validator->checkUsername($credentials['username'])) {
+            if (!$this->validator->checkUsername($username)) {
                 return false;
             }
         }
@@ -129,7 +147,7 @@ class Account
             'id, display_name, username, email, password, login_count, avatar, account_type, account_standing',
             'users',
             $isEmail ? 'WHERE email = ?' : 'WHERE username = ?',
-            [$credentials['username']]
+            [$username]
         );
 
         // Check if any user has been found
@@ -142,7 +160,7 @@ class Account
 		}
 
         // Check if password is correct
-		if (!password_verify($credentials['password'], $user[0]['password'])) {
+		if (!password_verify($password, $user[0]['password'])) {
             $this->flash->error('Wrong username/e-mail or password.');
 			return false;
 		}
@@ -212,7 +230,7 @@ class Account
 
         // Stop executing if registration is disabled in website's settings
         if (!$websiteSettings['enableRegistration']) {
-            $this->flash->error('Registration has been temporiary disabled. Sorry about that. Please, try again later.');
+            $this->flash->error('Registration has been temporary disabled. Sorry about that. Please, try again later.');
             return false;
         }
 

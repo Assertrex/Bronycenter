@@ -2,15 +2,13 @@
 // Include system initialization code
 require('../application/partials/init.php');
 
-if (!empty($_POST['login-submit'])) {
-    // Get stored flash messages from session
+// Check if login form has been submitted
+if (isset($_POST['submit'])) {
+    // Create an instance of an account class
     $account = BronyCenter\Account::getInstance();
-    $loginStatus = $account->login([
-        'username' => $_POST['login-username'],
-        'password' => $_POST['login-password']
-    ]);
 
-    if ($loginStatus) {
+    // Check if user has been correctly logged in
+    if ($account->login()) {
         // Display flash message notification about website
         $flash->info(
             'Please note, that BronyCenter is currently in early development stage.<br />' .
@@ -18,9 +16,11 @@ if (!empty($_POST['login-submit'])) {
         );
 
         // Redirect user into the social part of a website
-        header('Location: social/');
-        die();
+        $utilities->redirect('social/');
     }
+
+    // Get new system flash messages
+    $flashMessages = $flash->merge($flashMessages);
 }
 ?>
 
@@ -54,10 +54,25 @@ if (!empty($_POST['login-submit'])) {
         </section>
 
         <section id="s-login">
-            <?php
-            // Include partial containing a post creator
-            // require('../application/partials/index/form-registration.php');
-            ?>
+            <?php if ($websiteSettings['enableLogin']) { ?>
+                <form method="post" action="login.php">
+                    <div class="form-group">
+                        <label for="login-input-username">Username</label>
+                        <input type="text" name="username" class="form-control" id="login-input-username" placeholder="examplepony2017" pattern=".{3,24}" title="Field have to be between 3 and 24 characters." autocomplete="username" required autofocus />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="login-input-password">Password</label>
+                        <input type="password" name="password" class="form-control" id="login-input-password" placeholder="$ecretPass987" autocomplete="current-password" required />
+                    </div>
+
+                    <div class="form-group pt-1 text-center">
+                        <button type="submit" name="submit" value="login" class="btn btn-primary mb-2" id="login-button-submit">Login</button>
+                    </div>
+                </form>
+            <?php } else { ?>
+                <p class="text-danger text-center mb-0"><i class="fa fa-exclamation-circle mr-1" aria-hidden="true"></i> Login has been temporary turned off.</p>
+            <?php } ?>
         </section>
     </div>
 
