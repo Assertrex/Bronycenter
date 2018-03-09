@@ -65,6 +65,7 @@ CREATE TABLE IF NOT EXISTS `posts` (
   `edit_count` smallint(5) UNSIGNED NOT NULL DEFAULT 0,
   `type` tinyint(3) UNSIGNED NOT NULL DEFAULT 0,
   `status` tinyint(3) UNSIGNED NOT NULL DEFAULT 0,
+  `delete_moderator` tinyint(1) NOT NULL DEFAULT 0,
   `delete_id` int(10) UNSIGNED DEFAULT NULL,
   `delete_ip` varchar(45) DEFAULT NULL,
   `delete_datetime` datetime DEFAULT NULL,

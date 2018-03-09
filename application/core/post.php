@@ -219,6 +219,11 @@ class Post
             return false;
         }
 
+        // Store removing reason as null if it is empty
+        if (empty($reason)) {
+            $reason = null;
+        }
+
         // Get details about post author
         $postDetails = $this->database->read(
             'p.id, p.user_id, u.account_type',
@@ -238,6 +243,7 @@ class Post
         $isCurrentModerator = $this->user->isCurrentModerator();
         $currentIP = $this->utilities->getVisitorIP();
         $currentDatetime = $this->utilities->getDatetime();
+        $removeAsModerator = ($isCurrentModerator && !$isCurrentAuthor);
 
         // Check if user is allowed to delete a post
         if (!$isCurrentAuthor && !$isCurrentModerator) {
@@ -247,10 +253,10 @@ class Post
 
         // Turn post into a removed state
         $postRemovedID = $this->database->update(
-            'status, delete_id, delete_ip, delete_datetime, delete_reason',
+            'status, delete_moderator, delete_id, delete_ip, delete_datetime, delete_reason',
             'posts',
             'WHERE id = ?',
-            [9, $_SESSION['account']['id'], $currentIP, $currentDatetime, $reason ?? null, $postID]
+            [9, $removeAsModerator, $_SESSION['account']['id'], $currentIP, $currentDatetime, $reason, $postID]
         );
 
         // Check if post has been successfully removed
@@ -259,7 +265,7 @@ class Post
         }
 
         // Remove points from user statistics counters
-        if ($isCurrentModerator && !$isCurrentAuthor) {
+        if ($removeAsModerator) {
             $this->statistics->moderatorPostDelete($postDetails[0]['user_id']);
         } else {
             $this->statistics->userPostDelete();

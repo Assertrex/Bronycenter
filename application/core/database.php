@@ -29,13 +29,6 @@ class Database
     private $config = null;
 
     /**
-     * Place for instance of a flash class
-     *
-     * @since Release 0.1.0
-     */
-    private $flash = null;
-
-    /**
      * Place for object of a database PDO connection
      *
      * @since Release 0.1.0
@@ -49,7 +42,6 @@ class Database
      */
     public function __construct()
     {
-        $this->flash = Flash::getInstance();
         $this->config = Config::getInstance();
 
         // Get database configuration
