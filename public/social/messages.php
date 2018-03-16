@@ -224,11 +224,11 @@ require('../../application/partials/social/head.php');
 
                             if (dates_interval > 3600) {
                                 lastBlockDate = element.datetime;
-                                messageDateIntervalString = '<small class="d-block text-center my-2">' + element.datetime_interval_string + '</small>';
+                                messageDateIntervalString = '<small class="d-block text-center my-3">' + element.datetime + ' (UTC)</small>';
                             }
                         } else {
                             lastBlockDate = element.datetime;
-                            messageDateIntervalString = '<small class="d-block text-center my-2">' + element.datetime_interval_string + '</small>';
+                            messageDateIntervalString = '<small class="d-block text-center my-3">' + element.datetime + ' (UTC)</small>';
                         }
 
                         $('#messages-show').append(`
