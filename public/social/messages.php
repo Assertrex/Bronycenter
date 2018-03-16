@@ -91,6 +91,9 @@ require('../../application/partials/social/head.php');
         // Store details of all conversations
         let conversationsList = [];
 
+        // Store input value on conversation switch
+        let conversationsInputValues = [];
+
         // Store current conversation details
         let currentConversationID;
         let currentConversationUserID;
@@ -149,8 +152,24 @@ require('../../application/partials/social/head.php');
         function switchConversation(conversationLinkNode) {
             let conversationID = conversationLinkNode.getAttribute('data-conversationid');
             let conversationListIndex = conversationLinkNode.getAttribute('data-index');
+            let conversationTextarea = $('#message-creator-textarea');
+            let conversationTextareaValue = conversationTextarea.val();
 
             if (currentConversationID != conversationID) {
+                // Check if conversation contains an unsaved message before switching
+                if (conversationTextareaValue.length > 0) {
+                    // Save a textarea value for a conversation
+                    conversationsInputValues[currentConversationID] = conversationTextareaValue;
+
+                    // Clear a textarea
+                    conversationTextarea.val('');
+                }
+
+                // Check if conversation already has a saved message
+                if (conversationsInputValues.hasOwnProperty(conversationID)) {
+                    conversationTextarea.val(conversationsInputValues[conversationID]);
+                }
+
                 $('#list-conversations-item-' + currentConversationID).removeClass('active');
 
                 currentConversationID = conversationID;
@@ -352,6 +371,11 @@ require('../../application/partials/social/head.php');
                     // Reload messages if message has been sent successfully
                     if (json.status == 'success') {
                         messagesReload(currentConversationID, currentConversationUserID);
+
+                        // Clear if conversation already has a saved message
+                        if (conversationsInputValues.hasOwnProperty(currentConversationID)) {
+                            delete conversationsInputValues[currentConversationID];
+                        }
                     }
 
                     return true;
