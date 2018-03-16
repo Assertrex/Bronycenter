@@ -130,21 +130,7 @@ require('../../application/partials/social/head.php');
             }
 
             if ($(linkNode).hasClass('list-conversations-item')) {
-                let conversationID = linkNode.getAttribute('data-conversationid');
-                let conversationListIndex = linkNode.getAttribute('data-index');
-
-                if (currentConversationID != conversationID) {
-                    $('#list-conversations-item-' + currentConversationID).removeClass('active');
-
-                    currentConversationID = conversationID;
-                    currentConversationUserID = linkNode.getAttribute('data-userid');
-
-                    $(linkNode).addClass('active');
-
-                    window.location.hash = currentConversationID;
-                    messagesReload(currentConversationID, currentConversationUserID);
-                    conversationDetailsReload(conversationListIndex);
-                }
+                switchConversation(linkNode);
             }
         });
 
@@ -158,6 +144,25 @@ require('../../application/partials/social/head.php');
                 return false;
             }
         });
+
+        // Change a current conversation
+        function switchConversation(conversationLinkNode) {
+            let conversationID = conversationLinkNode.getAttribute('data-conversationid');
+            let conversationListIndex = conversationLinkNode.getAttribute('data-index');
+
+            if (currentConversationID != conversationID) {
+                $('#list-conversations-item-' + currentConversationID).removeClass('active');
+
+                currentConversationID = conversationID;
+                currentConversationUserID = conversationLinkNode.getAttribute('data-userid');
+
+                $(conversationLinkNode).addClass('active');
+
+                window.location.hash = currentConversationID;
+                messagesReload(currentConversationID, currentConversationUserID);
+                conversationDetailsReload(conversationListIndex);
+            }
+        }
 
         // Get messages
         function messagesReload(conversationID, userID) {
@@ -225,6 +230,7 @@ require('../../application/partials/social/head.php');
         function conversationsReload() {
             $.get('../ajax/getConversationsList.php', (response) => {
                 let json;
+                let conversationsListLastAmount = 0;
 
                 // Try to parse a JSON
                 try {
@@ -240,11 +246,11 @@ require('../../application/partials/social/head.php');
                 }
 
                 conversationsList = json.conversations;
-                console.log(conversationsList);
 
                 // Remove everything from conversations container
                 while ($('#list-conversations')[0].firstChild) {
                     $('#list-conversations')[0].removeChild($('#list-conversations')[0].firstChild);
+                    conversationsListLastAmount++;
                 }
 
                 json.conversations.forEach((conversation, index) => {
@@ -285,6 +291,14 @@ require('../../application/partials/social/head.php');
                         </div>
                     `);
                 });
+
+                // Get children of a conversation list div
+                let conversationListChildren = $('#list-conversations').children();
+
+                // Select newest conversation if messages page has been opened for a first time
+                if (conversationsListLastAmount == 0 && conversationListChildren.length != 0) {
+                    switchConversation(conversationListChildren[0]);
+                }
             });
         }
 
