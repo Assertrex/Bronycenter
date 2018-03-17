@@ -6,25 +6,25 @@
         </button>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
+            <ul class="navbar-nav my-1 my-lg-0 mr-auto">
                 <?php
                 // Display links for logged users
                 if ($loggedIn) {
                 ?>
                 <li class="nav-item">
-                    <a class="nav-link" href="index.php">Homepage</a>
+                    <a class="nav-link" href="index.php"><i class="fa fa-home d-inline-block d-lg-none mr-2" aria-hidden="true" style="width: 18px;"></i> Homepage</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="about.php">About</a>
+                    <a class="nav-link" href="about.php"><i class="fa fa-info-circle d-inline-block d-lg-none mr-2" aria-hidden="true" style="width: 18px;"></i> About</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="contact.php">Contact</a>
+                    <a class="nav-link" href="contact.php"><i class="fa fa-envelope-o d-inline-block d-lg-none mr-2" aria-hidden="true" style="width: 18px;"></i> Contact</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="social/members.php">Members</a>
+                    <a class="nav-link" href="social/members.php"><i class="fa fa-users d-inline-block d-lg-none mr-2" aria-hidden="true" style="width: 18px;"></i> Members</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="https://github.com/Assertrex/BronyCenter" target="_blank">Github</a>
+                    <a class="nav-link" href="https://github.com/Assertrex/BronyCenter" target="_blank"><i class="fa fa-github d-inline-block d-lg-none mr-2" aria-hidden="true" style="width: 18px;"></i> Github</a>
                 </li>
                 <?php
                 } // if
@@ -33,19 +33,19 @@
                 else {
                 ?>
                 <li class="nav-item">
-                    <a class="nav-link" href="index.php">Homepage</a>
+                    <a class="nav-link" href="index.php"><i class="fa fa-home d-inline-block d-lg-none mr-2" aria-hidden="true" style="width: 18px;"></i> Homepage</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="about.php">About</a>
+                    <a class="nav-link" href="about.php"><i class="fa fa-info-circle d-inline-block d-lg-none mr-2" aria-hidden="true" style="width: 18px;"></i> About</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="contact.php">Contact</a>
+                    <a class="nav-link" href="contact.php"><i class="fa fa-envelope-o d-inline-block d-lg-none mr-2" aria-hidden="true" style="width: 18px;"></i> Contact</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="social/members.php">Members</a>
+                    <a class="nav-link" href="social/members.php"><i class="fa fa-users d-inline-block d-lg-none mr-2" aria-hidden="true" style="width: 18px;"></i> Members</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="https://github.com/Assertrex/BronyCenter" target="_blank">Github</a>
+                    <a class="nav-link" href="https://github.com/Assertrex/BronyCenter" target="_blank"><i class="fa fa-github d-inline-block d-lg-none mr-2" aria-hidden="true" style="width: 18px;"></i> Github</a>
                 </li>
                 <?php
                 } // else

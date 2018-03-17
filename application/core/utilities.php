@@ -264,7 +264,7 @@ class Utilities
                 $badges['account_type_badge'] = '<span class="' . $class . '-danger" style="' . $style . '">Admin</span>';
                 break;
             case '8':
-                $badges['account_type_badge'] = '<span class="' . $class . '-purple" style="' . $style . '">Moderator</span>';
+                $badges['account_type_badge'] = '<span class="' . $class . '-purple" style="' . $style . '">Mod</span>';
                 break;
             case '1':
                 $badges['account_type_badge'] = '<span class="' . $class . '-primary" style="' . $style . '">Member</span>';

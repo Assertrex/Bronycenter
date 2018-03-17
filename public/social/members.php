@@ -52,15 +52,19 @@ require('../../application/partials/social/head.php');
                         ?>
 
                         <a class="d-flex align-items-center p-2 px-lg-3" href="profile.php?u=<?= $member['id']; ?>">
-                            <div style="width: 64px;">
+                            <div class="mr-2 mr-lg-3" style="width: 64px;">
                                 <img src="../media/avatars/<?= $member['avatar']; ?>/minres.jpg" class="rounded" />
+                                <div class="d-block d-lg-none">
+                                    <?= !empty($member['account_type_badge']) ? '<div>' . $member['account_type_badge'] . '</div>' : ''; ?>
+                                    <?= !empty($member['is_online_badge']) ? '<div>' . $member['is_online_badge'] . '</div>' : ''; ?>
+                                </div>
                             </div>
-                            <div class="ml-2" style="width: 82px;">
-                                <?= !empty($member['account_type_badge']) ? '<div class="mx-2">' . $member['account_type_badge'] . '</div>' : ''; ?>
-                                <?= !empty($member['account_standing_badge']) ? '<div class="mx-2">' . $member['account_standing_badge'] . '</div>' : ''; ?>
-                                <?= !empty($member['is_online_badge']) ? '<div class="mx-2">' . $member['is_online_badge'] . '</div>' : ''; ?>
+                            <div class="d-none d-lg-block mr-3" style="width: 66px;">
+                                <?= !empty($member['account_type_badge']) ? '<div>' . $member['account_type_badge'] . '</div>' : ''; ?>
+                                <?= !empty($member['account_standing_badge']) ? '<div>' . $member['account_standing_badge'] . '</div>' : ''; ?>
+                                <?= !empty($member['is_online_badge']) ? '<div>' . $member['is_online_badge'] . '</div>' : ''; ?>
                             </div>
-                            <div class="text-center pl-2" style="flex: 1; line-height: 1.1;">
+                            <div class="text-center" style="flex: 1; line-height: 1.15;">
                                 <div>
                                     <?= $utilities->doEscapeString($member['display_name'], false); ?>
                                 </div>

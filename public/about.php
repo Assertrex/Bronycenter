@@ -29,7 +29,7 @@ require('../application/partials/init.php');
         ?>
 
         <section id="about" class="mb-4">
-            <h1 class="mb-4">About BronyCenter</h1>
+            <h1 class="text-center text-lg-left mb-4">About BronyCenter</h1>
 
             <p>
                 This website has been created for the fans of the My Little Pony

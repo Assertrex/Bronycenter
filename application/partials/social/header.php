@@ -19,7 +19,7 @@
         </button>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav" style="flex: 1;">
+            <ul class="navbar-nav mt-1 mt-lg-0" style="flex: 1;">
                 <?php
                 // Display links for logged users
                 if ($loggedIn) {
@@ -30,29 +30,32 @@
                 </div>
 
                 <li class="nav-item d-lg-none">
-                    <a class="d-block nav-link" href="profile.php?u=<?= $_SESSION['account']['id']; ?>">Profile</a>
+                    <a class="d-block nav-link" href="profile.php?u=<?= $_SESSION['account']['id']; ?>"><i class="fa fa-user-o mr-2" aria-hidden="true" style="width: 18px;"></i> Profile</a>
                 </li>
                 <li class="nav-item d-lg-none">
-                    <a class="d-block nav-link" href="members.php">Members</a>
+                    <a class="d-block nav-link" href="members.php"><i class="fa fa-users mr-2" aria-hidden="true" style="width: 18px;"></i> Members</a>
                 </li>
                 <li class="nav-item d-lg-none">
-                    <a class="d-block nav-link" href="achievements.php">Statistics</a>
+                    <a class="d-block nav-link" href="messages.php"><i class="fa fa-envelope-o mr-2" aria-hidden="true" style="width: 18px;"></i> Messages</a>
                 </li>
                 <li class="nav-item d-lg-none">
-                    <a class="d-block nav-link" href="settings.php">Settings</a>
+                    <a class="d-block nav-link" href="achievements.php"><i class="fa fa-bar-chart mr-2" aria-hidden="true" style="width: 18px;"></i> Statistics</a>
+                </li>
+                <li class="nav-item d-lg-none">
+                    <a class="d-block nav-link" href="settings.php"><i class="fa fa-sliders mr-2" aria-hidden="true" style="width: 18px;"></i> Settings</a>
                 </li>
                 <?php
                 // Display moderate button only for moderators
                 if ($loggedModerator) {
                 ?>
                 <li class="nav-item d-lg-none">
-                    <a class="d-block nav-link" href="manage.php">Moderate</a>
+                    <a class="d-block nav-link" href="manage.php"><i class="fa fa-cogs mr-2" aria-hidden="true" style="width: 18px;"></i> Moderate</a>
                 </li>
                 <?php
                 } // if
                 ?>
                 <li class="nav-item d-lg-none">
-                    <a class="d-block nav-link" href="../logout.php">Logout</a>
+                    <a class="d-block nav-link" href="../logout.php"><i class="fa fa-sign-out mr-2" aria-hidden="true" style="width: 18px;"></i> Logout</a>
                 </li>
                 <?php
                 } // if
@@ -168,7 +171,7 @@
     // Display mobile notifications bar for logged users
     if ($loggedIn) {
     ?>
-    <div id="header-mobile-notifications-bar" class="d-block d-lg-none">
+    <div id="header-mobile-notifications-bar" class="d-none d-lg-none"> <!-- .d-block -->
         <ul>
             <li>
                 <i class="fa fa-user-circle-o" style="font-size: 22px;" aria-hidden="true"></i>

@@ -29,7 +29,7 @@ require('../application/partials/init.php');
         ?>
 
         <section id="contact">
-            <h1 class="mb-4">Contact</h1>
+            <h1 class="text-center text-lg-left mb-4">Contact</h1>
 
             <p>
                 As we don't have a contact form yet, you can contact with an

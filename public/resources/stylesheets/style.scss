@@ -42,11 +42,11 @@ section {
 }
 
 .container, .container-full {
-    padding-top: calc(108px + 1rem);
+    padding-top: calc(56px + 1rem); // calc(108px + 1rem)
     padding-bottom: 1rem;
 
     &.guest {
-        padding-top: calc(57px + 1rem);
+        padding-top: calc(56px + 1rem);
     }
 }
 

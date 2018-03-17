@@ -83,7 +83,7 @@ require('../../application/partials/social/head.php');
 
         <div class="row">
             <aside id="aside-list" class="col-12 col-lg-4">
-                <section class="fancybox mt-lg-0">
+                <section class="fancybox mt-0">
                     <h6 class="text-center mb-0">Account settings</h6>
 
                     <ul class="list-group">
