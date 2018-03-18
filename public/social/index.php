@@ -563,7 +563,9 @@ require('../../application/partials/social/head.php');
             displayModal(
                 'Edit history',
                 `
-                <div id="result-post-edit-history"></div>
+                <div id="result-post-edit-history">
+                    <div class="spinner-bcdefault active"></div>
+                </div>
                 `,
                 '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>'
             );
@@ -586,6 +588,9 @@ require('../../application/partials/social/head.php');
                     return false;
                 }
 
+                // Hide a spinner
+                $("#mainModal #result-post-edit-history .spinner-bcdefault").toggleClass('active');
+
                 let lastHistoryIndex = result.edit_history.length - 1;
 
                 // Display each edit history item in a div
@@ -597,6 +602,7 @@ require('../../application/partials/social/head.php');
                         editHistoryBoxClass = '';
                     }
 
+                    // Display each previous post
                     $("#mainModal #result-post-edit-history").append(
                         `
                         <div ${editHistoryBoxClass}>
