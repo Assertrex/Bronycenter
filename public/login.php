@@ -50,7 +50,7 @@ if (isset($_POST['submit'])) {
         ?>
 
         <section id="s-title" class="mb-4">
-            <h1 class="text-center">Login</h1>
+            <h1 class="text-center text-lg-left mb-4">Login</h1>
         </section>
 
         <section id="s-login">

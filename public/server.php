@@ -29,7 +29,7 @@ require('../application/partials/init.php');
         ?>
 
         <section id="details" class="mb-4">
-            <h1 class="mb-2">Our server and software</h1>
+            <h1 class="text-center text-lg-left mb-4">Our server and software</h1>
 
             <p class="mb-0">Last update: <b>30.12.2017</b></p>
         </section>

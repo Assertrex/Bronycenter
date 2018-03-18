@@ -50,7 +50,7 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'register') {
         ?>
 
         <section id="s-title" class="mb-4">
-            <h1 class="text-center">Registration</h1>
+            <h1 class="text-center text-lg-left mb-4">Registration</h1>
         </section>
 
         <section id="s-registration">

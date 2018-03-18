@@ -29,7 +29,7 @@ require('../application/partials/init.php');
         ?>
 
         <section id="terms" class="mb-4">
-            <h1 class="mb-2">Terms of Use</h1>
+            <h1 class="text-center text-lg-left mb-4">Terms of Use</h1>
 
             <p class="mb-4">
                 Last update: <b>30.12.2017</b>

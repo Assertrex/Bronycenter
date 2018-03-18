@@ -21,7 +21,7 @@
                     <a class="nav-link" href="contact.php"><i class="fa fa-envelope-o d-inline-block d-lg-none mr-2" aria-hidden="true" style="width: 18px;"></i> Contact</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="social/members.php"><i class="fa fa-users d-inline-block d-lg-none mr-2" aria-hidden="true" style="width: 18px;"></i> Members</a>
+                    <a class="nav-link" href="social/members.php"><i class="fa fa-address-book-o d-inline-block d-lg-none mr-2" aria-hidden="true" style="width: 18px;"></i> Members</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="https://github.com/Assertrex/BronyCenter" target="_blank"><i class="fa fa-github d-inline-block d-lg-none mr-2" aria-hidden="true" style="width: 18px;"></i> Github</a>
@@ -42,7 +42,7 @@
                     <a class="nav-link" href="contact.php"><i class="fa fa-envelope-o d-inline-block d-lg-none mr-2" aria-hidden="true" style="width: 18px;"></i> Contact</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="social/members.php"><i class="fa fa-users d-inline-block d-lg-none mr-2" aria-hidden="true" style="width: 18px;"></i> Members</a>
+                    <a class="nav-link" href="social/members.php"><i class="fa fa-address-book-o d-inline-block d-lg-none mr-2" aria-hidden="true" style="width: 18px;"></i> Members</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="https://github.com/Assertrex/BronyCenter" target="_blank"><i class="fa fa-github d-inline-block d-lg-none mr-2" aria-hidden="true" style="width: 18px;"></i> Github</a>
@@ -56,10 +56,19 @@
             // Display user panel for logged users
             if ($loggedIn) {
             ?>
-            <div>
+            <div class="d-none d-lg-block">
                 <a class="btn mt-2 mt-lg-0 mr-lg-2" role="button" href="social/">Social</a>
                 <a class="btn mt-2 mt-lg-0" role="button" href="logout.php">Logout</a>
             </div>
+
+            <ul class="d-flex d-lg-none navbar-nav mt-2">
+                <li class="nav-item">
+                    <a class="nav-link" href="social/"><i class="fa fa-users d-inline-block d-lg-none mr-2" aria-hidden="true" style="width: 18px;"></i> Social</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="logout.php"><i class="fa fa-sign-out d-inline-block d-lg-none mr-2" aria-hidden="true" style="width: 18px;"></i> Logout</a>
+                </li>
+            </ul>
             <?php
             } // if
 

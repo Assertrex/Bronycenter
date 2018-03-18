@@ -33,7 +33,7 @@
                     <a class="d-block nav-link" href="profile.php?u=<?= $_SESSION['account']['id']; ?>"><i class="fa fa-user-o mr-2" aria-hidden="true" style="width: 18px;"></i> Profile</a>
                 </li>
                 <li class="nav-item d-lg-none">
-                    <a class="d-block nav-link" href="members.php"><i class="fa fa-users mr-2" aria-hidden="true" style="width: 18px;"></i> Members</a>
+                    <a class="d-block nav-link" href="members.php"><i class="fa fa-address-book-o mr-2" aria-hidden="true" style="width: 18px;"></i> Members</a>
                 </li>
                 <li class="nav-item d-lg-none">
                     <a class="d-block nav-link" href="messages.php"><i class="fa fa-envelope-o mr-2" aria-hidden="true" style="width: 18px;"></i> Messages</a>
@@ -64,19 +64,19 @@
                 else {
                 ?>
                 <li class="nav-item">
-                    <a class="nav-link" href="../index.php">Homepage</a>
+                    <a class="nav-link" href="../index.php"><i class="fa fa-home d-inline-block d-lg-none mr-2" aria-hidden="true" style="width: 18px;"></i> Homepage</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="../about.php">About</a>
+                    <a class="nav-link" href="../about.php"><i class="fa fa-info-circle d-inline-block d-lg-none mr-2" aria-hidden="true" style="width: 18px;"></i> About</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="../contact.php">Contact</a>
+                    <a class="nav-link" href="../contact.php"><i class="fa fa-envelope-o d-inline-block d-lg-none mr-2" aria-hidden="true" style="width: 18px;"></i> Contact</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="members.php">Members</a>
+                    <a class="nav-link" href="members.php"><i class="fa fa-address-book-o d-inline-block d-lg-none mr-2" aria-hidden="true" style="width: 18px;"></i> Members</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="https://github.com/Assertrex/BronyCenter" target="_blank">Github</a>
+                    <a class="nav-link" href="https://github.com/Assertrex/BronyCenter" target="_blank"><i class="fa fa-github d-inline-block d-lg-none mr-2" aria-hidden="true" style="width: 18px;"></i> Github</a>
                 </li>
                 <?php
                 } // else
