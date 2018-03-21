@@ -62,10 +62,16 @@ class Statistics
      * Get user's statistics
      *
      * @since Release 0.1.0
+     * @var integer|null $id Optional ID of a user for which statistics will be generated
      * @return array|boolean User's statistics
     **/
-    public function get()
+    public function get($id = null)
     {
+        // Get an ID of a user for which statistics will be fetched
+        if (empty(intval($id))) {
+            $id = $_SESSION['account']['id'];
+        }
+
         // Get user's statistics from a database
         $array = $this->database->read(
             'user_points, posts_created, posts_removed, posts_removed_mod,' .
@@ -73,7 +79,7 @@ class Statistics
             'posts_comments_received',
             'users_statistics',
             'WHERE user_id = ?',
-            [$_SESSION['account']['id']],
+            [intval($id)],
             false
         );
 
