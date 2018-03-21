@@ -41,12 +41,20 @@ section {
     cursor: pointer;
 }
 
-.container, .container-full {
+.container {
     padding-top: calc(56px + 1rem); // calc(108px + 1rem)
     padding-bottom: 1rem;
 
     &.guest {
         padding-top: calc(56px + 1rem);
+    }
+}
+
+.container-full {
+    padding-top: calc(56px); // calc(108px + 1rem)
+
+    &.guest {
+        padding-top: calc(56px);
     }
 }
 

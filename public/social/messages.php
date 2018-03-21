@@ -7,7 +7,9 @@ $pageTitle = 'Messages :: BronyCenter';
 $pageStylesheet = '
 body { height: 100vh; }
 .container-full { flex: 1; }
-#aside { width: 340px; border-right: 1px solid #BDBDBD; }
+.container-full #messages-mobile-wrapper { display: flex; flex-direction: column; width: 100vw; }
+aside #messages-mobile-aside-wrapper { display: flex; flex-direction: column; flex: 1; }
+aside { flex: 1; }
 #aside #list-conversations { flex: 1; }
 #aside #list-conversations .list-conversations-item { border-bottom: 1px solid #BDBDBD; cursor: pointer; }
 #aside #list-conversations .list-conversations-item.active { background-color: #E0E0E0; }
@@ -25,6 +27,11 @@ body { height: 100vh; }
 #main #message-creator #message-creator-textarea { height: 48px; max-height: 168px; padding-top: .75rem !important; padding-bottom: .75rem !important; background: none; border: 0; overflow: hidden; overflow-y: auto; resize: none; box-shadow: none; }
 #main #message-creator #message-creator-lettercounter-wrapper { position: absolute; bottom: 4px; right: 20px; }
 #main #message-creator #message-creator-send-button { font-size: 1.125rem; }
+
+@media (min-width: 992px) {
+    #aside { max-width: 340px; border-right: 1px solid #BDBDBD; }
+    .container-full #messages-mobile-wrapper { flex-direction: row; }
+}
 ';
 // Include social head content for all pages
 require('../../application/partials/social/head.php');
@@ -37,45 +44,53 @@ require('../../application/partials/social/head.php');
     ?>
 
     <div class="container-full d-flex">
-        <aside id="aside" class="d-flex flex-column">
-            <h5 class="text-center py-3 my-0" style="height: 58px; border-bottom: 1px solid #BDBDBD;">Conversations list</h5>
+        <div id="messages-mobile-wrapper">
+            <aside id="aside" class="d-flex d-lg-flex flex-column">
+                <div id="messages-mobile-aside-wrapper">
+                    <h5 class="text-center py-3 my-0" style="height: 58px; border-bottom: 1px solid #BDBDBD;">Conversations list</h5>
 
-            <div id="list-conversations"></div>
+                    <div id="list-conversations"></div>
 
-            <div class="text-info text-center py-2 px-2" style="font-size: .875rem;">
-                <i class="fa fa-exclamation-triangle mr-1" aria-hidden="true"></i>
-                This is a temporiary messaging system. It will be rewritten in a future.
-            </div>
-        </aside>
-
-        <main id="main" class="d-flex flex-column">
-            <div id="messages-info" class="d-flex align-items-center text-center" style="height: 58px;">
-                <div id="messages-info-user" class="d-flex align-items-center" style="flex: 1;"></div>
-
-                <div>
-                    <i class="fa fa-info-circle text-primary mr-3" style="font-size: 2rem;" aria-hidden="true"></i>
-                </div>
-            </div>
-
-            <div id="messages-show" class="py-3 px-4">
-
-            </div>
-
-            <div id="message-creator">
-                <div id="message-creator-wrapper" class="d-flex align-items-stretch">
-                    <div id="message-creator-textarea-wrapper" class="form-group mb-0">
-                        <textarea type="text" id="message-creator-textarea" class="form-control" placeholder="Write a message..." maxlength="1000"></textarea>
-
-                        <small id="message-creator-lettercounter-wrapper" class="text-muted">
-                            <span id="message-creator-lettercounter">0</span> / 1000
-                        </small>
+                    <div class="text-info text-center py-2 px-2" style="font-size: .875rem;">
+                        <i class="fa fa-exclamation-triangle mr-1" aria-hidden="true"></i>
+                        This is a temporiary messaging system. It can contain bugs and it will be rewritten in the future.
                     </div>
-                    <button type="button" id="message-creator-send-button" class="btn btn-primary px-4 rounded-0">
-                        <i class="fa fa-paper-plane-o" aria-hidden="true"></i>
-                    </button>
                 </div>
-            </div>
-        </main>
+            </aside>
+
+            <main id="main" class="d-none d-lg-flex flex-column">
+                <div id="messages-info" class="d-flex align-items-center text-center" style="height: 58px;">
+                    <div class="d-block d-lg-none">
+                        <i id="messages-info-action-conversations" class="fa fa-arrow-circle-o-left text-primary mx-3" style="font-size: 2rem;" aria-hidden="true"></i>
+                    </div>
+
+                    <div id="messages-info-user" class="d-flex align-items-center justify-content-center ml-lg-3" style="flex: 1;"></div>
+
+                    <div>
+                        <i class="fa fa-info-circle text-primary mx-3" style="font-size: 2rem;" aria-hidden="true"></i>
+                    </div>
+                </div>
+
+                <div id="messages-show" class="py-3 px-4">
+
+                </div>
+
+                <div id="message-creator">
+                    <div id="message-creator-wrapper" class="d-flex align-items-stretch">
+                        <div id="message-creator-textarea-wrapper" class="form-group mb-0">
+                            <textarea type="text" id="message-creator-textarea" class="form-control" placeholder="Write a message..." maxlength="1000"></textarea>
+
+                            <small id="message-creator-lettercounter-wrapper" class="text-muted">
+                                <span id="message-creator-lettercounter">0</span> / 1000
+                            </small>
+                        </div>
+                        <button type="button" id="message-creator-send-button" class="btn btn-primary px-4 rounded-0">
+                            <i class="fa fa-paper-plane-o" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+            </main>
+        </div>
     </div>
 
     <?php
@@ -105,6 +120,13 @@ require('../../application/partials/social/head.php');
 
         // Load conversations list
         conversationsReload();
+
+        $('#messages-info-action-conversations').click(() => {
+            $('#aside').toggleClass('d-none');
+            $('#main').toggleClass('d-none');
+            $('#aside').toggleClass('d-flex');
+            $('#main').toggleClass('d-flex');
+        });
 
         // Handle resizable textarea height in a message creator
         // FIXME: Try to stop moving textarea after executing this code on page reload
@@ -176,6 +198,11 @@ require('../../application/partials/social/head.php');
                 currentConversationUserID = conversationLinkNode.getAttribute('data-userid');
 
                 $(conversationLinkNode).addClass('active');
+
+                $('#aside').toggleClass('d-none');
+                $('#main').toggleClass('d-none');
+                $('#aside').toggleClass('d-flex');
+                $('#main').toggleClass('d-flex');
 
                 window.location.hash = currentConversationID;
                 messagesReload(currentConversationID, currentConversationUserID);
@@ -328,12 +355,12 @@ require('../../application/partials/social/head.php');
             }
 
             $('#messages-info-user').append(`
-                <div>
-                    <img src="../media/avatars/${conversationsList[index].user_details.avatar}/minres.jpg" class="rounded ml-3" style="width: 46px; height: 46px;" />
+                <div class="mr-2">
+                    <img src="../media/avatars/${conversationsList[index].user_details.avatar}/minres.jpg" class="rounded" style="width: 46px; height: 46px;" />
                 </div>
 
-                <div style="flex: 1;">
-                    <h6 id="messages-info-displayname" class="mb-0">${conversationsList[index].user_details.display_name}</h6>
+                <div class="d-flex flex-column" style="flex: 1;">
+                    <h6 id="messages-info-displayname" class="d-inline-block mb-0" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${conversationsList[index].user_details.display_name}</h6>
                     <p id="messages-info-activeinterval" class="mb-0 text-muted"><small>Active: ${conversationsList[index].user_details.last_online_interval}</small></p>
                 </div>
             `);
