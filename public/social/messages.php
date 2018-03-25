@@ -103,11 +103,11 @@ require('../../application/partials/social/head.php');
 
     // Start when document is ready
     $(document).ready(function() {
-        // Store details of all conversations
-        let conversationsList = [];
+        // Store all conversations details
+        let conversationsDetails = [];
 
-        // Store input value on conversation switch
-        let conversationsInputValues = [];
+        // Store all conversations helpers
+        let conversationsHelpers = [];
 
         // Store current conversation details
         let currentConversationID;
@@ -181,16 +181,14 @@ require('../../application/partials/social/head.php');
                 // Check if conversation contains an unsaved message before switching
                 if (conversationTextareaValue.length > 0) {
                     // Save a textarea value for a conversation
-                    conversationsInputValues[currentConversationID] = conversationTextareaValue;
+                    conversationsHelpers[currentConversationID]['inputValue'] = conversationTextareaValue;
 
                     // Clear a textarea
                     conversationTextarea.val('');
                 }
 
                 // Check if conversation already has a saved message
-                if (conversationsInputValues.hasOwnProperty(conversationID)) {
-                    conversationTextarea.val(conversationsInputValues[conversationID]);
-                }
+                conversationTextarea.val(conversationsHelpers[conversationID]['inputValue']);
 
                 $('#list-conversations-item-' + currentConversationID).removeClass('active');
 
@@ -212,7 +210,9 @@ require('../../application/partials/social/head.php');
 
         // Get messages
         function messagesReload(conversationID, userID) {
-            $.get('../ajax/getConversationMessages.php?id=' + conversationID, (response) => {
+            let messagesLimit = 10;
+
+            $.get('../ajax/getConversationMessages.php?conversation_id=' + conversationID + '&messages_limit=' + messagesLimit, (response) => {
                 let json;
 
                 // Try to parse a JSON
@@ -270,13 +270,16 @@ require('../../application/partials/social/head.php');
                 }
 
                 $('#messages-show').scrollTop($('#messages-show')[0].scrollHeight);
+
+                // Store last message node
+                conversationsHelpers[currentConversationID]['elementMessageLast'] = $('#messages-show .message-item').last()[0];
             });
         }
 
         function conversationsReload() {
             $.get('../ajax/getConversationsList.php', (response) => {
                 let json;
-                let conversationsListLastAmount = 0;
+                let conversationsDetailsLastAmount = 0;
 
                 // Try to parse a JSON
                 try {
@@ -291,12 +294,12 @@ require('../../application/partials/social/head.php');
                     return false;
                 }
 
-                conversationsList = json.conversations;
+                conversationsDetails = json.conversations;
 
                 // Remove everything from conversations container
                 while ($('#list-conversations')[0].firstChild) {
                     $('#list-conversations')[0].removeChild($('#list-conversations')[0].firstChild);
-                    conversationsListLastAmount++;
+                    conversationsDetailsLastAmount++;
                 }
 
                 json.conversations.forEach((conversation, index) => {
@@ -336,13 +339,16 @@ require('../../application/partials/social/head.php');
                             </div>
                         </div>
                     `);
+
+                    // Create a place for a conversation helpers
+                    conversationsHelpers[conversation.id] = { inputValue: '', elementMessageLast: null };
                 });
 
                 // Get children of a conversation list div
                 let conversationListChildren = $('#list-conversations').children();
 
                 // Select newest conversation if messages page has been opened for a first time
-                if (conversationsListLastAmount == 0 && conversationListChildren.length != 0) {
+                if (conversationsDetailsLastAmount == 0 && conversationListChildren.length != 0) {
                     switchConversation(conversationListChildren[0]);
                 }
             });
@@ -356,12 +362,12 @@ require('../../application/partials/social/head.php');
 
             $('#messages-info-user').append(`
                 <div class="mr-2">
-                    <img src="../media/avatars/${conversationsList[index].user_details.avatar}/minres.jpg" class="rounded" style="width: 46px; height: 46px;" />
+                    <img src="../media/avatars/${conversationsDetails[index].user_details.avatar}/minres.jpg" class="rounded" style="width: 46px; height: 46px;" />
                 </div>
 
                 <div class="d-flex flex-column" style="flex: 1;">
-                    <h6 id="messages-info-displayname" class="d-inline-block mb-0" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${conversationsList[index].user_details.display_name}</h6>
-                    <p id="messages-info-activeinterval" class="mb-0 text-muted"><small>Active: ${conversationsList[index].user_details.last_online_interval}</small></p>
+                    <h6 id="messages-info-displayname" class="d-inline-block mb-0" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${conversationsDetails[index].user_details.display_name}</h6>
+                    <p id="messages-info-activeinterval" class="mb-0 text-muted"><small>Active: ${conversationsDetails[index].user_details.last_online_interval}</small></p>
                 </div>
             `);
         }
@@ -399,10 +405,8 @@ require('../../application/partials/social/head.php');
                     if (json.status == 'success') {
                         messagesReload(currentConversationID, currentConversationUserID);
 
-                        // Clear if conversation already has a saved message
-                        if (conversationsInputValues.hasOwnProperty(currentConversationID)) {
-                            delete conversationsInputValues[currentConversationID];
-                        }
+                        // Clear a currently saved message
+                        conversationsHelpers[currentConversationID]['inputValue'] = '';
                     }
 
                     return true;

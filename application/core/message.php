@@ -178,13 +178,13 @@ class Message
         }
     }
 
-    public function getConversationMessages($conversationID, $encryptionKey) {
+    public function getConversationMessages($conversationID, $messagesLimit, $encryptionKey, $messagesLastID = null) {
         // Get messages
         $messages = $this->database->read(
             'conversation_id, sender_id, datetime, message',
             'messages_simple_messages',
-            'WHERE conversation_id = ? ORDER BY id DESC LIMIT 50',
-            [$conversationID]
+            'WHERE conversation_id = ? ORDER BY id DESC LIMIT ?',
+            [$conversationID, $messagesLimit]
         );
 
         // Check if conversation exists
