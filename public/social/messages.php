@@ -205,6 +205,9 @@ require('../../application/partials/social/head.php');
                 window.location.hash = currentConversationID;
                 messagesReload(currentConversationID, currentConversationUserID);
                 conversationDetailsReload(conversationListIndex);
+
+                // Focus on a conversation input
+                $('#message-creator-textarea').focus();
             }
         }
 
