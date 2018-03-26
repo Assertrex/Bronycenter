@@ -171,3 +171,23 @@ function addLettersCounter(inputID, counterID) {
         $('#' + counterID).text(this.value.length);
     });
 }
+
+// Reset a letters counter
+function resetLettersCounter(inputID, counterID) {
+    $('#' + counterID).text($('#' + inputID).val().length);
+}
+
+// Parse a JSON or display an AJAX error
+function parseJSON(json) {
+    try {
+        // Try to parse a JSON
+        let result = JSON.parse(json);
+
+        return result;
+    } catch (e) {
+        // Return a system message about a failed AJAX
+        showFlashMessages();
+
+        return false;
+    }
+}

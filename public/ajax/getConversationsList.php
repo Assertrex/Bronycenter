@@ -7,7 +7,7 @@ $loginRequired = true;
 require_once('../../application/partials/init.php');
 
 // Get a list of an available conversations
-$conversations = $o_message->getConversations($websiteEncryptionKey);
+$conversations = $o_message->getConversationsArray();
 
 // Prepare array with result
 if (!empty($conversations)) {

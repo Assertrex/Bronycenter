@@ -53,6 +53,7 @@ $statistics = BronyCenter\Statistics::getInstance();
 
 // Create an instance of a message class for actions with messages
 $o_message = BronyCenter\Message::getInstance();
+$o_message->setEncryptionKey($websiteEncryptionKey);
 
 // Check if user is currently logged in
 if ($session->verify()) {

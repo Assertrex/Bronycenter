@@ -178,4 +178,30 @@ class Validator
 
         return $isValid;
     }
+
+    /**
+     * Check if a private message is valid
+     *
+     * @since Release 0.1.0
+     * @var string $message Content of a message
+     * @return boolean Result of a validation
+     */
+    public function isPrivateMessageValid($message) {
+        // Start from a valid value
+        $isValid = true;
+
+        // Check if message is empty
+        if (empty($message)) {
+            $this->flash->error('Message can\'t be sent empty!');
+            $isValid = false;
+        }
+
+        // Check if message is too long
+        if (strlen($message) > 1000) {
+            $this->flash->error('Message can\'t contain more than 1000 characters!');
+            $isValid = false;
+        }
+
+        return $isValid;
+    }
 }
