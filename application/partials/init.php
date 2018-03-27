@@ -3,6 +3,9 @@
 // Start a new session or use an existing one
 session_start();
 
+// Set a default timezone as a UTC
+date_default_timezone_set('UTC');
+
 // Create an instance of a config class
 require(__DIR__ . '/../core/config.php');
 $config = BronyCenter\Config::getInstance();
@@ -76,5 +79,12 @@ if ($session->verify()) {
 if (isset($loginRequired) && $loggedIn === false) {
     $flash->error('You need to be logged in to view this page.');
     header('Location: ../');
+    die();
+}
+
+// Redirect user back if page can be accessed only by moderators
+if (!empty($moderatorRequired) && $loggedModerator != true) {
+    $flash->error('You have to be a moderator to access this page.');
+    header('Location: index.php');
     die();
 }

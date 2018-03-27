@@ -91,6 +91,18 @@ class Statistics
         return $array;
     }
 
+    public function getMostActiveMembersArray(int $amount = 10): array
+    {
+        $members = $this->database->read(
+            's.user_id, s.user_points, u.display_name, u.username',
+            'users_statistics s',
+            'INNER JOIN users u ON s.user_id = u.id ORDER BY s.user_points DESC LIMIT ?',
+            [$amount]
+        );
+
+        return is_array($members) ? $members : [];
+    }
+
     /**
      * Count user's action points
      *

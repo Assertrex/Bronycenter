@@ -63,6 +63,8 @@ class Database
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
                 ]
             );
+
+            $this->connection->exec("SET time_zone='+00:00';");
         } catch (PDOException $e) {
             // Display error message on exception
             echo 'Connection with database couldn\'t be established!';

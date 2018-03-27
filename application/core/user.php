@@ -136,11 +136,59 @@ class User
         $members = $this->database->read(
             'id',
             'users',
-            'WHERE account_type != 0 AND account_standing NOT IN (8, 9) ORDER BY last_online DESC',
+            'WHERE account_type != 0 AND account_standing NOT IN (2, 3) ORDER BY last_online DESC',
             []
         );
 
         return $members;
+    }
+
+    /**
+     * Count all created accounts (including not-verified and banned)
+     */
+    public function countCreatedAccounts(): int
+    {
+        $members = $this->database->read(
+            'count(id) AS amount',
+            'users',
+            '',
+            [],
+            false
+        )['amount'];
+
+        return intval($members) ?: 0;
+    }
+
+    /**
+     * Count not-banned members with activated accounts
+     */
+    public function countExistingMembers(): int
+    {
+        $members = $this->database->read(
+            'count(id) AS amount',
+            'users',
+            'WHERE account_type != 0 AND account_standing NOT IN (2, 3)',
+            [],
+            false
+        )['amount'];
+
+        return intval($members) ?: 0;
+    }
+
+    /**
+     * Count all currently online members
+     */
+    public function countOnlineMembers(): int
+    {
+        $members = $this->database->read(
+            'count(id) AS amount',
+            'users',
+            'WHERE last_online >= (DATE_SUB(NOW(), INTERVAL 40 SECOND))',
+            [],
+            false
+        )['amount'];
+
+        return intval($members) ?: 0;
     }
 
     /**

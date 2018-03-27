@@ -475,8 +475,34 @@ class Post
         }
     }
 
+    public function countCreatedPosts(): int
+    {
+        $posts = $this->database->read(
+            'count(id) AS amount',
+            'posts',
+            '',
+            [],
+            false
+        )['amount'];
+
+        return intval($posts) ?: 0;
+    }
+
+    public function countAvailablePosts(): int
+    {
+        $posts = $this->database->read(
+            'count(id) AS amount',
+            'posts',
+            'WHERE status = 0',
+            [],
+            false
+        )['amount'];
+
+        return intval($posts) ?: 0;
+    }
+
     /**
-     * Count created posts
+     * Count created posts (Legacy code)
      *
      * @since 0.1.0
      * @var string $fetchMode Mode of posts fetching
