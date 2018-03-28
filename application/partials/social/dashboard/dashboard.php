@@ -1,5 +1,3 @@
-<h1 class="text-center mb-3">Dashboard</h1>
-
 <section class="fancybox">
     <h6 class="text-center mb-0">Details</h6>
 
@@ -43,9 +41,9 @@
         <div class="col-lg m-3" style="font-size: 14px;">
             <p class="text-center font-weight-bold"><i class="fa fa-users text-primary mr-2" aria-hidden="true"></i> Members</p>
 
-            <p class="mb-0">Online members: <b><?= number_format($user->countOnlineMembers(), 0, '.', ' ') ?></b></p>
-            <p class="mb-0">- last 1 hour: <span class="text-info ml-1"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Not implemented yet.</span></p>
-            <p>- last 24 hours: <span class="text-info ml-1"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Not implemented yet.</span></p>
+            <p class="mb-0">Online members: <b><?= number_format($user->countOnlineMembers('40 SECOND'), 0, '.', ' ') ?></b></p>
+            <p class="mb-0">- last 1 hour: <b><?= number_format($user->countOnlineMembers('1 HOUR'), 0, '.', ' ') ?></b></p>
+            <p>- last 24 hours: <b><?= number_format($user->countOnlineMembers('1 DAY'), 0, '.', ' ') ?></b></p>
 
             <p class="mb-0">Active accounts: <b><?= number_format($user->countExistingMembers(), 0, '.', ' ') ?></b></p>
             <p class="mb-0">All created accounts: <b><?= number_format($user->countCreatedAccounts(), 0, '.', ' ') ?></b></p>
@@ -55,14 +53,14 @@
             <p class="text-center font-weight-bold"><i class="fa fa-file-text-o text-primary mr-2" aria-hidden="true"></i> Posts</p>
 
             <p class="mb-0">Existing posts: <b><?= number_format($o_post->countAvailablePosts(), 0, '.', ' ') ?></b></p>
-            <p>Posts to review: <span class="text-info ml-1"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Not implemented yet.</span></p>
+            <p>Posts to review: <span class="text-info">Coming soon!</span></p>
 
             <p class="mb-0">All created posts: <b><?= number_format($o_post->countCreatedPosts(), 0, '.', ' ') ?></b></p>
-            <p class="mb-0">All reported posts: <span class="text-info ml-1"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Not implemented yet.</span></p>
+            <p class="mb-0">All reported posts: <span class="text-info">Coming soon!</span></p>
         </div>
 
         <div class="col-lg m-3" style="font-size: 14px;">
-            <p class="text-center font-weight-bold"><i class="fa fa-star text-primary mr-2" aria-hidden="true"></i> Active members</p>
+            <p class="text-center font-weight-bold"><i class="fa fa-star text-primary mr-2" aria-hidden="true"></i> Activity</p>
 
             <ul style="padding: 0; margin: 0; list-style: none;">
                 <?php
@@ -108,7 +106,7 @@
 
             <p class="text-info text-center mb-0">
                 <i class="fa fa-exclamation-triangle mr-1" aria-hidden="true"></i>
-                Feature not implemented yet.
+                Feature is not implemented yet!
             </p>
         </div>
 
@@ -117,7 +115,7 @@
 
             <p class="text-info text-center mb-0">
                 <i class="fa fa-exclamation-triangle mr-1" aria-hidden="true"></i>
-                Feature not implemented yet.
+                Feature is not implemented yet!
             </p>
         </div>
 

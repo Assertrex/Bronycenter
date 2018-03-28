@@ -49,7 +49,7 @@
                 if ($loggedModerator) {
                 ?>
                 <li class="nav-item d-lg-none">
-                    <a class="d-block nav-link" href="manage.php"><i class="fa fa-cogs mr-2" aria-hidden="true" style="width: 18px;"></i> Moderate</a>
+                    <a class="d-block nav-link" href="dashboard.php"><i class="fa fa-cogs mr-2" aria-hidden="true" style="width: 18px;"></i> Moderate</a>
                 </li>
                 <?php
                 } // if

@@ -175,20 +175,41 @@ class User
         return intval($members) ?: 0;
     }
 
-    /**
-     * Count all currently online members
-     */
-    public function countOnlineMembers(): int
+    public function countOnlineMembers(string $intervalUnitName = '1 MINUTE'): int
     {
         $members = $this->database->read(
             'count(id) AS amount',
             'users',
-            'WHERE last_online >= (DATE_SUB(NOW(), INTERVAL 40 SECOND))',
+            "WHERE last_online >= (DATE_SUB(NOW(), INTERVAL $intervalUnitName))",
             [],
             false
         )['amount'];
 
         return intval($members) ?: 0;
+    }
+
+    public function countMembersByAccountType(): array
+    {
+        $members = $this->database->read(
+            'account_type, count(id) AS amount',
+            'users',
+            'GROUP BY account_type',
+            []
+        );
+
+        return is_array($members) ? $members : [];
+    }
+
+    public function countMembersByAccountStanding(): array
+    {
+        $members = $this->database->read(
+            'account_standing, count(id) AS amount',
+            'users',
+            'GROUP BY account_standing',
+            []
+        );
+
+        return is_array($members) ? $members : [];
     }
 
     /**
