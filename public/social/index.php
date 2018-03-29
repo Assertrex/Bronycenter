@@ -200,7 +200,7 @@ require('../../application/partials/social/head.php');
     // Allow only one post to be published every one minute
     // FIXME: This is one of my most stupid ideas for security, I know
     function verifyPostCreatorWaittime() {
-        let waittimeInSeconds = 10;
+        let waittimeInSeconds = 60;
 
         // Don't create additional intervals if one is already working
         if (creatorWaittimeInterval) {
