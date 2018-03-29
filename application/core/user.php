@@ -352,27 +352,27 @@ class User
         // Store user details in an tooltip
         $details['tooltip'] = '
         <div style=\'padding: .5rem .25rem; line-height: 1.2;\'>
-            <div>' . $this->utilities->doEscapeString($details['display_name'], false) . '</div>
-            <div><small class=\'text-muted\'>@' . $details['username'] . '</small></div>
+            <div>' . strip_tags($details['display_name']) . '</div>
+            <div><small class=\'text-muted\'>@' . strip_tags($details['username']) . '</small></div>
 
             <div style=\'padding-top: 8px; text-align: left;\'>
                 <div style=\'margin-bottom: 1px;\'>
                     <span class=\'text-center mr-1\' style=\'width: 15px;\'>
                         <i class=\'fa fa-transgender text-primary\' style=\'width: 15px;\' aria-hidden=\'true\'></i>
                     </span>
-                    <small>' . ($details['gender'] ? $details['gender_name'] : 'Unknown gender') . '</small>
+                    <small>' . strip_tags($details['gender'] ? $details['gender_name'] : 'Unknown gender') . '</small>
                 </div>
                 <div style=\'margin-bottom: 1px;\'>
                     <span class=\'text-center mr-1\' style=\'width: 15px;\'>
                         <i class=\'fa fa-user-o text-primary\' style=\'width: 15px;\' aria-hidden=\'true\'></i>
                     </span>
-                    <small>' . ($details['birthdate_years'] ?? 'Unknown age') . '</small>
+                    <small>' . strip_tags($details['birthdate_years'] ?? 'Unknown age') . '</small>
                 </div>
                 <div>
                     <span class=\'text-center mr-1\' style=\'width: 15px;\'>
                         <i class=\'fa fa-map-marker text-primary\' style=\'width: 15px;\' aria-hidden=\'true\'></i>
                     </span>
-                    <small>' . ($details['country_name'] ?? 'Unknown country') . '</small>
+                    <small>' . strip_tags($details['country_name'] ?? 'Unknown country') . '</small>
                 </div>
             </div>
         </div>
