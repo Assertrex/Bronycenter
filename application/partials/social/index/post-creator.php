@@ -24,6 +24,12 @@
 
     <div id="post-creator-input">
         <textarea id="post-creator-textarea" placeholder="Tell us something..." maxlength="1000" style="overflow: hidden;"></textarea>
+
+        <div>
+            <p id="post-creator-notification-waittime" class="text-center text-danger mb-0" style="display: none;">
+                <small><i class="fa fa-exclamation-circle mr-1" aria-hidden="true"></i> You have to wait <b>0</b> seconds before you'll be able to publish a post again!</small>
+            </p>
+        </div>
     </div>
 
     <div id="post-creator-submitbar" class="d-flex align-items-center justify-content-end">

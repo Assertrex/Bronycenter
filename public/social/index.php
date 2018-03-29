@@ -110,6 +110,9 @@ require('../../application/partials/social/head.php');
         }, 15000
     );
 
+    // Variable used for storing waittime interval outside of a function
+    let creatorWaittimeInterval;
+
     // Store default resizable textarea height
     let initialTextareaValue;
     let textareaState = false;
@@ -119,6 +122,8 @@ require('../../application/partials/social/head.php');
     $('#post-creator-textarea').each(function () {
         initialTextareaValue = this.scrollHeight;
         $(this).css('height', initialTextareaValue + "px");
+
+        verifyPostCreatorWaittime();
     }).on('input', function () {
         $(this).css('height', initialTextareaValue);
         $(this).css('height', this.scrollHeight + "px");
@@ -144,6 +149,12 @@ require('../../application/partials/social/head.php');
             return false;
         }
 
+        // Abort an action if wait time has not finished
+        if (!verifyPostCreatorWaittime()) {
+            return false;
+        }
+
+        // Finally, send an AJAX request
         $.ajax({
             'url': '../ajax/doPostCreate.php',
             'method': 'POST',
@@ -152,6 +163,9 @@ require('../../application/partials/social/head.php');
                 'type': 1
             },
             'success': function(result) {
+                // FIXME: This will be stored even if post have not been published successfully
+                localStorage.setItem('socialTimestampPostCreation', + new Date());
+
                 // Reset content of a textarea after publishing new post
                 $('#post-creator-textarea').val('');
 
@@ -161,8 +175,16 @@ require('../../application/partials/social/head.php');
                 // Return textarea to it's initial height
                 $('#post-creator-textarea').css('height', initialTextareaValue + 'px');
 
+                // Make a textarea submit button disabled again
+                textareaState = false;
+                $('#post-creator-submit').prop('disabled', true);
+                $('#post-creator-submit').css('cursor', 'not-allowed');
+
                 // Display new posts including the created one
                 displayLastestPosts();
+
+                // Display an post creator waittime notification
+                verifyPostCreatorWaittime();
 
                 return true;
             }
@@ -174,6 +196,44 @@ require('../../application/partials/social/head.php');
 
     // Bind listeners to a default posts container
     bindListeners('#posts-list');
+
+    // Allow only one post to be published every one minute
+    // FIXME: This is one of my most stupid ideas for security, I know
+    function verifyPostCreatorWaittime() {
+        let waittimeInSeconds = 10;
+
+        // Don't create additional intervals if one is already working
+        if (creatorWaittimeInterval) {
+            return false;
+        }
+
+        let currentTimestamp = (+ new Date());
+        let passedTimeInSeconds = parseInt((currentTimestamp - localStorage.getItem('socialTimestampPostCreation')) / 1000);
+
+        if (passedTimeInSeconds < waittimeInSeconds) {
+            $('#post-creator-notification-waittime').css('display', 'block');
+            $('#post-creator-notification-waittime b').text(waittimeInSeconds - passedTimeInSeconds);
+
+            // Clear an interval even if it doesn't exist
+            creatorWaittimeInterval = setInterval(() => {
+                currentTimestamp = (+ new Date());
+                passedTimeInSeconds = parseInt((currentTimestamp - localStorage.getItem('socialTimestampPostCreation')) / 1000);
+
+                $('#post-creator-notification-waittime b').text(waittimeInSeconds - passedTimeInSeconds);
+
+                if (passedTimeInSeconds >= waittimeInSeconds) {
+                    clearInterval(creatorWaittimeInterval);
+                    creatorWaittimeInterval = null;
+
+                    $('#post-creator-notification-waittime').css('display', 'none');
+                }
+            }, 1000);
+
+            return false;
+        }
+
+        return true;
+    }
 
     function displayLastestPosts() {
         // Get ID of last fetched post
