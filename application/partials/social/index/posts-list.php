@@ -11,7 +11,7 @@
         // Get an amount of available posts
         $postsAmount = $posts->getPostsAmount();
 
-        $fetchAmount = 15;
+        $fetchAmount = 25;
         $fetchOffset = (intval($_GET['p'] ?? 0) ? $_GET['p'] * $fetchAmount - $fetchAmount : 0) ?? 0;
 
         // Fetch newest available posts
