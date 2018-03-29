@@ -3,7 +3,7 @@
 require('../../application/partials/init.php');
 
 // Get a list of active members
-$members = $user->getMembersList();
+$members = $user->getMembersList(50);
 
 // Page settings
 $pageTitle = 'Members :: BronyCenter';
@@ -33,6 +33,12 @@ require('../../application/partials/social/head.php');
             <div class="col-12 col-lg-8">
                 <section class="fancybox mt-0 mb-0" id="members-list">
                     <h6 class="text-center mb-0">Members list</h6>
+
+                    <div class="py-1 px-3" style="border-bottom: 1px solid #E9ECEF;">
+                        <p class="mb-0">
+                            <small>Displaying <b><?= count($members) ?></b> of <b><?= $user->countExistingMembers() ?></b> found members (recently seen are on top).</small>
+                        </p>
+                    </div>
 
                     <div>
                         <?php

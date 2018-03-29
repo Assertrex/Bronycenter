@@ -126,21 +126,21 @@ class User
     }
 
     /**
-     * Get all active registered members ordered by last seen time
+     * Get active registered members ordered by last seen time
      *
-     * @since Release 0.1.0
-     * @return array Array of active registered members ID's
+     * @var integer $amount - Amount of members to fetch
+     * @return array - Array of active registered members ID's
      */
-    public function getMembersList()
+    public function getMembersList(int $amount = 50) : array
     {
         $members = $this->database->read(
             'id',
             'users',
-            'WHERE account_type != 0 AND account_standing NOT IN (2, 3) ORDER BY last_online DESC',
-            []
+            'WHERE account_type != 0 AND account_standing NOT IN (2, 3) ORDER BY last_online DESC LIMIT ?',
+            [$amount]
         );
 
-        return $members;
+        return is_array($members) ? $members : [];
     }
 
     /**
