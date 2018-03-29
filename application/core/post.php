@@ -256,7 +256,7 @@ class Post
             'status, delete_moderator, delete_id, delete_ip, delete_datetime, delete_reason',
             'posts',
             'WHERE id = ?',
-            [9, $removeAsModerator, $_SESSION['account']['id'], $currentIP, $currentDatetime, $reason, $postID]
+            [9, intval($removeAsModerator), $_SESSION['account']['id'], $currentIP, $currentDatetime, $reason, $postID]
         );
 
         // Check if post has been successfully removed
