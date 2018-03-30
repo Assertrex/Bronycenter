@@ -27,8 +27,8 @@ $leftRemoved = false;
 $rightRemoved = false;
 ?>
 
-<nav class="mt-4" aria-label="Posts pages pagination">
-    <ul class="pagination pagination-sm justify-content-center">
+<nav aria-label="Posts pages pagination">
+    <ul class="pagination pagination-sm justify-content-center mb-0">
         <li class="page-item<?php echo $currentFirstpage ? ' disabled' : ''; ?>">
             <a class="page-link" href="?p=<?php echo $currentPage - 1; ?>">Prev</a>
         </li>

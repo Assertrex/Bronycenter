@@ -44,7 +44,9 @@ require('../../application/partials/social/head.php');
                 require('../../application/partials/social/index/posts-list.php');
 
                 // Include partial containing a posts pagination bar
-                require('../../application/partials/social/index/posts-pagination.php');
+                echo '<div class="my-3">';
+                    require('../../application/partials/social/index/posts-pagination.php');
+                echo '</div>';
                 ?>
             </div>
 
@@ -69,6 +71,11 @@ require('../../application/partials/social/head.php');
     // Check if new posts are available
     setInterval(
         () => {
+            // Check if posts checker is available on this page
+            if ($('#posts-list-checker').length != 1) {
+                return false;
+            }
+
             // Get ID of last fetched post
             let lastPostID = $('#posts-list-wrapper').children(':first');
 
