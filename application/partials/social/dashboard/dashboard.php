@@ -71,7 +71,7 @@
 
                 <li>
                     <span class="d-inline-block" style="width: 12px"><?= ++$activeMemberIndex ?>:</span>
-                    <?= $activeMember['display_name'] ?>
+                    <?= $utilities->doEscapeString($activeMember['display_name'], false) ?>
                     | <i class="fa fa-star-o text-success" aria-hidden="true"></i> <?= $activeMember['user_points'] ?>
                 </li>
 
