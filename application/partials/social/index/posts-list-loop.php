@@ -75,6 +75,9 @@ foreach ($listPosts as $post) {
                 </div>
             </div>
 
+            <?php
+            if (!$readonlyState) {
+            ?>
             <div class="d-flex post-actions" data-postid="<?= $post['id']; ?>">
                 <?php if (!$post['current_user_liked']) { ?>
                 <button type="button" class="btn btn-outline-secondary btn-sm btn-postlike mr-1" data-postid="<?= $post['id']; ?>" data-hasliked="false">
@@ -159,6 +162,31 @@ foreach ($listPosts as $post) {
                     ?>
                 </div>
             </div>
+            <?php
+            } else {
+            ?>
+            <div class="d-flex post-actions" data-postid="<?= $post['id']; ?>">
+                <p class="text-center text-danger mb-0">
+                    <i class="fa fa-exclamation-circle mr-1" aria-hidden="true"></i>
+                    <small>
+                    <?php
+                    switch ($_SESSION['account']['reason_readonly']) {
+                        case 'unverified':
+                            echo $translationArray['postslist']['accountUnverified'];
+                            break;
+                        case 'muted':
+                            echo $translationArray['postslist']['accountMuted'];
+                            break;
+                        default:
+                            echo $translationArray['postslist']['accountReadonly'];
+                    }
+                    ?>
+                    </small>
+                </p>
+            </div>
+            <?php
+            }
+            ?>
         </div>
     </div>
 

@@ -10,7 +10,7 @@
             <div>
                 <input class="form-control mr-2 mb-2" id="content-input-username"
                        type="text" placeholder="Username"
-                       value="<?php echo $userDetails['username'] ?? ''; ?>"
+                       value="<?= $userDetails['username'] ?? ''; ?>"
                        aria-describedby="usernameInputDescription" disabled />
 
                 <div class="d-flex justify-content-end">
@@ -28,6 +28,9 @@
         <div class="content-block mb-3">
             <p class="content-title mb-2">Password</p>
 
+            <?php
+            if (!$readonlyState) {
+            ?>
             <form method="post" id="content-form-changepassword">
                 <input class="form-control mr-2 mb-2" id="content-input-oldpassword" type="password" placeholder="Current password" autocomplete="off" required />
 
@@ -38,6 +41,16 @@
 
                 <button type="submit" class="btn btn-outline-primary btn-block">Change</button>
             </form>
+            <?php
+            } else {
+            ?>
+            <p class="text-center text-danger mb-0">
+                <i class="fa fa-exclamation-circle mr-1" aria-hidden="true"></i>
+                <?= $translationAccountReadonly ?>
+            </p>
+            <?php
+            }
+            ?>
         </div>
     </div>
 </div>

@@ -7,8 +7,8 @@
         <div class="content-block mb-3">
             <p class="content-title mb-2">Account standing</p>
             <div>
-                <p class="mb-1">Account type: <?php echo $userDetails['account_type_badge']; ?></p>
-                <p>Account standing: <?php echo $userDetails['account_standing_badge']; ?></p>
+                <p class="mb-1">Account type: <?= $userDetails['account_type_badge']; ?></p>
+                <p>Account standing: <?= $userDetails['account_standing_badge']; ?></p>
             </div>
         </div>
 
@@ -17,7 +17,7 @@
             <div>
                 <p class="mb-0 text-info text-center">
                     <i class="fa fa-exclamation-triangle mr-1" aria-hidden="true"></i>
-                    Feature is not available yet.
+                    <?= $translationArray['common']['featureNotAvailable'] ?>
                 </p>
             </div>
         </div>

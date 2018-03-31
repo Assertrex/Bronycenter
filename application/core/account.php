@@ -198,7 +198,6 @@ class Account
             'id' => $user[0]['id'],
             'displayname' => $user[0]['display_name'],
             'username' => $user[0]['username'],
-            'email' => $user[0]['email'],
             'avatar' => $user[0]['avatar'],
             'account_type' => $user[0]['account_type'],
             'account_standing' => $user[0]['account_standing'],

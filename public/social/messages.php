@@ -45,10 +45,27 @@ require('../../application/partials/social/head.php');
                 </div>
 
                 <div id="messages-show" class="py-3 px-4">
-
+                    <p class="text-center text-danger mb-0">
+                        <i class="fa fa-exclamation-circle mr-1" aria-hidden="true"></i>
+                        <?php
+                        switch ($_SESSION['account']['reason_readonly']) {
+                            case 'unverified':
+                                echo $translationArray['messages']['accountUnverified'];
+                                break;
+                            case 'muted':
+                                echo $translationArray['messages']['accountMuted'];
+                                break;
+                            default:
+                                echo $translationArray['messages']['accountReadonly'];
+                        }
+                        ?>
+                    </p>
                 </div>
 
                 <div id="message-creator">
+                    <?php
+                    if (!$readonlyState) {
+                    ?>
                     <div id="message-creator-wrapper" class="d-flex align-items-stretch">
                         <div id="message-creator-textarea-wrapper" class="form-group mb-0">
                             <textarea type="text" id="message-creator-textarea" class="form-control" placeholder="Write a message..." maxlength="1000"></textarea>
@@ -61,6 +78,9 @@ require('../../application/partials/social/head.php');
                             <i class="fa fa-paper-plane-o" aria-hidden="true"></i>
                         </button>
                     </div>
+                    <?php
+                    }
+                    ?>
                 </div>
             </main>
         </div>

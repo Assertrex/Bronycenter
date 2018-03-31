@@ -73,23 +73,28 @@ class Session
      */
     public function create($array)
     {
+        $_SESSION['user']['displayname'] = $array['displayname'];
+        $_SESSION['user']['avatar'] = $array['avatar'] ?? 'default';
+
         $_SESSION['account']['id'] = $array['id'];
         $_SESSION['account']['username'] = $array['username'];
         $_SESSION['account']['type'] = $array['account_type'];
         $_SESSION['account']['standing'] = $array['account_standing'];
 
-        // Check if user is an moderator
-        if ($_SESSION['account']['type'] == 8 ||
-            $_SESSION['account']['type'] == 9 &&
-            $_SESSION['account']['standing'] == 0) {
-            $_SESSION['account']['isModerator'] = true;
-        } else {
-            $_SESSION['account']['isModerator'] = false;
+        $_SESSION['account']['reason_readonly'] = null;
+        $_SESSION['account']['isModerator'] = false;
+
+        if ($_SESSION['account']['type'] == 0) {
+            $_SESSION['account']['reason_readonly'] = 'unverified';
         }
 
-        $_SESSION['user']['displayname'] = $array['displayname'];
-        $_SESSION['user']['email'] = $array['email'];
-        $_SESSION['user']['avatar'] = $array['avatar'] ?? 'default';
+        if ($_SESSION['account']['standing'] == 1) {
+            $_SESSION['account']['reason_readonly'] = 'muted';
+        }
+
+        if (($_SESSION['account']['type'] == 8 || $_SESSION['account']['type'] == 9) && $_SESSION['account']['standing'] == 0) {
+            $_SESSION['account']['isModerator'] = true;
+        }
 
         return true;
     }
@@ -101,41 +106,44 @@ class Session
      */
     public function verify()
     {
-        // Check if session exists
         if (empty($_SESSION['account']) || empty($_SESSION['user'])) {
             return false;
         }
 
         // Get details about selected account from database
 		$details = $this->database->read(
-			'id, display_name, username, email, avatar, account_type, account_standing',
+			'id, display_name, username, avatar, account_type, account_standing',
 			'users',
 			'WHERE id = ?',
 			[$_SESSION['account']['id']],
             false
 		);
 
-        // Logout user if it has been removed from a database
         if (empty($details)) {
             return false;
         }
 
-        // Check if account has been banned
-        // TODO Check if ban has ended and switch account standing value back to 0
-        // TODO Show time left to end ban
-        if ($details['account_standing'] == 2) {
-            $this->flash->error('Your account has been banned for some time.');
-            return false;
-        }
+        $_SESSION['user']['displayname'] = $details['display_name'];
+        $_SESSION['user']['avatar'] = $details['avatar'] ?? 'default';
 
-        // Update dynamic details in an account session
         $_SESSION['account']['username'] = $details['username'];
         $_SESSION['account']['type'] = $details['account_type'];
         $_SESSION['account']['standing'] = $details['account_standing'];
 
-        $_SESSION['user']['displayname'] = $details['display_name'];
-        $_SESSION['user']['email'] = $details['email'];
-        $_SESSION['user']['avatar'] = $details['avatar'] ?? 'default';
+        $_SESSION['account']['reason_readonly'] = null;
+        $_SESSION['account']['isModerator'] = false;
+
+        if ($_SESSION['account']['type'] == 0) {
+            $_SESSION['account']['reason_readonly'] = 'unverified';
+        }
+
+        if ($_SESSION['account']['standing'] == 1) {
+            $_SESSION['account']['reason_readonly'] = 'muted';
+        }
+
+        if (($_SESSION['account']['type'] == 8 || $_SESSION['account']['type'] == 9) && $_SESSION['account']['standing'] == 0) {
+            $_SESSION['account']['isModerator'] = true;
+        }
 
         // Update datetime of when account has been last seen logged
         $this->database->update(
@@ -173,6 +181,7 @@ class Session
     public function destroy()
     {
         session_destroy();
+        session_start();
 
         return true;
     }

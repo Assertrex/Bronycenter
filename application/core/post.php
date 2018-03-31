@@ -395,7 +395,7 @@ class Post
                     'posts p',
                     'INNER JOIN users u ON p.user_id = u.id
                      LEFT JOIN (SELECT post_id, user_id FROM posts_likes WHERE user_id = ? AND active = 1) AS l ON p.id = l.post_id
-                     WHERE status != 9 ORDER BY id DESC LIMIT ? OFFSET ?',
+                     WHERE u.account_type != 0 AND status != 9 ORDER BY id DESC LIMIT ? OFFSET ?',
                     [$_SESSION['account']['id'], $array['fetchAmount'] ?? 25, $array['fetchOffset'] ?? 0]
                 );
                 break;

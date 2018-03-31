@@ -65,6 +65,18 @@ if (!is_null($userDetails['birthdate'])) {
 // Get user's login history
 $loginHistory = $session->getHistory();
 
+// Remember translations of read-only state
+switch ($_SESSION['account']['reason_readonly']) {
+    case 'unverified':
+        $translationAccountReadonly = $translationArray['settings']['accountUnverified'];
+        break;
+    case 'muted':
+        $translationAccountReadonly = $translationArray['settings']['accountMuted'];
+        break;
+    default:
+        $translationAccountReadonly = $translationArray['settings']['accountReadonly'];
+}
+
 // Include social head content for all pages
 require('../../application/partials/social/head.php');
 ?>

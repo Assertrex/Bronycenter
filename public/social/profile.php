@@ -133,7 +133,7 @@ require('../../application/partials/social/head.php');
                     </div>
                 </section>
 
-                <?php if ($loggedIn) { ?>
+                <?php if ($loggedIn && !$readonlyState) { ?>
                 <section class="fancybox">
                     <h6 class="text-center mb-0">Quick actions</h6>
 

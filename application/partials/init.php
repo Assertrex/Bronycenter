@@ -15,6 +15,10 @@ $websiteSettings = $config->getSection('system');
 $websiteVersion = $config->getVersion();
 $websiteEncryptionKey = $config->getSection('messages')['key'];
 
+// Get a translation strings depending on a website's language
+$websiteLanguage = $websiteSettings['language'] ?? 'en';
+require_once(__DIR__ . '/translation/' . $websiteLanguage . '.php');
+
 // Enable error reporting if debugging is enabled
 if ($websiteSettings['enableDebug']) {
     ini_set('display_errors', 1);
@@ -58,6 +62,12 @@ $statistics = BronyCenter\Statistics::getInstance();
 $o_message = BronyCenter\Message::getInstance();
 $o_message->setEncryptionKey($websiteEncryptionKey);
 
+// Account default variables
+$loggedIn = false;
+$loggedModerator = false;
+$readonlyState = false;
+$readonlyStateString = null;
+
 // Check if user is currently logged in
 if ($session->verify()) {
     $loggedIn = true;
@@ -65,26 +75,53 @@ if ($session->verify()) {
     // Check if user is a moderator
     if ($_SESSION['account']['isModerator']) {
         $loggedModerator = true;
-    } else {
-        $loggedModerator = false;
+    }
+
+    // Check if account is in a read-only state
+    if (!empty($_SESSION['account']['reason_readonly'])) {
+        $readonlyState = true;
+
+        switch ($_SESSION['account']['reason_readonly']) {
+            case 'unverified':
+                $readonlyStateString = $translationArray['errors']['accountUnverified'];
+                break;
+            case 'muted':
+                $readonlyStateString = $translationArray['errors']['accountMuted'];
+                break;
+            default:
+                $readonlyStateString = $translationArray['errors']['accountReadonly'];
+        }
     }
 } else {
-    $loggedIn = false;
-    $loggedModerator = false;
+    $session->destroy();
 }
 
-// TODO Handle not verified users and muted & banned users
-
 // Redirect not logged guest if page requires log in
-if (isset($loginRequired) && $loggedIn === false) {
-    $flash->error('You need to be logged in to view this page.');
+if (isset($loginRequired) && $loginRequired == true && $loggedIn != true) {
+    $flash->error($translationArray['errors']['loginRequired']);
     header('Location: ../');
     die();
 }
 
 // Redirect user back if page can be accessed only by moderators
-if (!empty($moderatorRequired) && $loggedModerator != true) {
-    $flash->error('You have to be a moderator to access this page.');
+if (!empty($moderatorRequired) && $moderatorRequired == true && $loggedModerator != true) {
+    $flash->error($translationArray['errors']['moderatorRequired']);
+    header('Location: index.php');
+    die();
+}
+
+// Stop executing if page or AJAX requires an account outside of readonly state
+if (isset($readonlyDenied) && $readonlyDenied == true && $readonlyState != false) {
+    if (isset($isAJAXCall) && $isAJAXCall == true) {
+        $AJAXCallJSON = [
+            'status' => 'error',
+            'error' => $readonlyStateString
+        ];
+
+        die(json_encode($AJAXCallJSON, JSON_UNESCAPED_UNICODE));
+    }
+
+    $flash->error($readonlyStateString);
     header('Location: index.php');
     die();
 }

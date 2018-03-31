@@ -5,13 +5,13 @@
         <p><small>Change your email address and what types of emails you want to receive.</small></p>
 
         <div class="content-block mb-3">
-            <p class="content-title mb-2 text-danger">E-mail address (not implemented)</p>
+            <p class="content-title mb-2 text-danger">E-mail address</p>
             <p class="mb-2 text-info text-center">
                 <i class="fa fa-exclamation-triangle mr-1" aria-hidden="true"></i>
-                Feature is not available yet.
+                <?= $translationArray['common']['featureNotAvailable'] ?>
             </p>
             <div class="form-inline align-items-top mb-2">
-                <input class="form-control" id="content-input-email" type="email" placeholder="E-mail address" value="<?php echo $userDetails['email'] ?? ''; ?>" style="flex: 1;" disabled />
+                <input class="form-control" id="content-input-email" type="email" placeholder="E-mail address" value="<?= $userDetails['email'] ?? ''; ?>" style="flex: 1;" disabled />
             </div>
             <div class="d-flex justify-content-end">
                 <small class="letters-counter text-muted">
@@ -25,7 +25,7 @@
             <div>
                 <p class="mb-0 text-info text-center">
                     <i class="fa fa-exclamation-triangle mr-1" aria-hidden="true"></i>
-                    Feature is not available yet.
+                    <?= $translationArray['common']['featureNotAvailable'] ?>
                 </p>
             </div>
         </div>

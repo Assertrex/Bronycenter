@@ -1,7 +1,8 @@
 <?php
 
-// Allow access only for logged users
+$isAJAXCall = true;
 $loginRequired = true;
+$readonlyDenied = true;
 
 // Require system initialization code
 require_once('../../application/partials/init.php');

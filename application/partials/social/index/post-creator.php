@@ -5,29 +5,32 @@
                 <div style="width: 16px; height: 14px; text-align: right; vertical-align: middle;">
                     <i class="fa fa-pencil-square-o" style="vertical-align: top;" aria-hidden="true"></i>
                 </div>
-                <span>Post</span>
+                <span><?= $translationArray['postcreator']['post'] ?></span>
             </li>
             <li class="disabled" style="cursor: not-allowed;">
                 <div style="width: 16px; height: 14px; text-align: right; vertical-align: middle;">
                     <i class="fa fa-picture-o" style="vertical-align: top;" aria-hidden="true"></i>
                 </div>
-                <span>Photo</span>
+                <span><?= $translationArray['postcreator']['photo'] ?></span>
             </li>
             <li class="disabled" style="cursor: not-allowed;">
                 <div style="width: 16px; height: 14px; text-align: right; vertical-align: middle;">
                     <i class="fa fa-bar-chart" style="vertical-align: top;" aria-hidden="true"></i>
                 </div>
-                <span>Poll</span>
+                <span><?= $translationArray['postcreator']['poll'] ?></span>
             </li>
         </ul>
     </div>
 
+    <?php
+    if (!$readonlyState) {
+    ?>
     <div id="post-creator-input">
-        <textarea id="post-creator-textarea" placeholder="Tell us something..." maxlength="1000" style="overflow: hidden;"></textarea>
+        <textarea id="post-creator-textarea" placeholder="<?= $translationArray['postcreator']['textareaPlaceholder'] ?>" maxlength="1000" style="overflow: hidden;"></textarea>
 
         <div>
             <p id="post-creator-notification-waittime" class="text-center text-danger mb-0" style="display: none;">
-                <small><i class="fa fa-exclamation-circle mr-1" aria-hidden="true"></i> You have to wait <b>0</b> seconds before you'll be able to publish a post again!</small>
+                <small><i class="fa fa-exclamation-circle mr-1" aria-hidden="true"></i> <?= $translationArray['postcreator']['timeRestriction'] ?></small>
             </p>
         </div>
     </div>
@@ -36,6 +39,29 @@
         <small class="text-muted mr-3">
             <span id="post-creator-lettercounter">0</span> / 1000
         </small>
-        <button id="post-creator-submit" class="btn btn-sm btn-outline-primary" disabled style="cursor: not-allowed;">Publish</button>
+        <button id="post-creator-submit" class="btn btn-sm btn-outline-primary" disabled style="cursor: not-allowed;"><?= $translationArray['postcreator']['publish'] ?></button>
     </div>
+    <?php
+    } else {
+    ?>
+    <div class="py-3">
+        <p class="text-center text-danger mb-0">
+            <i class="fa fa-exclamation-circle mr-1" aria-hidden="true"></i>
+            <?php
+            switch ($_SESSION['account']['reason_readonly']) {
+                case 'unverified':
+                    echo $translationArray['postcreator']['accountUnverified'];
+                    break;
+                case 'muted':
+                    echo $translationArray['postcreator']['accountMuted'];
+                    break;
+                default:
+                    echo $translationArray['postcreator']['accountReadonly'];
+            }
+            ?>
+        </p>
+    </div>
+    <?php
+    }
+    ?>
 </section>

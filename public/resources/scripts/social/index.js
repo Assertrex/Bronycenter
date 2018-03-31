@@ -102,7 +102,19 @@ $('#post-creator-submit').click(function() {
             'content': $('#post-creator-textarea').val(),
             'type': 1
         },
-        'success': function(result) {
+        'success': function(response) {
+            let result = parseJSON(response);
+
+            // // Stop executing if AJAX response couldn't be parsed or there was an error
+            // if (result == false || result.status != 'success') {
+            //     return false;
+            // }
+
+            // TEMP Just check if there was an error caused by a read-only account
+            if (result != false && result.status == 'error') {
+                return false;
+            }
+
             // FIXME: This will be stored even if post have not been published successfully
             localStorage.setItem('socialTimestampPostCreation', + new Date());
 

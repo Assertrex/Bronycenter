@@ -7,8 +7,8 @@
         <div class="content-block mb-3">
             <p class="content-title mb-2">Current connection</p>
 
-            <p class="mb-2">Your IP: <b><?php echo $utilities->getVisitorIP(); ?></b></p>
-            <p style="line-height: 1.2;">User agent: <b><?php echo $utilities->getVisitorAgent(); ?></b></p>
+            <p class="mb-2">Your IP: <b><?= $utilities->getVisitorIP(); ?></b></p>
+            <p style="line-height: 1.2;">User agent: <b><?= $utilities->getVisitorAgent(); ?></b></p>
         </div>
 
         <div class="content-block mb-3">
