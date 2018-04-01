@@ -1,36 +1,10 @@
 <?php
 
-// Start a new session or use an existing one
+date_default_timezone_set('UTC');
 session_start();
 
-// Set a default timezone as a UTC
-date_default_timezone_set('UTC');
-
-// Create an instance of a config class
 require(__DIR__ . '/../core/config.php');
-$config = BronyCenter\Config::getInstance();
-
-// Get website's settings
-$websiteSettings = $config->getSection('system');
-$websiteVersion = $config->getVersion();
-$websiteEncryptionKey = $config->getSection('messages')['key'];
-
-// Get a translation strings depending on a website's language
-$websiteLanguage = $websiteSettings['language'] ?? 'en';
-require_once(__DIR__ . '/translation/' . $websiteLanguage . '.php');
-
-// Enable error reporting if debugging is enabled
-if ($websiteSettings['enableDebug']) {
-    ini_set('display_errors', 1);
-    ini_set('display_startup_errors', 1);
-    error_reporting(E_ALL);
-} else {
-    ini_set('display_errors', 0);
-    ini_set('display_startup_errors', 0);
-    error_reporting(0);
-}
-
-// Require all classes
+require(__DIR__ . '/../core/translation.php');
 require(__DIR__ . '/../core/database.php');
 require(__DIR__ . '/../core/utilities.php');
 require(__DIR__ . '/../core/account.php');
@@ -42,23 +16,29 @@ require(__DIR__ . '/../core/post.php');
 require(__DIR__ . '/../core/statistics.php');
 require(__DIR__ . '/../core/message.php');
 
-// Create an instance of an utilities class to share common functions
+$config = BronyCenter\Config::getInstance();
+$o_translation = BronyCenter\Translation::getInstance();
+
+$websiteSettings = $config->getSection('system');
+$websiteVersion = $config->getVersion();
+$websiteEncryptionKey = $config->getSection('messages')['key'];
+
+if ($websiteSettings['enableDebug']) {
+    ini_set('display_errors', 1);
+    ini_set('display_startup_errors', 1);
+    error_reporting(E_ALL);
+} else {
+    ini_set('display_errors', 0);
+    ini_set('display_startup_errors', 0);
+    error_reporting(0);
+}
+
 $utilities = BronyCenter\Utilities::getInstance();
-
-// Create an instance of a user class to share common functions
 $user = BronyCenter\User::getInstance();
-
-// Get stored flash messages from session
 $flash = BronyCenter\Flash::getInstance();
 $flashMessages = $flash->get();
-
-// Check if user is logged in and verify a session
 $session = BronyCenter\Session::getInstance();
-
-// Create an instance of a statistics class to count users actions
 $statistics = BronyCenter\Statistics::getInstance();
-
-// Create an instance of a message class for actions with messages
 $o_message = BronyCenter\Message::getInstance();
 $o_message->setEncryptionKey($websiteEncryptionKey);
 
@@ -83,13 +63,13 @@ if ($session->verify()) {
 
         switch ($_SESSION['account']['reason_readonly']) {
             case 'unverified':
-                $readonlyStateString = $translationArray['errors']['accountUnverified'];
+                $readonlyStateString = $o_translation->getString('errors', 'accountUnverified');
                 break;
             case 'muted':
-                $readonlyStateString = $translationArray['errors']['accountMuted'];
+                $readonlyStateString = $o_translation->getString('errors', 'accountMuted');
                 break;
             default:
-                $readonlyStateString = $translationArray['errors']['accountReadonly'];
+                $readonlyStateString = $o_translation->getString('errors', 'accountReadonly');
         }
     }
 } else {
@@ -98,14 +78,14 @@ if ($session->verify()) {
 
 // Redirect not logged guest if page requires log in
 if (isset($loginRequired) && $loginRequired == true && $loggedIn != true) {
-    $flash->error($translationArray['errors']['loginRequired']);
+    $flash->error($o_translation->getString('errors', 'loginRequired'));
     header('Location: ../');
     die();
 }
 
 // Redirect user back if page can be accessed only by moderators
 if (!empty($moderatorRequired) && $moderatorRequired == true && $loggedModerator != true) {
-    $flash->error($translationArray['errors']['moderatorRequired']);
+    $flash->error($o_translation->getString('errors', 'moderatorRequired'));
     header('Location: index.php');
     die();
 }

@@ -68,13 +68,13 @@ $loginHistory = $session->getHistory();
 // Remember translations of read-only state
 switch ($_SESSION['account']['reason_readonly']) {
     case 'unverified':
-        $translationAccountReadonly = $translationArray['settings']['accountUnverified'];
+        $translationAccountReadonly = $o_translation->getString('settings', 'accountUnverified');
         break;
     case 'muted':
-        $translationAccountReadonly = $translationArray['settings']['accountMuted'];
+        $translationAccountReadonly = $o_translation->getString('settings', 'accountMuted');
         break;
     default:
-        $translationAccountReadonly = $translationArray['settings']['accountReadonly'];
+        $translationAccountReadonly = $o_translation->getString('settings', 'accountReadonly');
 }
 
 // Include social head content for all pages

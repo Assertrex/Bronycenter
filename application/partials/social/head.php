@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?php echo $pageTitle ?? 'Unknown page :: BronyCenter'; ?></title>
+    <title><?php echo $pageTitle ?? $o_translation->getString('common', 'unknownPage') . ' :: BronyCenter'; ?></title>
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />

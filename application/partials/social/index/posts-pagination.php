@@ -30,7 +30,7 @@ $rightRemoved = false;
 <nav aria-label="Posts pages pagination">
     <ul class="pagination pagination-sm justify-content-center mb-0">
         <li class="page-item<?php echo $currentFirstpage ? ' disabled' : ''; ?>">
-            <a class="page-link" href="?p=<?php echo $currentPage - 1; ?>">Prev</a>
+            <a class="page-link" href="?p=<?php echo $currentPage - 1; ?>"><?= $o_translation->getString('common', 'prev') ?></a>
         </li>
 
         <?php
@@ -84,7 +84,7 @@ $rightRemoved = false;
         ?>
 
         <li class="page-item<?php echo $nextAvailable ? '' : ' disabled'; ?>">
-            <a class="page-link" href="?p=<?php echo $currentPage + 1; ?>">Next</a>
+            <a class="page-link" href="?p=<?php echo $currentPage + 1; ?>"><?= $o_translation->getString('common', 'next') ?></a>
         </li>
     </ul>
 </nav>

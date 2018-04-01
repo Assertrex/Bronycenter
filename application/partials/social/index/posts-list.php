@@ -1,5 +1,5 @@
 <section class="fancybox mb-0" id="posts-list">
-    <h6 class="text-center mb-0">Recent posts</h6>
+    <h6 class="text-center mb-0"><?= $o_translation->getString('postslist', 'recentPosts') ?></h6>
 
     <?php
     $currentPage = intval($_GET['p'] ?? 1);
@@ -13,8 +13,10 @@
     if ($currentPage === 1) {
     ?>
     <p class="mb-0 py-2 py-lg-3 text-center" id="posts-list-checker" style="border-bottom: 1px solid #E9ECEF;">
-        <button type="button" class="d-inline-block btn btn-sm btn-outline-dark" id="posts-list-checker-unavailable" style="cursor: not-allowed;" disabled>No new posts to show</button>
-        <button type="button" class="d-none btn btn-sm btn-outline-primary" id="posts-list-checker-available">Click to show <span id="posts-list-checker-available-counter">0</span> new posts</button>
+        <button type="button" class="d-inline-block btn btn-sm btn-outline-dark" id="posts-list-checker-unavailable" style="cursor: not-allowed;" disabled><?= $o_translation->getString('postslist', 'noNewPostsToShow') ?></button>
+        <button type="button" class="d-none btn btn-sm btn-outline-primary" id="posts-list-checker-available">
+            <?= ucfirst($o_translation->getString('postslist', 'clickToShowNewPosts')) ?>
+        </button>
     </p>
     <?php
     } else {

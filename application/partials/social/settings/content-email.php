@@ -8,7 +8,7 @@
             <p class="content-title mb-2 text-danger">E-mail address</p>
             <p class="mb-2 text-info text-center">
                 <i class="fa fa-exclamation-triangle mr-1" aria-hidden="true"></i>
-                <?= $translationArray['common']['featureNotAvailable'] ?>
+                <?= $o_translation->getString('common', 'featureNotAvailable') ?>
             </p>
             <div class="form-inline align-items-top mb-2">
                 <input class="form-control" id="content-input-email" type="email" placeholder="E-mail address" value="<?= $userDetails['email'] ?? ''; ?>" style="flex: 1;" disabled />
@@ -25,7 +25,7 @@
             <div>
                 <p class="mb-0 text-info text-center">
                     <i class="fa fa-exclamation-triangle mr-1" aria-hidden="true"></i>
-                    <?= $translationArray['common']['featureNotAvailable'] ?>
+                    <?= $o_translation->getString('common', 'featureNotAvailable') ?>
                 </p>
             </div>
         </div>

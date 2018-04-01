@@ -6,28 +6,28 @@ foreach ($listPosts as $post) {
     $post['author'] = array_merge($post['author'], $utilities->generateUserBadges($post['author'], 'd-block mt-1 badge badge'));
 ?>
 
-<article class="d-flex flex-column px-1" id="post-<?= $post['id']; ?>">
+<article class="d-flex flex-column px-1" id="post-<?= $post['id'] ?>">
     <div class="d-flex">
         <div class="mr-3 post-author-details">
-            <img class="rounded mb-1" src="../media/avatars/<?= $post['author']['avatar']; ?>/minres.jpg" alt="User's avatar">
-            <?= $post['author']['account_type_badge'] ?? ''; ?>
-            <?= $post['author']['account_standing_badge'] ?? ''; ?>
-            <?= $post['author']['is_online'] ? $post['author']['is_online_badge'] : ''; ?>
+            <img class="rounded mb-1" src="../media/avatars/<?= $post['author']['avatar'] ?>/minres.jpg" alt="<?= $o_translation->getString('postslist', 'userAvatar') ?>">
+            <?= $post['author']['account_type_badge'] ?? '' ?>
+            <?= $post['author']['account_standing_badge'] ?? '' ?>
+            <?= $post['author']['is_online'] ? $post['author']['is_online_badge'] : '' ?>
         </div>
 
         <div class="d-flex flex-column" style="flex: 1;">
             <div class="mb-2">
                 <p class="post-displayname d-flex align-items-center justify-content-between font-weight-bold mb-0">
-                    <a href="profile.php?u=<?= $post['author']['id']; ?>" data-toggle="tooltip" data-html="true" title="<?= $post['author']['tooltip']; ?>">
+                    <a href="profile.php?u=<?= $post['author']['id'] ?>" data-toggle="tooltip" data-html="true" title="<?= $post['author']['tooltip'] ?>">
                         <?= $utilities->doEscapeString($post['author']['display_name'], false); ?>
                     </a>
-                    <small class="d-none d-md-inline-block text-muted" data-toggle="tooltip" style="cursor: help;" title="<?= $post['datetime'] . ' (UTC)'; ?>">
+                    <small class="d-none d-md-inline-block text-muted" data-toggle="tooltip" style="cursor: help;" title="<?= $post['datetime'] ?> (UTC)">
                         <?= $post['datetime_interval']; ?>
                     </small>
                 </p>
                 <p class="d-block d-md-none mb-0">
-                    <small class="text-muted" data-toggle="tooltip" style="cursor: help;" title="<?= $post['datetime'] . ' (UTC)'; ?>">
-                        <i class="d-none d-lg-inline fa fa-clock-o pr-1"></i> <?= $post['datetime_interval']; ?>
+                    <small class="text-muted" data-toggle="tooltip" style="cursor: help;" title="<?= $post['datetime'] ?> (UTC)">
+                        <i class="d-none d-lg-inline fa fa-clock-o pr-1"></i> <?= $post['datetime_interval'] ?>
                     </small>
                 </p>
             </div>
@@ -36,20 +36,20 @@ foreach ($listPosts as $post) {
                 <div>
                     <?php
                     if ($post['content'] != NULL) {
-                        echo $post['was_edited'] ? '<div><small class="font-weight-bold text-dark" style="opacity: .5;">Post has been edited' . $post['edit_count_string'] . '.</small></div>' : '';
+                        echo $post['was_edited'] ? '<div><small class="font-weight-bold text-dark" style="opacity: .5;">' . $o_translation->getString('postslist', 'postBeenEdited', [$post['edit_count_string']]) . '.</small></div>' : '';
                         echo '<span class="post-content-text">' . $utilities->doEscapeString($post['content']) . '</span>';
                     } else {
                     ?>
 
                     <div>
-                        <small class="font-weight-bold text-dark" style="opacity: .5;">Posted by a server</small>
+                        <small class="font-weight-bold text-dark" style="opacity: .5;"><?= $o_translation->getString('postslist', 'postedByServer') ?>.</small>
                     </div>
 
                     <?php
                         switch ($post['type']) {
                             case '10':
                                 echo '<small style="opacity: .6;"><i class="fa fa-user-plus text-dark mr-1" aria-hidden="true"></i></small> ' .
-                                     '<span class="post-content-text">Has created a new account. Welcome our new member!</span>';
+                                     '<span class="post-content-text">' . $o_translation->getString('postslist', 'hasCreatedAnAccount') . '</span>';
                                 break;
                             case '11':
                                 echo '<small style="opacity: .6;"><i class="fa fa-address-book-o text-dark mr-1" aria-hidden="true"></i></small> ';
@@ -57,18 +57,18 @@ foreach ($listPosts as $post) {
                                 // Different message depending on user's gender
                                 switch ($post['author']['gender']) {
                                     case '1':
-                                        echo '<span class="post-content-text">Has changed his display name.</span>';
+                                        echo '<span class="post-content-text">' . $o_translation->getString('postslist', 'hasChangedHisDisplayname') . '</span>';
                                     break;
                                     case '2':
-                                        echo '<span class="post-content-text">Has changed her display name.</span>';
+                                        echo '<span class="post-content-text">' . $o_translation->getString('postslist', 'hasChangedHerDisplayname') . '</span>';
                                     break;
                                     default:
-                                        echo '<span class="post-content-text">Has changed his/her display name.</span>';
+                                        echo '<span class="post-content-text">' . $o_translation->getString('postslist', 'hasChangedDisplayname') . '</span>';
                                 }
                                 break;
                             default:
                                 echo '<small style="opacity: .6;"><i class="fa fa-question-circle-o text-dark mr-1" aria-hidden="true"></i></small> ' .
-                                     '<span class="post-content-text">Server message of an invalid type!</span>';
+                                     '<span class="post-content-text">' . $o_translation->getString('postslist', 'invalidServerMessage') . '</span>';
                         }
                     }
                     ?>
@@ -87,19 +87,21 @@ foreach ($listPosts as $post) {
                     <span class="d-inline-block" style="width: 14px; height: 12px; text-align: center;">
                         <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
                     </span>
-                    <span style="vertical-align: middle;">Like</span>
+                    <span style="vertical-align: middle;"><?= $o_translation->getString('postslist', 'like') ?></span>
                 </button>
 
                 <button type="button" class="btn btn-outline-secondary btn-sm btn-postcommentswitch mr-1" data-active="false">
                     <span class="d-inline-block" style="width: 14px; height: 12px; text-align: center;">
                         <i class="fa fa-comment-o" aria-hidden="true"></i>
-                    </span> Comment
+                    </span> <?= $o_translation->getString('postslist', 'comment') ?>
                 </button>
 
-                <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">More</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fa fa-list" aria-hidden="true"></i>
+                </button>
 
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <h6 class="dropdown-header" style="font-size: .813rem;">Actions</h6>
+                    <h6 class="dropdown-header" style="font-size: .813rem;"><?= $o_translation->getString('postslist', 'actions') ?></h6>
 
                     <?php
                     // Display edit history for posts that have been edited at least once
@@ -108,7 +110,7 @@ foreach ($listPosts as $post) {
                     <button class="dropdown-item btn-showedithistorymodal" type="button" role="button" data-toggle="modal" data-target="#mainModal" data-postid="<?= $post['id']; ?>">
                         <div class="d-flex align-items-center" style="font-size: .875em;">
                             <i class="fa fa-history" style="margin-right: 12px;" aria-hidden="true"></i>
-                            <span style="flex: 1;">Edit history</span>
+                            <span style="flex: 1;"><?= $o_translation->getString('postslist', 'editHistory') ?></span>
                         </div>
                     </button>
                     <?php
@@ -122,14 +124,14 @@ foreach ($listPosts as $post) {
                     <button class="dropdown-item btn-postedit" type="button" role="button" data-toggle="modal" data-target="#mainModal" data-postid="<?= $post['id']; ?>">
                         <div class="d-flex align-items-center" style="font-size: .875em;">
                             <i class="fa fa-pencil-square-o" style="margin-right: 12px;" aria-hidden="true"></i>
-                            <span style="flex: 1;">Edit</span>
+                            <span style="flex: 1;"><?= $o_translation->getString('postslist', 'edit') ?></span>
                         </div>
                     </button>
 
                     <button class="dropdown-item btn-showdeletepostmodal" type="button" role="button" data-toggle="modal" data-target="#mainModal" data-postid="<?= $post['id']; ?>">
                         <div class="d-flex align-items-center" style="font-size: .875em;">
                             <i class="fa fa-trash-o" style="margin-right: 12px;" aria-hidden="true"></i>
-                            <span style="flex: 1;">Delete</span>
+                            <span style="flex: 1;"><?= $o_translation->getString('postslist', 'delete') ?></span>
                         </div>
                     </button>
                     <?php
@@ -138,7 +140,7 @@ foreach ($listPosts as $post) {
                     <button class="dropdown-item btn-showreportmodal" type="button" role="button" data-toggle="modal" data-target="#mainModal" data-postid="<?= $post['id']; ?>">
                         <div class="d-flex align-items-center" style="font-size: .875em;">
                             <i class="fa fa-flag-o" style="margin-right: 12px;" aria-hidden="true"></i>
-                            <span style="flex: 1;">Report</span>
+                            <span style="flex: 1;"><?= $o_translation->getString('postslist', 'report') ?></span>
                         </div>
                     </button>
                     <?php
@@ -149,12 +151,12 @@ foreach ($listPosts as $post) {
                     // Display moderate section only for moderators
                     if ($loggedModerator && !$post['is_current_user_author'] && $post['type'] == 1) {
                     ?>
-                    <h6 class="dropdown-header" style="font-size: .813rem;">Moderate</h6>
+                    <h6 class="dropdown-header" style="font-size: .813rem;"><?= $o_translation->getString('postslist', 'moderate') ?></h6>
 
                     <button class="dropdown-item btn-showdeletepostmodal" type="button" role="button" data-toggle="modal" data-target="#mainModal" data-postid="<?= $post['id']; ?>" data-moderate="true">
                         <div class="d-flex align-items-center" style="font-size: .875em;">
                             <i class="fa fa-ban" style="margin-right: 12px;" aria-hidden="true"></i>
-                            <span style="flex: 1;">Delete</span>
+                            <span style="flex: 1;"><?= $o_translation->getString('postslist', 'delete') ?></span>
                         </div>
                     </button>
                     <?php
@@ -172,13 +174,13 @@ foreach ($listPosts as $post) {
                     <?php
                     switch ($_SESSION['account']['reason_readonly']) {
                         case 'unverified':
-                            echo $translationArray['postslist']['accountUnverified'];
+                            echo $o_translation->getString('postslist', 'accountUnverified');
                             break;
                         case 'muted':
-                            echo $translationArray['postslist']['accountMuted'];
+                            echo $o_translation->getString('postslist', 'accountMuted');
                             break;
                         default:
-                            echo $translationArray['postslist']['accountReadonly'];
+                            echo $o_translation->getString('postslist', 'accountReadonly');
                     }
                     ?>
                     </small>
@@ -218,13 +220,15 @@ foreach ($listPosts as $post) {
                 ?>
                 <p class="mb-0 text-muted" id="posts-comments-showing-wrapper">
                     <small>
+                        <!-- TODO TRANSLATION -->
                         Showing <span class="var-commentsshown"><?= $commentsShown; ?></span> of <span class="var-commentsamount"><?= $post['amount_comments']; ?></span> comments.
                         <a href="#" class="btn-loadmorecomments"
-                              data-postID="<?= $post['id']; ?>"
-                              data-lastCommentID="<?= $lastCommentID; ?>"
-                              data-commentsAmount="<?= $post['amount_comments']; ?>"
-                              data-commentsShown="<?= $commentsShown; ?>">
-                              View more</a>
+                            data-postID="<?= $post['id']; ?>"
+                            data-lastCommentID="<?= $lastCommentID; ?>"
+                            data-commentsAmount="<?= $post['amount_comments']; ?>"
+                            data-commentsShown="<?= $commentsShown; ?>">
+                            <?= $o_translation->getString('postslist', 'viewMore') ?>
+                        </a>
                     </small>
                 </p>
                 <?php
@@ -275,13 +279,13 @@ foreach ($listPosts as $post) {
                         <img src="../media/avatars/<?= $_SESSION['user']['avatar']; ?>/minres.jpg" class="rounded" style="display: block; width: 26px; height: 26px;" />
                     </div>
                     <div class="pr-2" style="flex: 100%; text-align: right;">
-                        <input type="text" class="form-control form-control-sm post-comment-input" id="post-comment-input-<?= $post['id']; ?>" placeholder="Write a comment..." maxlength="500" style="font-size: 12px;" />
+                        <input type="text" class="form-control form-control-sm post-comment-input" id="post-comment-input-<?= $post['id']; ?>" placeholder="<?= $o_translation->getString('postslist', 'writeComment') ?>..." maxlength="500" style="font-size: 12px;" />
                         <small class="d-block text-muted text-right mt-1">
                             <span class="post-comment-input-lettercounter" id="post-comment-input-lettercounter-<?= $post['id']; ?>">0</span> / 500
                         </small>
                     </div>
                     <div>
-                        <button type="button" class="btn btn-outline-primary btn-sm btn-postcommentsend" role="button"><i class="fa fa-paper-plane-o" aria-hidden="true"></i> Send</button>
+                        <button type="button" class="btn btn-outline-primary btn-sm btn-postcommentsend" role="button"><i class="fa fa-paper-plane-o" aria-hidden="true"></i> <?= $o_translation->getString('postslist', 'send') ?></button>
                     </div>
                 </div>
             </div>

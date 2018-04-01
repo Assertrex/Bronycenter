@@ -20,14 +20,9 @@ require('../../application/partials/social/head.php');
         <div id="messages-mobile-wrapper">
             <aside id="aside" class="d-flex d-lg-flex flex-column">
                 <div id="messages-mobile-aside-wrapper">
-                    <h5 class="text-center py-3 my-0" style="height: 58px; border-bottom: 1px solid #BDBDBD;">Conversations list</h5>
+                    <h5 class="text-center py-3 my-0" style="height: 58px; border-bottom: 1px solid #BDBDBD;"><?= $o_translation->getString('messages', 'conversationsList') ?></h5>
 
                     <div id="list-conversations"></div>
-
-                    <div class="text-info text-center py-2 px-2" style="font-size: .875rem;">
-                        <i class="fa fa-exclamation-triangle mr-1" aria-hidden="true"></i>
-                        This is a temporiary messaging system. It can contain bugs and it will be rewritten in the future.
-                    </div>
                 </div>
             </aside>
 
@@ -45,21 +40,27 @@ require('../../application/partials/social/head.php');
                 </div>
 
                 <div id="messages-show" class="py-3 px-4">
+                    <?php
+                    if (!empty($_SESSION['account']['reason_readonly'])) {
+                    ?>
                     <p class="text-center text-danger mb-0">
                         <i class="fa fa-exclamation-circle mr-1" aria-hidden="true"></i>
                         <?php
                         switch ($_SESSION['account']['reason_readonly']) {
                             case 'unverified':
-                                echo $translationArray['messages']['accountUnverified'];
+                                echo $o_translation->getString('messages', 'accountUnverified');
                                 break;
                             case 'muted':
-                                echo $translationArray['messages']['accountMuted'];
+                                echo $o_translation->getString('messages', 'accountMuted');
                                 break;
                             default:
-                                echo $translationArray['messages']['accountReadonly'];
+                                echo $o_translation->getString('messages', 'accountReadonly');
                         }
                         ?>
                     </p>
+                    <?php
+                    }
+                    ?>
                 </div>
 
                 <div id="message-creator">
@@ -68,7 +69,7 @@ require('../../application/partials/social/head.php');
                     ?>
                     <div id="message-creator-wrapper" class="d-flex align-items-stretch">
                         <div id="message-creator-textarea-wrapper" class="form-group mb-0">
-                            <textarea type="text" id="message-creator-textarea" class="form-control" placeholder="Write a message..." maxlength="1000"></textarea>
+                            <textarea type="text" id="message-creator-textarea" class="form-control" placeholder="<?= $o_translation->getString('messages', 'writeMessage') ?>..." maxlength="1000"></textarea>
 
                             <small id="message-creator-lettercounter-wrapper" class="text-muted">
                                 <span id="message-creator-lettercounter">0</span> / 1000

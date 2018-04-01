@@ -91,18 +91,18 @@ require('../../application/partials/social/head.php');
                 </section>
 
                 <section class="fancybox">
-                    <h6 class="text-center mb-0">About</h6>
+                    <h6 class="text-center mb-0"><?= $o_translation->getString('headings', 'aboutMe') ?></h6>
 
                     <div class="px-4 my-3">
                         <p class="mb-0">
-                            <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="Location">
+                            <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="<?= $o_translation->getString('profile', 'location') ?>">
                                 <i class="fa fa-map-marker text-primary" aria-hidden="true"></i>
                             </span>
                             <?= $profileDetails['city'] ? $utilities->doEscapeString($profileDetails['city'], false) . ', ' : ''; ?><?= $profileDetails['country_name'] ?? '<span class="text-danger">Unknown country</span>'; ?>
                         </p>
                         <?php if (!empty($profileDetails['gender'])) { ?>
                         <p class="mb-0">
-                            <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="Gender">
+                            <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="<?= $o_translation->getString('profile', 'gender') ?>">
                                 <i class="fa fa-transgender text-primary" aria-hidden="true"></i>
                             </span>
                             <?= $profileDetails['gender_name']; ?>
@@ -110,24 +110,26 @@ require('../../application/partials/social/head.php');
                         <?php } // if ?>
                         <?php if (!empty($profileDetails['birthdate'])) { ?>
                         <p class="mb-0">
-                            <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="Age">
+                            <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="<?= $o_translation->getString('profile', 'age') ?>">
                                 <i class="fa fa-user-o text-primary" aria-hidden="true"></i>
                             </span>
                             <?= $profileDetails['birthdate_years']; ?>
                         </p>
                         <?php } // if ?>
                         <p class="mb-0">
-                            <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="Account created">
+                            <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="<?= $o_translation->getString('profile', 'accountCreated') ?>">
                                 <i class="fa fa-address-book-o text-primary" aria-hidden="true"></i>
                             </span>
                             <span style="cursor: help;" data-toggle="tooltip" data-placement="top" title="<?= $profileDetails['registration_datetime']; ?> (UTC)"><?= $profileDetails['registration_interval']; ?></span>
                         </p>
                         <?php if (!empty($profileDetails['last_online'])) { ?>
                         <p class="mb-0">
-                            <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="Last seen">
+                            <span class="d-inline-block text-center mr-2" style="width: 16px; cursor: help;" data-toggle="tooltip" data-placement="top" title="<?= $o_translation->getString('profile', 'lastSeen') ?>">
                                 <i class="fa fa-clock-o text-primary" aria-hidden="true"></i>
                             </span>
-                            <span style="cursor: help;" data-toggle="tooltip" data-placement="top" title="<?= $profileDetails['last_online']; ?> (UTC)"><?= $profileDetails['is_online'] ? 'Just now ' : $profileDetails['last_online_interval']; ?></span>
+                            <span style="cursor: help;" data-toggle="tooltip" data-placement="top" title="<?= $profileDetails['last_online']; ?> (UTC)">
+                                <?= $profileDetails['is_online'] ? $o_translation->getString('dates', 'justNow') : $profileDetails['last_online_interval']; ?>
+                            </span>
                         </p>
                         <?php } // if ?>
                     </div>
@@ -135,13 +137,17 @@ require('../../application/partials/social/head.php');
 
                 <?php if ($loggedIn && !$readonlyState) { ?>
                 <section class="fancybox">
-                    <h6 class="text-center mb-0">Quick actions</h6>
+                    <h6 class="text-center mb-0"><?= $o_translation->getString('headings', 'quickActions') ?></h6>
 
                     <div class="px-4 my-3">
                         <?php if ($profileDetails['id'] == $_SESSION['account']['id']) { ?>
-                        <button type="button" role="button" class="btn btn-outline-primary btn-sm btn-block" style="cursor: not-allowed" disabled>Send a message</button>
+                        <button type="button" role="button" class="btn btn-outline-primary btn-sm btn-block" style="cursor: not-allowed" disabled>
+                            <?= $o_translation->getString('profile', 'sendMessage') ?>
+                        </button>
                         <?php } else { ?>
-                        <button type="button" role="button" data-toggle="modal" data-target="#mainModal" id="btn-profile-sendmessage" class="btn btn-outline-primary btn-sm btn-block" data-userid="<?= $profileDetails['id']; ?>"  data-userdisplayname="<?= $utilities->doEscapeString($profileDetails['display_name']); ?>">Send a message</button>
+                        <button type="button" role="button" data-toggle="modal" data-target="#mainModal" id="btn-profile-sendmessage" class="btn btn-outline-primary btn-sm btn-block" data-userid="<?= $profileDetails['id']; ?>"  data-userdisplayname="<?= $utilities->doEscapeString($profileDetails['display_name']); ?>">
+                            <?= $o_translation->getString('profile', 'sendMessage') ?>
+                        </button>
                         <?php } // if ?>
                     </div>
                 </section>
@@ -154,20 +160,20 @@ require('../../application/partials/social/head.php');
                     <ul class="nav nav-tabs" id="aside-tabs">
                         <?php if ($profileDetails['filled_about']) { ?>
                         <li class="nav-item">
-                            <a class="nav-link" id="aside-tab-about" href="#about">About</a>
+                            <a class="nav-link" id="aside-tab-about" href="#about"><?= $o_translation->getString('profile', 'about') ?></a>
                         </li>
                         <?php } // if ?>
                         <li class="nav-item">
-                            <a class="nav-link active" id="aside-tab-posts" href="#posts">Posts</a>
+                            <a class="nav-link active" id="aside-tab-posts" href="#posts"><?= $o_translation->getString('profile', 'posts') ?></a>
                         </li>
                         <?php if ($profileDetails['filled_fandom']) { ?>
                         <li class="nav-item">
-                            <a class="nav-link" id="aside-tab-fandom" href="#fandom">Fandom</a>
+                            <a class="nav-link" id="aside-tab-fandom" href="#fandom"><?= $o_translation->getString('profile', 'fandom') ?></a>
                         </li>
                         <?php } // if ?>
                         <?php if ($profileDetails['filled_creations']) { ?>
                         <li class="nav-item">
-                            <a class="nav-link" id="aside-tab-creations" href="#creations">Creations</a>
+                            <a class="nav-link" id="aside-tab-creations" href="#creations"><?= $o_translation->getString('profile', 'creations') ?></a>
                         </li>
                         <?php } // if ?>
                     </ul>
@@ -176,40 +182,40 @@ require('../../application/partials/social/head.php');
                     <div id="aside-tabs-content">
                         <?php if ($profileDetails['filled_about']) { ?>
                         <div id="aside-about" style="display: none;">
-                            <h6 class="text-center mb-0">About</h6>
+                            <h6 class="text-center mb-0"><?= $o_translation->getString('profile', 'about') ?></h6>
 
                             <div class="p-3">
                                 <?php if (!empty($profileDetails['full_description'])) { ?>
                                 <div class="aside-content-blocks mb-3">
-                                    <p class="aside-content-titles mb-2">Something about me</p>
+                                    <p class="aside-content-titles mb-2"><?= $o_translation->getString('profile', 'tab_1_custom_field_1') ?></p>
                                     <div><?= $utilities->doEscapeString($profileDetails['full_description']); ?></div>
                                 </div>
                                 <?php } // if ?>
 
                                 <?php if (!empty($profileDetails['contact_methods'])) { ?>
                                 <div class="aside-content-blocks mb-3">
-                                    <p class="aside-content-titles mb-2">You can find me there</p>
+                                    <p class="aside-content-titles mb-2"><?= $o_translation->getString('profile', 'tab_1_custom_field_2') ?></p>
                                     <div><?= $utilities->doEscapeString($profileDetails['contact_methods']); ?></div>
                                 </div>
                                 <?php } // if ?>
 
                                 <?php if (!empty($profileDetails['favourite_music'])) { ?>
                                 <div class="aside-content-blocks mb-3">
-                                    <p class="aside-content-titles mb-2">Favourite music</p>
+                                    <p class="aside-content-titles mb-2"><?= $o_translation->getString('profile', 'tab_1_custom_field_3') ?></p>
                                     <div><?= $utilities->doEscapeString($profileDetails['favourite_music']); ?></div>
                                 </div>
                                 <?php } // if ?>
 
                                 <?php if (!empty($profileDetails['favourite_movies'])) { ?>
                                 <div class="aside-content-blocks mb-3">
-                                    <p class="aside-content-titles mb-2">Favourite movies</p>
+                                    <p class="aside-content-titles mb-2"><?= $o_translation->getString('profile', 'tab_1_custom_field_4') ?></p>
                                     <div><?= $utilities->doEscapeString($profileDetails['favourite_movies']); ?></div>
                                 </div>
                                 <?php } // if ?>
 
                                 <?php if (!empty($profileDetails['favourite_games'])) { ?>
                                 <div class="aside-content-blocks mb-3">
-                                    <p class="aside-content-titles mb-2">Favourite games</p>
+                                    <p class="aside-content-titles mb-2"><?= $o_translation->getString('profile', 'tab_1_custom_field_5') ?></p>
                                     <div><?= $utilities->doEscapeString($profileDetails['favourite_games']); ?></div>
                                 </div>
                                 <?php } // if ?>
@@ -218,38 +224,38 @@ require('../../application/partials/social/head.php');
                         <?php } // if ?>
 
                         <div id="aside-posts">
-                            <h6 class="text-center mb-0">Posts</h6>
+                            <h6 class="text-center mb-0"><?= $o_translation->getString('profile', 'posts') ?></h6>
 
                             <div class="p-3">
                                 <p class="mb-0 text-info text-center">
                                     <i class="fa fa-exclamation-triangle mr-1" aria-hidden="true"></i>
-                                    User's posts will appear there in future update.
+                                    <?= $o_translation->getString('profile', 'postsInFutureUpdate') ?>.
                                 </p>
                             </div>
                         </div>
 
                         <?php if ($profileDetails['filled_fandom']) { ?>
                         <div id="aside-fandom" style="display: none;">
-                            <h6 class="text-center mb-0">Fandom</h6>
+                            <h6 class="text-center mb-0"><?= $o_translation->getString('profile', 'fandom') ?></h6>
 
                             <div class="p-3">
                                 <?php if (!empty($profileDetails['fandom_becameabrony'])) { ?>
                                 <div class="aside-content-blocks mb-3">
-                                    <p class="aside-content-titles mb-2">When I've became a brony/pegasister</p>
+                                    <p class="aside-content-titles mb-2"><?= $o_translation->getString('profile', 'tab_1_custom_field_1') ?></p>
                                     <div><?= $utilities->doEscapeString($profileDetails['fandom_becameabrony']); ?></div>
                                 </div>
                                 <?php } // if ?>
 
                                 <?php if (!empty($profileDetails['fandom_favouritepony'])) { ?>
                                 <div class="aside-content-blocks mb-3">
-                                    <p class="aside-content-titles mb-2">Favourite pony</p>
+                                    <p class="aside-content-titles mb-2"><?= $o_translation->getString('profile', 'tab_1_custom_field_2') ?></p>
                                     <div><?= $utilities->doEscapeString($profileDetails['fandom_favouritepony']); ?></div>
                                 </div>
                                 <?php } // if ?>
 
                                 <?php if (!empty($profileDetails['fandom_favouriteepisode'])) { ?>
                                 <div class="aside-content-blocks mb-3">
-                                    <p class="aside-content-titles mb-2">Favourite episode</p>
+                                    <p class="aside-content-titles mb-2"><?= $o_translation->getString('profile', 'tab_1_custom_field_3') ?></p>
                                     <div><?= $utilities->doEscapeString($profileDetails['fandom_favouriteepisode']); ?></div>
                                 </div>
                                 <?php } // if ?>
@@ -259,16 +265,16 @@ require('../../application/partials/social/head.php');
 
                         <?php if ($profileDetails['filled_creations']) { ?>
                         <div id="aside-creations" style="display: none;">
-                            <h6 class="text-center mb-0">Creations</h6>
+                            <h6 class="text-center mb-0"><?= $o_translation->getString('profile', 'creations') ?></h6>
 
                             <div class="p-3">
                                 <div class="aside-content-blocks mb-3 text-info text-center">
                                     <i class="fa fa-exclamation-triangle mr-1" aria-hidden="true"></i>
-                                    Social networks integration will be available in future update.
+                                    <?= $o_translation->getString('profile', 'creationsInFutureUpdate') ?>.
                                 </div>
 
                                 <div class="aside-content-blocks mb-3">
-                                    <p class="aside-content-titles mb-2">Look what I've made</p>
+                                    <p class="aside-content-titles mb-2"><?= $o_translation->getString('profile', 'tab_3_custom_field_1') ?></p>
                                     <div><?= $utilities->doEscapeString($profileDetails['creations_links']); ?></div>
                                 </div>
 

@@ -1,10 +1,6 @@
 <?php
 
-/**
-* Used for creating and reading user's posts
-*
-* @since Release 0.1.0
-*/
+// Used for creating and reading user's posts
 
 namespace BronyCenter;
 
@@ -12,62 +8,18 @@ use DateTime;
 
 class Post
 {
-    /**
-     * Singleton instance of a current class
-     *
-     * @since Release 0.1.0
-     */
     private static $instance = null;
-
-    /**
-     * Place for instance of a user class
-     *
-     * @since Release 0.1.0
-     */
+    private $o_translation = null;
     private $user = null;
-
-    /**
-     * Place for instance of a database class
-     *
-     * @since Release 0.1.0
-     */
     private $database = null;
-
-    /**
-     * Place for instance of a flash class
-     *
-     * @since Release 0.1.0
-     */
     private $flash = null;
-
-    /**
-     * Place for instance of an utilities class
-     *
-     * @since Release 0.1.0
-     */
     private $utilities = null;
-
-    /**
-     * Place for instance of a validator class
-     *
-     * @since Release 0.1.0
-     */
     private $validator = null;
-
-    /**
-     * Place for instance of a statistics class
-     *
-     * @since Release 0.1.0
-     */
     private $statistics = null;
 
-    /**
-     * Get instances of required classes
-     *
-     * @since Release 0.1.0
-     */
     public function __construct()
     {
+        $this->o_translation = Translation::getInstance();
         $this->user = User::getInstance();
         $this->database = Database::getInstance();
         $this->flash = Flash::getInstance();
@@ -76,13 +28,6 @@ class Post
         $this->statistics = Statistics::getInstance();
     }
 
-    /**
-     * Check if instance of current class is existing and create and/or return it
-     *
-     * @since Release 0.1.0
-     * @var boolean Set as true to reset class instance
-     * @return object Instance of a current class
-     */
     public static function getInstance($reset = false)
     {
         if (!self::$instance || $reset === true) {
@@ -446,7 +391,7 @@ class Post
                 $posts[$i]['was_edited'] = true;
 
                 if ($posts[$i]['edit_count'] > 1) {
-                    $posts[$i]['edit_count_string'] = ' ' . $posts[$i]['edit_count'] . ' times';
+                    $posts[$i]['edit_count_string'] = ' ' . $posts[$i]['edit_count'] . ' ' . $this->o_translation->getString('common', 'timesAsActionRepeated');
                 } else {
                     $posts[$i]['edit_count_string'] = '';
                 }
@@ -755,54 +700,61 @@ class Post
 
         // Check if current user has liked a post
         if ($hasLiked == 'true') {
+            if ($likesAmount === 1) {
+                $likedString = $this->o_translation->getString('postslist', 'currentLikeThisPostSingle');
+            } else {
+                $likedString = $this->o_translation->getString('postslist', 'currentLikeThisPostMultiple');
+            }
+
             // Check if there is only one like
             if ($likesAmount === 1)
-                $string = 'You like this post.';
+                $string = ucfirst($this->o_translation->getString('common', 'you'));
             // Check if there are two likes
             else if ($likesAmount === 2)
-                $string = 'You and ' .
-                          '<a href="profile.php?u=' . $randomUsers[0]['id'] . '" data-toggle="tooltip" data-html="true" title="' . $randomUsers[0]['tooltip'] . '">' . $this->utilities->doEscapeString($randomUsers[0]['display_name']) . '</a> ' .
-                          'like this post.';
+                $string = ucfirst($this->o_translation->getString('common', 'you')) . ' ' . $this->o_translation->getString('common', 'and') . ' ' .
+                          '<a href="profile.php?u=' . $randomUsers[0]['id'] . '" data-toggle="tooltip" data-html="true" title="' . $randomUsers[0]['tooltip'] . '">' . $this->utilities->doEscapeString($randomUsers[0]['display_name']) . '</a> ';
             // Check if there are three likes
             else if ($likesAmount === 3)
-                $string = 'You, ' .
+                $string = ucfirst($this->o_translation->getString('common', 'you')) . ', ' .
                           '<a href="profile.php?u=' . $randomUsers[0]['id'] . '" data-toggle="tooltip" data-html="true" title="' . $randomUsers[0]['tooltip'] . '">' . $this->utilities->doEscapeString($randomUsers[0]['display_name']) . '</a> ' .
-                          'and ' .
-                          '<a href="profile.php?u=' . $randomUsers[1]['id'] . '" data-toggle="tooltip" data-html="true" title="' . $randomUsers[1]['tooltip'] . '">' . $this->utilities->doEscapeString($randomUsers[1]['display_name']) . '</a> ' .
-                          'like this post.';
+                          $this->o_translation->getString('common', 'and') . ' ' .
+                          '<a href="profile.php?u=' . $randomUsers[1]['id'] . '" data-toggle="tooltip" data-html="true" title="' . $randomUsers[1]['tooltip'] . '">' . $this->utilities->doEscapeString($randomUsers[1]['display_name']) . '</a> ';
             // Check if there are more than three likes
             else
-                $string = 'You, ' .
+                $string = ucfirst($this->o_translation->getString('common', 'you')) . ', ' .
                           '<a href="profile.php?u=' . $randomUsers[0]['id'] . '" data-toggle="tooltip" data-html="true" title="' . $randomUsers[0]['tooltip'] . '">' . $this->utilities->doEscapeString($randomUsers[0]['display_name']) . '</a> ' .
-                          'and ' .
-                          '<span class="btn-openmodal btn-showlikesmodal " data-postid="' . $postID . '" data-toggle="modal" data-target="#mainModal">' . ($likesAmount - 2) . ' other ponies</span> like this post.';
+                          $this->o_translation->getString('common', 'and') . ' ' .
+                          '<span class="btn-openmodal btn-showlikesmodal " data-postid="' . $postID . '" data-toggle="modal" data-target="#mainModal">' . ($likesAmount - 2) . ' ' . $this->o_translation->getString('postslist', 'otherPeople') . '</span>';
         } else {
+            if ($likesAmount === 1) {
+                $likedString = $this->o_translation->getString('postslist', 'otherLikeThisPostSingle');
+            } else {
+                $likedString = $this->o_translation->getString('postslist', 'otherLikeThisPostMultiple');
+            }
+
             // Check if there is only one like
             if ($likesAmount === 1)
-                $string = '<a href="profile.php?u=' . $randomUsers[0]['id'] . '" data-toggle="tooltip" data-html="true" title="' . $randomUsers[0]['tooltip'] . '">' . $this->utilities->doEscapeString($randomUsers[0]['display_name']) . '</a> ' .
-                          'like this post.';
+                $string = '<a href="profile.php?u=' . $randomUsers[0]['id'] . '" data-toggle="tooltip" data-html="true" title="' . $randomUsers[0]['tooltip'] . '">' . $this->utilities->doEscapeString($randomUsers[0]['display_name']) . '</a> ';
             // Check if there are two likes
             else if ($likesAmount === 2)
                 $string = '<a href="profile.php?u=' . $randomUsers[0]['id'] . '" data-toggle="tooltip" data-html="true" title="' . $randomUsers[0]['tooltip'] . '">' . $this->utilities->doEscapeString($randomUsers[0]['display_name']) . '</a> ' .
-                          'and ' .
-                          '<a href="profile.php?u=' . $randomUsers[1]['id'] . '" data-toggle="tooltip" data-html="true" title="' . $randomUsers[1]['tooltip'] . '">' . $this->utilities->doEscapeString($randomUsers[1]['display_name']) . '</a> ' .
-                          'like this post.';
+                          $this->o_translation->getString('common', 'and') . ' ' .
+                          '<a href="profile.php?u=' . $randomUsers[1]['id'] . '" data-toggle="tooltip" data-html="true" title="' . $randomUsers[1]['tooltip'] . '">' . $this->utilities->doEscapeString($randomUsers[1]['display_name']) . '</a> ';
             // Check if there are three likes
             else if ($likesAmount === 3)
                 $string = '<a href="profile.php?u=' . $randomUsers[0]['id'] . '" data-toggle="tooltip" data-html="true" title="' . $randomUsers[0]['tooltip'] . '">' . $this->utilities->doEscapeString($randomUsers[0]['display_name']) . '</a>, ' .
                           '<a href="profile.php?u=' . $randomUsers[1]['id'] . '" data-toggle="tooltip" data-html="true" title="' . $randomUsers[1]['tooltip'] . '">' . $this->utilities->doEscapeString($randomUsers[1]['display_name']) . '</a> ' .
-                          'and ' .
-                          '<a href="profile.php?u=' . $randomUsers[2]['id'] . '" data-toggle="tooltip" data-html="true" title="' . $randomUsers[2]['tooltip'] . '">' . $this->utilities->doEscapeString($randomUsers[2]['display_name']) . '</a> ' .
-                          'like this post.';
+                          $this->o_translation->getString('common', 'and') . ' ' .
+                          '<a href="profile.php?u=' . $randomUsers[2]['id'] . '" data-toggle="tooltip" data-html="true" title="' . $randomUsers[2]['tooltip'] . '">' . $this->utilities->doEscapeString($randomUsers[2]['display_name']) . '</a> ';
             // Check if there are more than three likes
             else
                 $string = '<a href="profile.php?u=' . $randomUsers[0]['id'] . '" data-toggle="tooltip" data-html="true" title="' . $randomUsers[0]['tooltip'] . '">' . $this->utilities->doEscapeString($randomUsers[0]['display_name']) . '</a>, ' .
                           '<a href="profile.php?u=' . $randomUsers[1]['id'] . '" data-toggle="tooltip" data-html="true" title="' . $randomUsers[1]['tooltip'] . '">' . $this->utilities->doEscapeString($randomUsers[1]['display_name']) . '</a> ' .
-                          'and ' .
-                          '<span class="btn-openmodal btn-showlikesmodal " data-postid="' . $postID . '" data-toggle="modal" data-target="#mainModal">' . ($likesAmount - 2) . ' other ponies</span> like this post.';
+                          $this->o_translation->getString('common', 'and') . ' ' .
+                          '<span class="btn-openmodal btn-showlikesmodal " data-postid="' . $postID . '" data-toggle="modal" data-target="#mainModal">' . ($likesAmount - 2) . ' ' . $this->o_translation->getString('postslist', 'otherPeople') . '</span>';
         }
 
-        return '<i class="fa fa-thumbs-o-up text-muted mr-1" aria-hidden="true"></i> <span>' . $string . '</span>';
+        return '<i class="fa fa-thumbs-o-up text-muted mr-1" aria-hidden="true"></i> <span>' . $string . ' ' . $likedString . '.</span>';
     }
 
     /**

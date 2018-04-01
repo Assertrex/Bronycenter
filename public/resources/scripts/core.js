@@ -115,7 +115,7 @@ $(document).ready(function() {
                                 <div class="mr-3"><img src="../media/avatars/${user.avatar}/minres.jpg" class="rounded"></div>
                                 <div style="line-height: 1.25;">
                                     <div class="navbar-searchbar-result-item-username">${user.display_name} <small class="ml-1">@${user.username}</small></div>
-                                    <div><small><span style="color: rgba(255, 255, 255, .5);">Last seen:</span> ${user.last_online}</small></div>
+                                    <div><small><span style="color: rgba(255, 255, 255, .5);">${user.lastSeenTranslation}:</span> ${user.last_online}</small></div>
                                 </div>
                             </a>
                         `);

@@ -20,17 +20,17 @@ $matchedUsers = $database->read(
     [$likeQuestion, $likeQuestion]
 );
 
+$lastSeenTranslation = $o_translation->getString('profile', 'lastSeen');
+
 for ($i = 0; $i < count($matchedUsers); $i++) {
-    // Show default avatar if user don't have it
     if (is_null($matchedUsers[$i]['avatar'])) {
         $matchedUsers[$i]['avatar'] = 'default';
     }
 
-    // Format activity datetimes
     $matchedUsers[$i]['last_online'] = $utilities->getDateIntervalString($utilities->countDateInterval($matchedUsers[$i]['last_online']));
-
-    // Escape users display name
     $matchedUsers[$i]['display_name'] = $utilities->doEscapeString($matchedUsers[$i]['display_name'], false);
+
+    $matchedUsers[$i]['lastSeenTranslation'] = $lastSeenTranslation;
 }
 
 // Prepare array with result

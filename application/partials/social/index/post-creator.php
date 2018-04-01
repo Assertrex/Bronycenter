@@ -5,19 +5,19 @@
                 <div style="width: 16px; height: 14px; text-align: right; vertical-align: middle;">
                     <i class="fa fa-pencil-square-o" style="vertical-align: top;" aria-hidden="true"></i>
                 </div>
-                <span><?= $translationArray['postcreator']['post'] ?></span>
+                <span><?= $o_translation->getString('postcreator', 'post') ?></span>
             </li>
-            <li class="disabled" style="cursor: not-allowed;">
+            <li class="d-none disabled" style="cursor: not-allowed;">
                 <div style="width: 16px; height: 14px; text-align: right; vertical-align: middle;">
                     <i class="fa fa-picture-o" style="vertical-align: top;" aria-hidden="true"></i>
                 </div>
-                <span><?= $translationArray['postcreator']['photo'] ?></span>
+                <span><?= $o_translation->getString('postcreator', 'photo') ?></span>
             </li>
-            <li class="disabled" style="cursor: not-allowed;">
+            <li class="d-none disabled" style="cursor: not-allowed;">
                 <div style="width: 16px; height: 14px; text-align: right; vertical-align: middle;">
                     <i class="fa fa-bar-chart" style="vertical-align: top;" aria-hidden="true"></i>
                 </div>
-                <span><?= $translationArray['postcreator']['poll'] ?></span>
+                <span><?= $o_translation->getString('postcreator', 'poll') ?></span>
             </li>
         </ul>
     </div>
@@ -26,11 +26,11 @@
     if (!$readonlyState) {
     ?>
     <div id="post-creator-input">
-        <textarea id="post-creator-textarea" placeholder="<?= $translationArray['postcreator']['textareaPlaceholder'] ?>" maxlength="1000" style="overflow: hidden;"></textarea>
+        <textarea id="post-creator-textarea" placeholder="<?= $o_translation->getString('postcreator', 'textareaPlaceholder') ?>" maxlength="1000" style="overflow: hidden;"></textarea>
 
         <div>
             <p id="post-creator-notification-waittime" class="text-center text-danger mb-0" style="display: none;">
-                <small><i class="fa fa-exclamation-circle mr-1" aria-hidden="true"></i> <?= $translationArray['postcreator']['timeRestriction'] ?></small>
+                <small><i class="fa fa-exclamation-circle mr-1" aria-hidden="true"></i> <?= $o_translation->getString('postcreator', 'timeRestriction') ?></small>
             </p>
         </div>
     </div>
@@ -39,7 +39,7 @@
         <small class="text-muted mr-3">
             <span id="post-creator-lettercounter">0</span> / 1000
         </small>
-        <button id="post-creator-submit" class="btn btn-sm btn-outline-primary" disabled style="cursor: not-allowed;"><?= $translationArray['postcreator']['publish'] ?></button>
+        <button id="post-creator-submit" class="btn btn-sm btn-outline-primary" disabled style="cursor: not-allowed;"><?= $o_translation->getString('postcreator', 'publish') ?></button>
     </div>
     <?php
     } else {
@@ -50,13 +50,13 @@
             <?php
             switch ($_SESSION['account']['reason_readonly']) {
                 case 'unverified':
-                    echo $translationArray['postcreator']['accountUnverified'];
+                    echo $o_translation->getString('postcreator', 'accountUnverified');
                     break;
                 case 'muted':
-                    echo $translationArray['postcreator']['accountMuted'];
+                    echo $o_translation->getString('postcreator', 'accountMuted');
                     break;
                 default:
-                    echo $translationArray['postcreator']['accountReadonly'];
+                    echo $o_translation->getString('postcreator', 'accountReadonly');
             }
             ?>
         </p>

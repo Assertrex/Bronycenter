@@ -33,7 +33,7 @@ setInterval(
             // Modify post content if it has been modified successfully
             if (json.status == 'success') {
                 // Update new posts counter value
-                $('#posts-list-checker-available-counter').text(json.amount);
+                $('#posts-list-checker-available span').text(json.amount);
 
                 // Update counter text if any new post exists
                 if (json.amount > 0) {

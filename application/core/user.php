@@ -1,10 +1,6 @@
 <?php
 
-/**
-* Used for getting and modifing user details
-*
-* @since Release 0.1.0
-*/
+// Used for getting and modifing user details
 
 namespace BronyCenter;
 
@@ -12,69 +8,24 @@ use DateTime;
 
 class User
 {
-    /**
-     * Singleton instance of a current class
-     *
-     * @since Release 0.1.0
-     */
     private static $instance = null;
-
-    /**
-     * Place for instance of a database class
-     *
-     * @since Release 0.1.0
-     */
+    private $o_translation = null;
     private $database = null;
-
-    /**
-     * Place for instance of a flash class
-     *
-     * @since Release 0.1.0
-     */
     private $flash = null;
-
-    /**
-     * Place for instance of an utilities class
-     *
-     * @since Release 0.1.0
-     */
     private $utilities = null;
-
-    /**
-     * Place for instance of a validator class
-     *
-     * @since Release 0.1.0
-     */
     private $validator = null;
-
-    /**
-     * Place for array containing users details
-     *
-     * @since Release 0.1.0
-     */
     private $users_details = [];
 
-    /**
-     * Get instances of required classes
-     *
-     * @since Release 0.1.0
-     */
     public function __construct()
     {
+        $this->o_translation = Translation::getInstance();
         $this->database = Database::getInstance();
         $this->flash = Flash::getInstance();
         $this->utilities = Utilities::getInstance();
         $this->validator = Validator::getInstance();
     }
 
-    /**
-     * Check if instance of current class is existing and create and/or return it
-     *
-     * @since Release 0.1.0
-     * @var boolean Set as true to reset class instance
-     * @return object Instance of a current class
-     */
-    public static function getInstance($reset = false)
+    public static function getInstance(bool $reset = false)
     {
         if (!self::$instance || $reset === true) {
             self::$instance = new User();
@@ -302,13 +253,13 @@ class User
         // Name gender types
         switch ($details['gender']) {
             case 1:
-                $details['gender_name'] = 'Male';
+                $details['gender_name'] = ucfirst($this->o_translation->getString('common', 'male'));
                 break;
             case 2:
-                $details['gender_name'] = 'Female';
+                $details['gender_name'] = ucfirst($this->o_translation->getString('common', 'female'));
                 break;
             default:
-                $details['gender_name'] = 'Unknown';
+                $details['gender_name'] = ucfirst($this->o_translation->getString('common', 'unknown'));
         }
 
         // Format birthdate if available
@@ -316,7 +267,7 @@ class User
             $current_date = new DateTime();
             $age_interval = new DateTime($details['birthdate']);
             $age_interval = $current_date->diff($age_interval);
-            $details['birthdate_years'] = $age_interval->format('%y years old');
+            $details['birthdate_years'] = $age_interval->format('%y ') . $this->o_translation->getString('common', 'yearsOld');
         }
 
         // Format activity datetimes

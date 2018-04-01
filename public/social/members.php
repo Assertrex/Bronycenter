@@ -32,11 +32,13 @@ require('../../application/partials/social/head.php');
         <div class="row">
             <div class="col-12 col-lg-8">
                 <section class="fancybox mt-0 mb-0" id="members-list">
-                    <h6 class="text-center mb-0">Members list</h6>
+                    <h6 class="text-center mb-0"><?= $o_translation->getString('headings', 'membersList') ?></h6>
 
-                    <div class="py-1 px-3" style="border-bottom: 1px solid #E9ECEF;">
+                    <div class="py-2 px-3" style="border-bottom: 1px solid #E9ECEF;">
                         <p class="mb-0">
-                            <small>Displaying <b><?= count($members) ?></b> of <b><?= $user->countExistingMembers() ?></b> found members (recently seen are on top).</small>
+                            <small class="d-block text-center text-lg-left">
+                                <?= $o_translation->getString('members', 'displayAmountDetails', [count($members), $user->countExistingMembers()]) ?>
+                            </small>
                         </p>
                     </div>
 
@@ -65,7 +67,7 @@ require('../../application/partials/social/head.php');
                                     <?= !empty($member['is_online_badge']) ? '<div>' . $member['is_online_badge'] . '</div>' : ''; ?>
                                 </div>
                             </div>
-                            <div class="d-none d-lg-block mr-3" style="width: 66px;">
+                            <div class="d-none d-lg-block mr-3" style="width: 72px;">
                                 <?= !empty($member['account_type_badge']) ? '<div>' . $member['account_type_badge'] . '</div>' : ''; ?>
                                 <?= !empty($member['account_standing_badge']) ? '<div>' . $member['account_standing_badge'] . '</div>' : ''; ?>
                                 <?= !empty($member['is_online_badge']) ? '<div>' . $member['is_online_badge'] . '</div>' : ''; ?>

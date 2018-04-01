@@ -17,7 +17,7 @@
             <div>
                 <p class="mb-0 text-info text-center">
                     <i class="fa fa-exclamation-triangle mr-1" aria-hidden="true"></i>
-                    <?= $translationArray['common']['featureNotAvailable'] ?>
+                    <?= $o_translation->getString('common', 'featureNotAvailable') ?>
                 </p>
             </div>
         </div>

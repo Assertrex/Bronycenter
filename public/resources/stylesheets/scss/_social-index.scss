@@ -66,9 +66,12 @@ section#posts-list {
     }
 
     .post-author-details {
+        width: 58px;
+        overflow: hidden;
+
         img {
-            width: 52px;
-            height: 52px;
+            width: 58px;
+            height: 58px;
         }
     }
 
@@ -80,7 +83,7 @@ section#posts-list {
     }
 
     .post-wrapleftunder {
-        width: 52px;
+        width: 58px;
         height: 1px;
     }
 
@@ -114,6 +117,7 @@ aside {
     section#posts-list {
         .post-author-details {
             min-height: 110px;
+            width: 64px;
 
             img {
                 width: 64px;
