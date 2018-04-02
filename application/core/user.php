@@ -296,7 +296,7 @@ class User
 
         if ($recentDisplaynamesArray[0] != '') {
             foreach ($recentDisplaynamesArray as $recentDisplayname) {
-                $details['recent_displaynames_divs'] .= '<div style=\'line-height: 1.2;\'><small>' . $recentDisplayname . '</small></div>';
+                $details['recent_displaynames_divs'] .= '<div style=\'line-height: 1.2;\'><small>' . strip_tags($recentDisplayname) . '</small></div>';
             }
         }
 
