@@ -1,3 +1,10 @@
+#page-social-index {
+    .posts-container-from { margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(189, 189, 189, .5); }
+    .post-content-text { word-break: break-word; }
+    .comment-container { border-bottom: 1px solid #EEEEEE; }
+    .comment-container:last-child { padding-bottom: 0 !important; border-bottom: 0; }
+}
+
 section#post-creator {
     #post-creator-types {
         color: #616161;

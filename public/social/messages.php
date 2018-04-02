@@ -1,22 +1,22 @@
 <?php
-// Include system initialization code
+$pageSettings = [
+    'title' => 'Messages',
+    'robots' => false,
+    'loginRequired' => true,
+    'moderatorRequired' => false,
+];
+
 require('../../application/partials/init.php');
-
-// Page settings
-$pageTitle = 'Messages';
-$pageStylesheet = '';
-
-// Include social head content for all pages
 require('../../application/partials/social/head.php');
 ?>
 
-<body class="d-flex flex-column vh-100">
+<body id="page-social-messages" class="d-flex flex-column vh-100">
     <?php
     // Include social header for all pages
     require('../../application/partials/social/header.php');
     ?>
 
-    <div id="page-messages" class="container-fullscreen d-flex">
+    <div class="container-fullscreen d-flex">
         <div id="messages-mobile-wrapper">
             <aside id="aside" class="d-flex d-lg-flex flex-column">
                 <div id="messages-mobile-aside-wrapper">

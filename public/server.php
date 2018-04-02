@@ -1,21 +1,15 @@
 <?php
-// Include system initialization code
+$pageSettings = [
+    'title' => 'Our server',
+    'robots' => true,
+    'loginRequired' => false,
+    'moderatorRequired' => false,
+];
+
 require('../application/partials/init.php');
+require('../application/partials/head.php');
 ?>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-
-    <title>Our server :: <?= $o_config->getWebsiteTitle() ?></title>
-
-    <?php
-    // Include stylesheets for all pages
-    require('../application/partials/stylesheets.php');
-    ?>
-</head>
 <body>
     <?php
     // Include header for all pages

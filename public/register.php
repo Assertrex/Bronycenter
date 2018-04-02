@@ -1,6 +1,13 @@
 <?php
-// Include system initialization code
+$pageSettings = [
+    'title' => 'Registration',
+    'robots' => true,
+    'loginRequired' => false,
+    'moderatorRequired' => false,
+];
+
 require('../application/partials/init.php');
+require('../application/partials/head.php');
 
 // Check if register form has been submitted
 if (!empty($_POST['submit']) && $_POST['submit'] === 'register') {
@@ -24,19 +31,6 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'register') {
 }
 ?>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-
-    <title>Registration :: <?= $o_config->getWebsiteTitle() ?></title>
-
-    <?php
-    // Include stylesheets for all pages
-    require('../application/partials/stylesheets.php');
-    ?>
-</head>
 <body>
     <?php
     // Include header for all pages

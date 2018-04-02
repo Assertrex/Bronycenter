@@ -1,4 +1,4 @@
-#page-messages {
+#page-social-messages {
     #messages-mobile-wrapper {
         display: flex;
         flex-direction: column;
@@ -97,7 +97,7 @@
 }
 
 @media (min-width: 992px) {
-    #page-messages {
+    #page-social-messages {
         #messages-mobile-wrapper {
             flex-direction: row;
         }

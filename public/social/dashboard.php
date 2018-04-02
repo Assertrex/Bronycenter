@@ -1,26 +1,21 @@
 <?php
-// Allow access only for logged moderators
-$loginRequired = true;
-$moderatorRequired = true;
-
-// Include system initialization code
-require('../../application/partials/init.php');
-
-// Use post class for creating and reading user's posts
 use BronyCenter\Post;
-$o_post = Post::getInstance();
 
-// Set "dashboard" as a default page
-$dashboardCategory = $_GET['cat'] ?? 'dashboard';
+$pageSettings = [
+    'title' => 'Dashboard',
+    'robots' => false,
+    'loginRequired' => true,
+    'moderatorRequired' => true,
+];
 
-// Page settings
-$pageTitle = 'Dashboard';
-
-// Include social head content for all pages
+require('../../application/partials/init.php');
 require('../../application/partials/social/head.php');
+
+$o_post = Post::getInstance();
+$dashboardCategory = $_GET['cat'] ?? 'dashboard';
 ?>
 
-<body id="page-dashboard">
+<body id="page-social-dashboard">
     <?php
     // Include social header for all pages
     require('../../application/partials/social/header.php');

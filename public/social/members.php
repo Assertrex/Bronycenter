@@ -1,23 +1,18 @@
 <?php
-// Include system initialization code
+$pageSettings = [
+    'title' => 'Members',
+    'robots' => false,
+    'loginRequired' => false,
+    'moderatorRequired' => false,
+];
+
 require('../../application/partials/init.php');
-
-// Get a list of active members
-$members = $user->getMembersList(50);
-
-// Page settings
-$pageTitle = 'Members';
-$pageStylesheet = '
-#members-list div a { color: #000; text-decoration: none; border-top: 1px solid #E9ECEF; }
-#members-list div a:first-child { border-top: 0; }
-#members-list div a:hover { background-color: #EEE; }
-';
-
-// Include social head content for all pages
 require('../../application/partials/social/head.php');
+
+$members = $user->getMembersList(50);
 ?>
 
-<body>
+<body id="page-social-members">
     <?php
     // Include social header for all pages
     require('../../application/partials/social/header.php');

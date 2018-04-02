@@ -1,21 +1,18 @@
 <?php
-// Allow access only for logged users
-$loginRequired = true;
+$pageSettings = [
+    'title' => 'Achievements',
+    'robots' => false,
+    'loginRequired' => true,
+    'moderatorRequired' => false,
+];
 
-// Include system initialization code
 require('../../application/partials/init.php');
-
-// Page settings
-$pageTitle = 'Achievements';
-
-// Get an array containing user's statistics
-$userStatistics = $statistics->get();
-
-// Include social head content for all pages
 require('../../application/partials/social/head.php');
+
+$userStatistics = $statistics->get();
 ?>
 
-<body>
+<body id="page-social-achievements">
     <?php
     // Include social header for all pages
     require('../../application/partials/social/header.php');

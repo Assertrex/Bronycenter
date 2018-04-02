@@ -1,28 +1,20 @@
 <?php
-// Allow access only for logged users
-$loginRequired = true;
-
-// Include system initialization code
-require('../../application/partials/init.php');
-
-// Use post class for creating and reading user's posts
 use BronyCenter\Post;
-$posts = Post::getInstance();
 
-// Page settings
-$pageTitle = 'Posts';
-$pageStylesheet = '
-.posts-container-from { margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(189, 189, 189, .5); }
-.post-content-text { word-break: break-word; }
-.comment-container { border-bottom: 1px solid #EEEEEE; }
-.comment-container:last-child { padding-bottom: 0 !important; border-bottom: 0; }
-';
+$pageSettings = [
+    'title' => 'Posts',
+    'robots' => false,
+    'loginRequired' => true,
+    'moderatorRequired' => false,
+];
 
-// Include social head content for all pages
+require('../../application/partials/init.php');
 require('../../application/partials/social/head.php');
+
+$posts = Post::getInstance();
 ?>
 
-<body>
+<body id="page-social-index">
     <?php
     // Include social header for all pages
     require('../../application/partials/social/header.php');

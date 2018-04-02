@@ -1,9 +1,11 @@
 <?php
+$pageSettings = [
+    'isAJAXCall' => true,
+    'readonlyDenied' => false,
+    'loginRequired' => true,
+    'moderatorRequired' => false,
+];
 
-// Allow access only for logged users
-$loginRequired = true;
-
-// Require system initialization code
 require_once('../../application/partials/init.php');
 
 // Create an instance of a database class to use CRUD operations on database

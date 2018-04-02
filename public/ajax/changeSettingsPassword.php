@@ -1,10 +1,11 @@
 <?php
+$pageSettings = [
+    'isAJAXCall' => true,
+    'readonlyDenied' => true,
+    'loginRequired' => true,
+    'moderatorRequired' => false,
+];
 
-$isAJAXCall = true;
-$loginRequired = true;
-$readonlyDenied = true;
-
-// Require system initialization code
 require_once('../../application/partials/init.php');
 
 // Try to change user's password

@@ -1,6 +1,13 @@
 <?php
-// Include system initialization code
+$pageSettings = [
+    'title' => 'Profile',
+    'robots' => false,
+    'loginRequired' => false,
+    'moderatorRequired' => false,
+];
+
 require('../../application/partials/init.php');
+require('../../application/partials/social/head.php');
 
 // Get an ID of a selected profile
 if (!empty($_GET['u'])) {
@@ -34,26 +41,9 @@ $profileDetails = array_merge(
         'badge badge'
     )
 );
-
-// Page settings
-$pageTitle = 'Profile :: ' . $o_config->getWebsiteTitle();
-$pageStylesheet = '
-#aside-tabs { background: #EEE; justify-content: center; }
-#aside-tabs .nav-item { flex: 1; text-align: center; }
-#aside-tabs .nav-item:first-child .nav-link.active { border-left: 0; }
-#aside-tabs .nav-item:last-child .nav-link.active { border-right: 0; }
-#aside-tabs .nav-link { border-top: 0; border-radius: 0; }
-#aside-tabs .nav-link.active { background-color: #EEE; color: #616161; border-bottom: 1px solid #EEE; }
-#aside-tabs-content h6 { padding: .5rem 0; background-color: #EEEEEE; color: #616161; border-bottom: 1px solid #BDBDBD; }
-#aside-tabs-content .aside-content-titles { font-size: 13px; color: #90949c; text-transform: uppercase; border-bottom: 1px solid #dddfe2; line-height: 26px; }
-#aside-tabs-content .aside-content-blocks:last-child { margin-bottom: 0 !important; }
-';
-
-// Include social head content for all pages
-require('../../application/partials/social/head.php');
 ?>
 
-<body>
+<body id="page-social-profile">
     <?php
     // Include social header for all pages
     require('../../application/partials/social/header.php');

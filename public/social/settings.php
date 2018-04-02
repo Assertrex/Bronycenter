@@ -1,34 +1,13 @@
 <?php
+$pageSettings = [
+    'title' => 'Settings',
+    'robots' => false,
+    'loginRequired' => true,
+    'moderatorRequired' => false,
+];
 
-// Page settings
-$pageTitle = 'Settings';
-$pageStylesheet = '
-aside .fa { width: 15px; }
-aside .list-group-item { border-radius: 0 !important; cursor: pointer; }
-aside .list-group-item:hover { background-color: #EEE; }
-aside .list-group-item a { color: #424242; text-decoration: none; }
-aside .list-group-item.active { background-color: #1565C0; border-color: #1565C0; }
-aside .list-group-item.active a { color: rgba(255, 255, 255, .8); }
-aside .list-group-item span { flex: 1; margin-left: -22px; text-align: center; user-select: none; }
-#tabs-content h6 { padding: .5rem 0; background-color: #EEEEEE; color: #616161; border-bottom: 1px solid #BDBDBD; }
-#tabs-content .content-block:last-child { margin-bottom: 0 !important; }
-#tabs-content .content-title { font-size: 12px; color: #90949C; text-transform: uppercase; border-bottom: 1px solid #DDDFE2; line-height: 26px; }
-input, textarea, select { font-size: 12px !important; }
-#content-input-avatar { font-size: 12px !important; }
-#content-currentavatar { width: 64px; height: 64px; }
-
-@media (min-width: 576px) {
-    #tabs-content .content-title { font-size: 13px; }
-    input, textarea, select { font-size: 15px !important; }
-    .content-block .form-inline input { flex: 1; }
-    #content-currentavatar { width: 128px; height: 128px; }
-';
-
-// Allow access only for logged users
-$loginRequired = true;
-
-// Include system initialization code
 require('../../application/partials/init.php');
+require('../../application/partials/social/head.php');
 
 // Get details about selected user
 $userDetails = $user->generateUserDetails($_SESSION['account']['id'], ['descriptions' => true, 'sensitive' => true]);
@@ -76,12 +55,9 @@ switch ($_SESSION['account']['reason_readonly']) {
     default:
         $translationAccountReadonly = $o_translation->getString('settings', 'accountReadonly');
 }
-
-// Include social head content for all pages
-require('../../application/partials/social/head.php');
 ?>
 
-<body>
+<body id="page-social-settings">
     <?php
     // Include social header for all pages
     require('../../application/partials/social/header.php');

@@ -179,6 +179,49 @@ textarea.std-textarea {
 @keyframes spinbcdefault { to { -webkit-transform: rotate(360deg); } }
 @-webkit-keyframes spinbcdefault { to { -webkit-transform: rotate(360deg); } }
 
+#members-list {
+    div {
+        a { color: #000; text-decoration: none; border-top: 1px solid #E9ECEF; }
+        a:first-child { border-top: 0; }
+        a:hover { background-color: #EEE; }
+    }
+}
+
+#page-social-profile {
+    #aside-tabs { background: #EEE; justify-content: center; }
+    #aside-tabs .nav-item { flex: 1; text-align: center; }
+    #aside-tabs .nav-item:first-child .nav-link.active { border-left: 0; }
+    #aside-tabs .nav-item:last-child .nav-link.active { border-right: 0; }
+    #aside-tabs .nav-link { border-top: 0; border-radius: 0; }
+    #aside-tabs .nav-link.active { background-color: #EEE; color: #616161; border-bottom: 1px solid #EEE; }
+    #aside-tabs-content h6 { padding: .5rem 0; background-color: #EEEEEE; color: #616161; border-bottom: 1px solid #BDBDBD; }
+    #aside-tabs-content .aside-content-titles { font-size: 13px; color: #90949c; text-transform: uppercase; border-bottom: 1px solid #dddfe2; line-height: 26px; }
+    #aside-tabs-content .aside-content-blocks:last-child { margin-bottom: 0 !important; }
+}
+
+#page-social-settings {
+    aside .fa { width: 15px; }
+    aside .list-group-item { border-radius: 0 !important; cursor: pointer; }
+    aside .list-group-item:hover { background-color: #EEE; }
+    aside .list-group-item a { color: #424242; text-decoration: none; }
+    aside .list-group-item.active { background-color: #1565C0; border-color: #1565C0; }
+    aside .list-group-item.active a { color: rgba(255, 255, 255, .8); }
+    aside .list-group-item span { flex: 1; margin-left: -22px; text-align: center; user-select: none; }
+    #tabs-content h6 { padding: .5rem 0; background-color: #EEEEEE; color: #616161; border-bottom: 1px solid #BDBDBD; }
+    #tabs-content .content-block:last-child { margin-bottom: 0 !important; }
+    #tabs-content .content-title { font-size: 12px; color: #90949C; text-transform: uppercase; border-bottom: 1px solid #DDDFE2; line-height: 26px; }
+    input, textarea, select { font-size: 12px !important; }
+    #content-input-avatar { font-size: 12px !important; }
+    #content-currentavatar { width: 64px; height: 64px; }
+
+    @media (min-width: 576px) {
+        #tabs-content .content-title { font-size: 13px; }
+        input, textarea, select { font-size: 15px !important; }
+        .content-block .form-inline input { flex: 1; }
+        #content-currentavatar { width: 128px; height: 128px; }
+    }
+}
+
 @media (min-width: 992px) {
     body {
         font-size: 15px;

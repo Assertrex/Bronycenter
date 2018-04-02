@@ -76,22 +76,22 @@ if ($session->verify()) {
 }
 
 // Redirect not logged guest if page requires log in
-if (isset($loginRequired) && $loginRequired == true && $loggedIn != true) {
+if (isset($pageSettings['loginRequired']) && $pageSettings['loginRequired'] == true && $loggedIn != true) {
     $flash->error($o_translation->getString('errors', 'loginRequired'));
     header('Location: ../');
     die();
 }
 
 // Redirect user back if page can be accessed only by moderators
-if (!empty($moderatorRequired) && $moderatorRequired == true && $loggedModerator != true) {
+if (!empty($pageSettings['moderatorRequired']) && $pageSettings['moderatorRequired'] == true && $loggedModerator != true) {
     $flash->error($o_translation->getString('errors', 'moderatorRequired'));
     header('Location: index.php');
     die();
 }
 
 // Stop executing if page or AJAX requires an account outside of readonly state
-if (isset($readonlyDenied) && $readonlyDenied == true && $readonlyState != false) {
-    if (isset($isAJAXCall) && $isAJAXCall == true) {
+if (isset($pageSettings['readonlyDenied']) && $pageSettings['readonlyDenied'] == true && $readonlyState != false) {
+    if (isset($pageSettings['isAJAXCall']) && $pageSettings['isAJAXCall'] == true) {
         $AJAXCallJSON = [
             'status' => 'error',
             'error' => $readonlyStateString
