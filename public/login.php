@@ -36,7 +36,7 @@ if (!empty($_GET['func']) && $_GET['func'] == 'ajaxlogout') {
 }
 ?>
 
-<body>
+<body id="page-login">
     <?php require_once('../application/partials/header.php'); ?>
 
     <div class="container">
@@ -76,7 +76,8 @@ if (!empty($_GET['func']) && $_GET['func'] == 'ajaxlogout') {
         </section>
     </div>
 
-    <?php require_once('../application/partials/scripts.php'); ?>
+    <?php require('../application/partials/footer.php'); ?>
+    <?php require('../application/partials/scripts.php'); ?>
 
     <script>
     "use-strict";

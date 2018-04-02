@@ -46,6 +46,11 @@ class Utilities
 		return substr(md5(uniqid(rand(), true)), 0, $length);
 	}
 
+    public function getLoadtimeInMs() : string
+    {
+        return number_format((microtime(true) - $_SERVER['REQUEST_TIME_FLOAT']) * 1000, 1, '.', ' ');
+    }
+
     public function redirect(string $path = 'index.php')
 	{
 		header('Location: ' . $path);

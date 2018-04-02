@@ -10,7 +10,7 @@ require('../../application/partials/init.php');
 require('../../application/partials/social/head.php');
 ?>
 
-<body id="page-social-messages" class="d-flex flex-column vh-100">
+<body id="page-social-messages">
     <?php
     // Include social header for all pages
     require('../../application/partials/social/header.php');

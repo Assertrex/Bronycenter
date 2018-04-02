@@ -10,7 +10,7 @@ require('../application/partials/init.php');
 require('../application/partials/head.php');
 ?>
 
-<body>
+<body id="page-index">
     <?php
     // Include header for all pages
     require('../application/partials/header.php');
@@ -41,22 +41,15 @@ require('../application/partials/head.php');
             </p>
         </section>
 
-        <section id="registration" class="mb-4">
+        <section id="registration">
             <?php
             // Include partial containing a post creator
             require('../application/partials/index/form-registration.php');
             ?>
         </section>
-
-        <section id="website" class="text-center mb-0">
-            <p class="mb-0">Version: <?= $o_config->getWebsiteVersion() ?> (<?= $o_config->getWebsiteDate() ?>)</p>
-            <p class="mb-0"><?= $o_config->getWebsiteTitle() ?> &copy; 2017 - 2018</p>
-        </section>
     </div>
 
-    <?php
-    // Include scripts for all pages
-    require('../application/partials/scripts.php');
-    ?>
+    <?php require('../application/partials/footer.php'); ?>
+    <?php require('../application/partials/scripts.php'); ?>
 </body>
 </html>

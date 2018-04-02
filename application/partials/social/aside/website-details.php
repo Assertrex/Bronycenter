@@ -10,12 +10,17 @@
             <li><a href="https://github.com/Assertrex/BronyCenter" target="_blank">Github</a> &bull; <a href="https://trello.com/b/cjkeP4yt/bronycenter" target="_blank">Trello</a></li>
             <?php } ?>
         </ul>
-        <ul class="mb-0 pl-0 list-unstyled">
+
+        <ul class="mb-2 pl-0 list-unstyled">
             <li><?= $o_config->getWebsiteTitle() ?> &copy; <?= ($o_config->getWebsiteYear() == date('Y')) ? $o_config->getWebsiteYear() : $o_config->getWebsiteYear() . ' - ' . date('Y') ?></li>
 
             <?php if (!$o_config->isUsingCustomVersion()) { ?>
             <li><a href="../terms.php" target="_blank">Terms of Service</a> &bull; <a href="../policy.php" target="_blank">Privacy Policy</a></li>
             <?php } ?>
         </ul>
+
+        <p class="mb-0">
+            <?= $o_translation->getString('common', 'pageLoadedIn') ?>: <?= $utilities->getLoadtimeInMs() ?> ms
+        </p>
     </div>
 </section>

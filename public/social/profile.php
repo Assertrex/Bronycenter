@@ -277,10 +277,8 @@ $profileDetails = array_merge(
         </div>
     </div>
 
-    <?php
-    // Include social scripts for all pages
-    require('../../application/partials/social/scripts.php');
-    ?>
+    <?php require('../../application/partials/social/footer.php'); ?>
+    <?php require('../../application/partials/social/scripts.php'); ?>
 
     <script type="text/javascript">
     "use-strict";

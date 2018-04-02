@@ -10,7 +10,7 @@ require('../application/partials/init.php');
 require('../application/partials/head.php');
 ?>
 
-<body>
+<body id="page-about">
     <?php
     // Include header for all pages
     require('../application/partials/header.php');
@@ -66,9 +66,7 @@ require('../application/partials/head.php');
         </section>
     </div>
 
-    <?php
-    // Include scripts for all pages
-    require('../application/partials/scripts.php');
-    ?>
+    <?php require('../application/partials/footer.php'); ?>
+    <?php require('../application/partials/scripts.php'); ?>
 </body>
 </html>

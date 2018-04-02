@@ -29,6 +29,7 @@ $translationArray = [
         'female' => 'kobieta',
         'unknown' => 'nieznana',
         'youAreTryingToAccessPage' => 'Próbujesz dostać się na podstronę',
+        'pageLoadedIn' => 'Strona załadowana w',
     ],
     'dates' => [
         'justNow' => 'Właśnie teraz',

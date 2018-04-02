@@ -31,7 +31,7 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'register') {
 }
 ?>
 
-<body>
+<body id="page-register">
     <?php
     // Include header for all pages
     require('../application/partials/header.php');
@@ -55,9 +55,7 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'register') {
         </section>
     </div>
 
-    <?php
-    // Include scripts for all pages
-    require('../application/partials/scripts.php');
-    ?>
+    <?php require('../application/partials/footer.php'); ?>
+    <?php require('../application/partials/scripts.php'); ?>
 </body>
 </html>
