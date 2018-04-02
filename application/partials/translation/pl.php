@@ -28,6 +28,7 @@ $translationArray = [
         'male' => 'mężczyzna',
         'female' => 'kobieta',
         'unknown' => 'nieznana',
+        'youAreTryingToAccessPage' => 'Próbujesz dostać się na podstronę',
     ],
     'dates' => [
         'justNow' => 'Właśnie teraz',
@@ -53,6 +54,7 @@ $translationArray = [
         'accountMuted' => 'Nie możesz wykonać tej czynności, ponieważ twoje konto zostało wyciszone.',
         'accountReadonly' => 'Nie możesz wykonać tej czynności, ponieważ twoje konto jest w trybie tylko do odczytu.',
         'loginRequired' => 'Musisz być zalogowany, aby uzyskać dostęp do tej zawartości.',
+        'loginRequiredAJAX' => 'Musisz być zalogowany, aby uzyskać dostęp do zawartości tego pliku AJAX.',
         'moderatorRequired' => 'Musisz być moderatorem, aby uzyskać dostęp do tej zawartości.',
     ],
     'header' => [
@@ -68,6 +70,7 @@ $translationArray = [
         'homepage' => 'Główna',
         'about' => 'O nas',
         'contact' => 'Kontakt',
+        'social' => 'Społeczność',
     ],
     'members' => [
         'displayAmountDetails' => 'Wyświetlono <b>{param}</b> z <b>{param}</b> znalezionych użytkowników (ostatnio aktywni znajdują się na górze).',

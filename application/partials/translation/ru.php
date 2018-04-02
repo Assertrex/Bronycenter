@@ -28,6 +28,7 @@ $translationArray = [
         'male' => 'male',
         'female' => 'female',
         'unknown' => 'unknown',
+        'youAreTryingToAccessPage' => 'You\'re trying to access a page',
     ],
     'dates' => [
         'justNow' => 'Just now',
@@ -53,6 +54,7 @@ $translationArray = [
         'accountMuted' => 'You can\'t perform this action, as your account has been muted.',
         'accountReadonly' => 'You can\'t perform this action, as your account is in a read-only state.',
         'loginRequired' => 'You have to be logged in to access this content.',
+        'loginRequiredAJAX' => 'You have to be logged in to access content of this AJAX file.',
         'moderatorRequired' => 'You have to be a moderator to access this content.',
     ],
     'header' => [
@@ -68,6 +70,7 @@ $translationArray = [
         'homepage' => 'Homepage',
         'about' => 'About',
         'contact' => 'Contact',
+        'social' => 'Social',
     ],
     'members' => [
         'displayAmountDetails' => 'Displaying <b>{param}</b> of <b>{param}</b> found members (recently seen are on top).',

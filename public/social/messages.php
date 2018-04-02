@@ -92,7 +92,7 @@ require('../../application/partials/social/head.php');
     require('../../application/partials/social/scripts.php');
     ?>
 
-    <script src="../resources/scripts/social/messages.js?v=<?php echo $websiteVersion['commit']; ?>"></script>
+    <script src="../resources/scripts/social/messages.js?v=<?= $o_config->getWebsiteCommit() ?>"></script>
 
     <script>
     "use-strict";

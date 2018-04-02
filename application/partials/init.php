@@ -72,19 +72,37 @@ if ($session->verify()) {
         }
     }
 } else {
-    $session->destroy();
+    if (!empty($_SESSION['data']['pathLoginAccessed'])) {
+        $pathLoginAccessed = $_SESSION['data']['pathLoginAccessed'];
+        $session->destroy();
+        $_SESSION['data']['pathLoginAccessed'] = $pathLoginAccessed;
+    } else {
+        $session->destroy();
+    }
 }
 
 // Redirect not logged guest if page requires log in
 if (isset($pageSettings['loginRequired']) && $pageSettings['loginRequired'] == true && $loggedIn != true) {
+    if (!empty($pageSettings['isAJAXCall'])) {
+        $AJAXCallJSON = [
+            'status' => 'error',
+            'errorMessage' => $o_translation->getString('errors', 'loginRequiredAJAX')
+        ];
+
+        die(json_encode($AJAXCallJSON, JSON_UNESCAPED_UNICODE));
+    }
+
     $flash->error($o_translation->getString('errors', 'loginRequired'));
-    header('Location: ../');
+    $_SESSION['data']['pathLoginAccessed'] = $_SERVER['REQUEST_URI'];
+
+    header('Location: ../login.php');
     die();
 }
 
 // Redirect user back if page can be accessed only by moderators
 if (!empty($pageSettings['moderatorRequired']) && $pageSettings['moderatorRequired'] == true && $loggedModerator != true) {
     $flash->error($o_translation->getString('errors', 'moderatorRequired'));
+
     header('Location: index.php');
     die();
 }
@@ -94,7 +112,7 @@ if (isset($pageSettings['readonlyDenied']) && $pageSettings['readonlyDenied'] ==
     if (isset($pageSettings['isAJAXCall']) && $pageSettings['isAJAXCall'] == true) {
         $AJAXCallJSON = [
             'status' => 'error',
-            'error' => $readonlyStateString
+            'errorMessage' => $readonlyStateString
         ];
 
         die(json_encode($AJAXCallJSON, JSON_UNESCAPED_UNICODE));
