@@ -54,8 +54,12 @@ $translationArray = [
         'accountMuted' => 'You can\'t perform this action, as your account has been muted.',
         'accountReadonly' => 'You can\'t perform this action, as your account is in a read-only state.',
         'loginRequired' => 'You have to be logged in to access this content.',
-        'loginRequiredAJAX' => 'You have to be logged in to access content of this AJAX file.',
         'moderatorRequired' => 'You have to be a moderator to access this content.',
+        'loggedOut' => 'You have been logged out.',
+    ],
+    'ajax' => [
+        'loginRequired' => 'You have to be logged in to access content of this AJAX file.',
+        'unknownError' => 'There was an unknown error while running an AJAX code.',
     ],
     'header' => [
         'account' => 'Account',

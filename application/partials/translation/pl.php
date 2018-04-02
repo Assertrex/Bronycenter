@@ -54,8 +54,12 @@ $translationArray = [
         'accountMuted' => 'Nie możesz wykonać tej czynności, ponieważ twoje konto zostało wyciszone.',
         'accountReadonly' => 'Nie możesz wykonać tej czynności, ponieważ twoje konto jest w trybie tylko do odczytu.',
         'loginRequired' => 'Musisz być zalogowany, aby uzyskać dostęp do tej zawartości.',
-        'loginRequiredAJAX' => 'Musisz być zalogowany, aby uzyskać dostęp do zawartości tego pliku AJAX.',
         'moderatorRequired' => 'Musisz być moderatorem, aby uzyskać dostęp do tej zawartości.',
+        'loggedOut' => 'Zostałeś wylogowany przez serwer.',
+    ],
+    'ajax' => [
+        'loginRequired' => 'Musisz być zalogowany, aby uzyskać dostęp do zawartości tego pliku AJAX.',
+        'unknownError' => 'Wystąpił nieoczekiwany błąd w trakcie wykonywania kodu przez AJAX.',
     ],
     'header' => [
         'account' => 'Konto',

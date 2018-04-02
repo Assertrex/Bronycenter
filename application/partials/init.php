@@ -72,13 +72,7 @@ if ($session->verify()) {
         }
     }
 } else {
-    if (!empty($_SESSION['data']['pathLoginAccessed'])) {
-        $pathLoginAccessed = $_SESSION['data']['pathLoginAccessed'];
-        $session->destroy();
-        $_SESSION['data']['pathLoginAccessed'] = $pathLoginAccessed;
-    } else {
-        $session->destroy();
-    }
+    $session->destroy();
 }
 
 // Redirect not logged guest if page requires log in
@@ -86,7 +80,7 @@ if (isset($pageSettings['loginRequired']) && $pageSettings['loginRequired'] == t
     if (!empty($pageSettings['isAJAXCall'])) {
         $AJAXCallJSON = [
             'status' => 'error',
-            'errorMessage' => $o_translation->getString('errors', 'loginRequiredAJAX')
+            'errorMessage' => $o_translation->getString('ajax', 'loginRequired')
         ];
 
         die(json_encode($AJAXCallJSON, JSON_UNESCAPED_UNICODE));

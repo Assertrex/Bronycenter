@@ -29,19 +29,18 @@ if (isset($_POST['submit'])) {
 
     $flashMessages = $flash->merge($flashMessages);
 }
+
+if (!empty($_GET['func']) && $_GET['func'] == 'ajaxlogout') {
+    $flash->error($o_translation->getString('errors', 'loggedOut'));
+    $flashMessages = $flash->merge($flashMessages);
+}
 ?>
 
 <body>
-    <?php
-    // Include header for all pages
-    require('../application/partials/header.php');
-    ?>
+    <?php require_once('../application/partials/header.php'); ?>
 
     <div class="container">
-        <?php
-        // Include system messages if any exists
-        require('../application/partials/flash.php');
-        ?>
+        <?php require_once('../application/partials/flash.php'); ?>
 
         <section id="s-title" class="mb-4">
             <h1 class="text-center text-lg-left mb-4"><?= $pageSettings['title'] ?></h1>
@@ -77,9 +76,16 @@ if (isset($_POST['submit'])) {
         </section>
     </div>
 
-    <?php
-    // Include scripts for all pages
-    require('../application/partials/scripts.php');
-    ?>
+    <?php require_once('../application/partials/scripts.php'); ?>
+
+    <script>
+    "use-strict";
+
+    $(document).ready(function() {
+        <?php if (!empty($_GET['func']) && $_GET['func'] == 'ajaxlogout') { ?>
+        window.history.pushState({}, document.title, 'login.php');
+        <?php } ?>
+    });
+    </script>
 </body>
 </html>

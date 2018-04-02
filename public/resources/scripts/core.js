@@ -1,30 +1,45 @@
 "use-strict";
 
-// Start when document is ready
 $(document).ready(function() {
-    // Enable Bootstrap's tooltips
+    // Enable tooltips
     $('[data-toggle="tooltip"]').tooltip();
 
-    // Clear modal's content after closing it
+    // When user closes a modal, clear it
     $('#mainModal').on('hidden.bs.modal', (e) => {
         $('#mainModal .modal-title').text('');
         $('#mainModal .modal-body').text('');
         $('#mainModal .modal-footer').text('');
     });
 
-    // Extend account session every X seconds
-    setInterval(() => {
-        // Use default path to the extend session AJAX file
-        let extendSessionFilePath = 'ajax/doSessionExtend.php';
+    let wasUserLogged = false;
+    extendSession();
+    setInterval(extendSession, 15000);
 
-        // Use social path to the extend session AJAX file
+    function extendSession() {
+        let extendSessionFilePath;
+
         if (window.location.pathname.split('/').includes('social')) {
             extendSessionFilePath = '../ajax/doSessionExtend.php';
+        } else {
+            extendSessionFilePath = 'ajax/doSessionExtend.php';
         }
 
-        // TODO: Handle an error
-        $.get(extendSessionFilePath);
-    }, 30000);
+        $.get(extendSessionFilePath, (response) => {
+            let result = parseJSON(response);
+
+            if (result == false || result.status != 'success') {
+                return false;
+            }
+
+            if (wasUserLogged && !result.data.isLoggedIn) {
+                window.location.replace('../login.php?func=ajaxlogout');
+            }
+
+            wasUserLogged = result.data.isLoggedIn;
+
+            return true;
+        });
+    }
 
     // Check current Y position of a window
     let currentPositionY = $(window).scrollTop();

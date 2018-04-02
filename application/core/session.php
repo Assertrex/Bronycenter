@@ -173,15 +173,18 @@ class Session
         return $array;
     }
 
-    /** Destroy a session to log out a user
-     *
-     * @since Release 0.1.0
-     * @return boolean Result of a method
-     */
-    public function destroy()
+    public function destroy(bool $everything = false) : bool
     {
+        if (!$everything) {
+            $sessionData = $_SESSION['data'] ?? [];
+        }
+
         session_destroy();
         session_start();
+
+        if (!$everything) {
+            $_SESSION['data'] = $sessionData;
+        }
 
         return true;
     }
