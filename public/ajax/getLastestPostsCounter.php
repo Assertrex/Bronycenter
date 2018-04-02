@@ -21,7 +21,7 @@ $postsAmount = $posts->getPostsAmount(
 // Prepare array with result
 $JSON = [
     'status' => 'success',
-    'amount' => intval($postsAmount)
+    'amount' => $postsAmount
 ];
 
 // Format array into JSON

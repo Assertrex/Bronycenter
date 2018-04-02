@@ -357,7 +357,7 @@ class Post
                     'posts p',
                     'INNER JOIN users u ON p.user_id = u.id
                      LEFT JOIN (SELECT id, post_id, user_id FROM posts_likes WHERE user_id = ? AND active = 1) AS l ON p.id = l.post_id
-                     WHERE p.id > ? AND status != 9 ORDER BY id DESC',
+                     WHERE p.id > ? AND u.account_type != 0 AND status != 9 ORDER BY id DESC',
                     [$_SESSION['account']['id'], $array['fetchFromID']]
                 );
                 break;
@@ -436,9 +436,10 @@ class Post
     public function countAvailablePosts(): int
     {
         $posts = $this->database->read(
-            'count(id) AS amount',
-            'posts',
-            'WHERE status = 0',
+            'count(p.id) AS amount',
+            'posts p',
+            'INNER JOIN users u ON p.user_id = u.id ' .
+                'WHERE u.account_type != 0 AND p.status = 0',
             [],
             false
         )['amount'];
@@ -446,35 +447,31 @@ class Post
         return intval($posts) ?: 0;
     }
 
-    /**
-     * Count created posts (Legacy code)
-     *
-     * @since 0.1.0
-     * @var string $fetchMode Mode of posts fetching
-     * @var array $fetchSettings Settings for other fetch modes
-     * @return string Amount of available posts
-     */
-    public function getPostsAmount($fetchMode = 'available', $fetchSettings = []) {
+    // Count created posts (Legacy method)
+    public function getPostsAmount(string $fetchMode = 'available', array $fetchSettings = []) : int
+    {
         switch ($fetchMode) {
             case 'available':
-                $postsCount = $this->database->read(
-                    'COUNT(*) AS posts',
-                    'posts',
-                    'WHERE status = 0',
+                $posts = $this->database->read(
+                    'COUNT(p.id) AS posts',
+                    'posts p',
+                    'INNER JOIN users u ON p.user_id = u.id ' .
+                        'WHERE u.account_type != 0 AND p.status = 0',
                     []
                 )[0]['posts'];
                 break;
             case 'available_lastest':
-                $postsCount = $this->database->read(
-                    'COUNT(*) AS posts',
-                    'posts',
-                    'WHERE id > ? AND status = 0',
+                $posts = $this->database->read(
+                    'COUNT(p.id) AS posts',
+                    'posts p',
+                    'INNER JOIN users u ON p.user_id = u.id ' .
+                        'WHERE u.account_type != 0 AND p.status = 0 AND p.id > ?',
                     [$fetchSettings['fetchFromID']]
                 )[0]['posts'];
                 break;
         }
 
-        return $postsCount;
+        return intval($posts) ?: 0;
     }
 
     /**
