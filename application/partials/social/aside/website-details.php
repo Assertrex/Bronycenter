@@ -11,7 +11,7 @@
             <?php } ?>
         </ul>
         <ul class="mb-0 pl-0 list-unstyled">
-            <li><?= $o_config->getWebsiteTitle() ?> &copy; 2017 - 2018</li>
+            <li><?= $o_config->getWebsiteTitle() ?> &copy; <?= ($o_config->getWebsiteYear() == date('Y')) ? $o_config->getWebsiteYear() : $o_config->getWebsiteYear() . ' - ' . date('Y') ?></li>
 
             <?php if (!$o_config->isUsingCustomVersion()) { ?>
             <li><a href="../terms.php" target="_blank">Terms of Service</a> &bull; <a href="../policy.php" target="_blank">Privacy Policy</a></li>

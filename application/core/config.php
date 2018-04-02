@@ -124,4 +124,15 @@ class Config
 
         return intval($commit) ?: 0;
     }
+
+    public function getWebsiteYear(bool $software = false) : int
+    {
+        if ($software !== true) {
+            $year = $this->versions['website']['year'] ?? $this->versions['software']['year'] ?? 0;
+        } else {
+            $year = $this->versions['software']['year'] ?? 0;
+        }
+
+        return intval($year) ?: intval(date('Y'));
+    }
 }

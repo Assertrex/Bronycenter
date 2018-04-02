@@ -71,7 +71,8 @@ will find out by itself that you're using a custom file.
 * **Title** - Name of your website
 * **Version** - Full version of a website *(optional)*
 * **Date** - Date of a last modification *(optional)*
-* **Commit** - Unique number of your current CSS/JS change, counting from 1.
+* **Commit** - Unique number of your current CSS/JS change, counting from 1
+* **Year** - Year of starting your website
 
 Note, that **/version.ini** file is still required in an unchanged form.
 
