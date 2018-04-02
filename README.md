@@ -55,3 +55,11 @@ credentials.
 Don't update it. Each update can have different database schema, and it just
 won't work without changes to the database. But not updating is also bad, as there
 are often security updates. Yes, I have no idea what I am doing.
+
+## Modifications
+### Custom CSS and JS
+In commit 108, there was added a possibility for using a custom CSS and JS files
+which can override styles from default CSS/JS files. They won't be ever
+overwritten by an update. To use them, simply create a new files:
+* **/public/resources/stylesheets/custom.css**
+* **/public/resources/scripts/custom.js**

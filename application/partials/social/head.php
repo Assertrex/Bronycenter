@@ -16,4 +16,8 @@
     <?php echo $pageStylesheet; ?>
     </style>
     <?php } ?>
+
+    <?php if (file_exists(__DIR__ . '/../../../public/resources/stylesheets/custom.css')) { ?>
+    <link type="text/css" rel="stylesheet" href="../resources/stylesheets/custom.css" />
+    <?php } ?>
 </head>
