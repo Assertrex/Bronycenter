@@ -22,7 +22,7 @@ $o_translation = BronyCenter\Translation::getInstance();
 $websiteSettings = $o_config->getSettings('system');
 $websiteEncryptionKey = $o_config->getSettings('messages')['key'];
 
-if ($websiteSettings['enableDebug']) {
+if ($websiteSettings['enableErrors']) {
     ini_set('display_errors', 1);
     ini_set('display_startup_errors', 1);
     error_reporting(E_ALL);
@@ -83,7 +83,7 @@ if (isset($pageSettings['loginRequired']) && $pageSettings['loginRequired'] == t
             'errorMessage' => $o_translation->getString('ajax', 'loginRequired')
         ];
 
-        die(json_encode($AJAXCallJSON, JSON_UNESCAPED_UNICODE));
+        die($utilities->encodeJSON($AJAXCallJSON));
     }
 
     $flash->error($o_translation->getString('errors', 'loginRequired'));
@@ -106,10 +106,10 @@ if (isset($pageSettings['readonlyDenied']) && $pageSettings['readonlyDenied'] ==
     if (isset($pageSettings['isAJAXCall']) && $pageSettings['isAJAXCall'] == true) {
         $AJAXCallJSON = [
             'status' => 'error',
-            'errorMessage' => $readonlyStateString
+            'errorMessage' => $readonlyStateString,
         ];
 
-        die(json_encode($AJAXCallJSON, JSON_UNESCAPED_UNICODE));
+        die($utilities->encodeJSON($AJAXCallJSON));
     }
 
     $flash->error($readonlyStateString);

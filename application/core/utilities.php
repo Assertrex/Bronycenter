@@ -51,6 +51,19 @@ class Utilities
         return number_format((microtime(true) - $_SERVER['REQUEST_TIME_FLOAT']) * 1000, 1, '.', ' ');
     }
 
+    public function encodeJSON(array $AJAXCallJSON) : string
+    {
+        $json = $AJAXCallJSON;
+
+        if ($this->o_config->getSettings('system')['enableDebug']) {
+            $json['executionTimeInMs'] = $this->getLoadtimeInMs();
+        }
+
+        $json = json_encode($json, JSON_UNESCAPED_UNICODE);
+
+        return $json;
+    }
+
     public function redirect(string $path = 'index.php')
 	{
 		header('Location: ' . $path);

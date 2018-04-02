@@ -11,6 +11,7 @@ session_start();
 
 $o_translation = BronyCenter\Translation::getInstance();
 $o_session = BronyCenter\Session::getInstance();
+$o_utilities = BronyCenter\Utilities::getInstance();
 $o_flash = BronyCenter\Flash::getInstance();
 
 $AJAXCallJSON = [
@@ -37,4 +38,4 @@ if ($o_session->verify()) {
     $o_session->destroy();
 }
 
-die(json_encode($AJAXCallJSON, JSON_UNESCAPED_UNICODE));
+die($o_utilities->encodeJSON($AJAXCallJSON));

@@ -11,7 +11,7 @@
             <?php } ?>
         </ul>
 
-        <ul class="mb-2 pl-0 list-unstyled">
+        <ul class="mb-0 pl-0 list-unstyled">
             <li><?= $o_config->getWebsiteTitle() ?> &copy; <?= ($o_config->getWebsiteYear() == date('Y')) ? $o_config->getWebsiteYear() : $o_config->getWebsiteYear() . ' - ' . date('Y') ?></li>
 
             <?php if (!$o_config->isUsingCustomVersion()) { ?>
@@ -19,8 +19,8 @@
             <?php } ?>
         </ul>
 
-        <p class="mb-0">
-            <?= $o_translation->getString('common', 'pageLoadedIn') ?>: <?= $utilities->getLoadtimeInMs() ?> ms
-        </p>
+        <?php if ($websiteSettings['enableDebug']) { ?>
+        <p class="mt-2 mb-0"><?= $o_translation->getString('common', 'pageLoadedIn') ?>: <?= $utilities->getLoadtimeInMs() ?> ms</p>
+        <?php } ?>
     </div>
 </section>
