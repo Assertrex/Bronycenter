@@ -57,9 +57,32 @@ won't work without changes to the database. But not updating is also bad, as the
 are often security updates. Yes, I have no idea what I am doing.
 
 ## Modifications
+You can optionally create a new files, which will allow you to modify default
+values, so they will suit your website. Those files will never get overridden
+by any update.
+
+### Website name and version
+If you want to use this code for your own website, you probably will want to
+change it's name and use custom website versioning for your own CSS/JS files.
+To use it, simply duplicate **/version.ini** file with a name
+**/version.dev.ini**. When you're done, you can edit this new file and software
+will find out by itself that you're using a custom file.
+
+* **Title** - Name of your website
+* **Version** - Full version of a website *(optional)*
+* **Date** - Date of a last modification *(optional)*
+* **Commit** - Unique number of your current CSS/JS change, counting from 1.
+
+Note, that **/version.ini** file is still required in an unchanged form.
+
 ### Custom CSS and JS
-In commit 108, there was added a possibility for using a custom CSS and JS files
-which can override styles from default CSS/JS files. They won't be ever
-overwritten by an update. To use them, simply create a new files:
+You can use a custom CSS and JS files which will be able to override styles from
+default CSS/JS files (but shouldn't work for inline styles). To use them, simply
+create new files:
+
 * **/public/resources/stylesheets/custom.css**
 * **/public/resources/scripts/custom.js**
+
+Just remember, when you modify CSS/JS, it won't be changed in your visitors
+browsers immediately. You have to use a custom website versioning to
+bypass browser's cache. You can read more about it above.

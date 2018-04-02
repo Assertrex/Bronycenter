@@ -14,7 +14,7 @@ class Translation
     {
         $this->o_config = Config::getInstance();
 
-        $websiteLanguage = $this->o_config->getSection('system')['language'] ?? 'en';
+        $websiteLanguage = $this->o_config->getSettings('system')['language'] ?? 'en';
         require_once(__DIR__ . '/../partials/translation/' . $websiteLanguage . '.php');
         $this->a_translation = $translationArray;
     }

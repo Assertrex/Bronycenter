@@ -1,53 +1,21 @@
 <?php
 
-/**
-* Used for parsing configuration file and reading it's content
-*
-* @since Release 0.1.0
-*/
-
 namespace BronyCenter;
 
 class Config
 {
-    /**
-     * Singleton instance of a current class
-     *
-     * @since Release 0.1.0
-     */
     private static $instance = null;
+    private $settings = null;
+    private $versions = null;
 
-    /**
-     * Place for array of configuration file contents
-     *
-     * @since Release 0.1.0
-     */
-    private $configuration = null;
-
-    /**
-     * Parse a configuration file and store it's content in a property
-     *
-     * @since Release 0.1.0
-     */
     public function __construct()
     {
-        // Use local environment configuration file if exists
-        // It is required to share a source code without leaking a mail configuration
-        if (file_exists(__DIR__ . '/../../settings.dev.ini')) {
-            $this->configuration = parse_ini_file(__DIR__ . '/../../settings.dev.ini', true);
-        } else {
-            $this->configuration = parse_ini_file(__DIR__ . '/../../settings.ini', true);
-        }
+        $this->settings = $this->readSettingsFiles();
+        $this->versions = $this->readVersionsFiles();
     }
 
-    /**
-     * Check if instance of current class is existing and create and/or return it
-     *
-     * @since Release 0.1.0
-     * @var boolean Set as true to reset class instance
-     * @return object Instance of a current class
-     */
-     public static function getInstance($reset = false) {
+     public static function getInstance(bool $reset = false)
+     {
          if (!self::$instance || $reset === true) {
             self::$instance = new Config();
         }
@@ -55,31 +23,105 @@ class Config
         return self::$instance;
     }
 
-    /**
-     * Return selected section of a configuration file
-     *
-     * @since Release 0.1.0
-     * @var string $section Name of a selected section
-     * @return boolean|array Content of existing array
-     */
-    public function getSection($section)
+    // TODO Throw an exception if settings file has not been found
+    private function readSettingsFiles() : array
     {
-        // Return content of a section if it exists
-        if (array_key_exists($section, $this->configuration)) {
-            return $this->configuration[$section];
+        if (file_exists(__DIR__ . '/../../settings.dev.ini')) {
+            $settings = parse_ini_file(__DIR__ . '/../../settings.dev.ini', true);
+        } else if (file_exists(__DIR__ . '/../../settings.ini')) {
+            $settings = parse_ini_file(__DIR__ . '/../../settings.ini', true);
         }
 
-        return false;
+        return $settings ?: [];
     }
 
-    /**
-     * Return website version details
-     *
-     * @since Release 0.1.0
-     * @return array Content of an array
-     */
-    public function getVersion()
+    // TODO Throw an exception if version file has not been found
+    // TODO Throw an exception if version files have not been found (if modification is used)
+    private function readVersionsFiles() : array
     {
-        return parse_ini_file(__DIR__ . '/../../version.ini', false);
+        $versions = [];
+
+        $versions['software'] = parse_ini_file(__DIR__ . '/../../version.ini', false);
+
+        if (file_exists(__DIR__ . '/../../version.dev.ini')) {
+            $versions['website'] = parse_ini_file(__DIR__ . '/../../version.dev.ini', false);
+        }
+
+        return $versions ?: [];
+    }
+
+    public function getSettings(string $section = '') : array
+    {
+        if (empty($section)) {
+            $settings = $this->settings;
+        } else if (array_key_exists($section, $this->settings)) {
+            $settings = $this->settings[$section];
+        }
+
+        return $settings ?: [];
+    }
+
+    public function getVersions(string $section = '') : array
+    {
+        if (empty($section)) {
+            $versions = $this->versions;
+        } else if (array_key_exists($section, $this->versions)) {
+            $versions = $this->versions[$section];
+        }
+
+        return $versions ?: [];
+    }
+
+    public function isUsingCustomVersion() : bool
+    {
+        if (empty($this->versions['website'])) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function getWebsiteTitle(bool $software = false) : string
+    {
+        if ($software !== true) {
+            $title = $this->versions['website']['title'] ?? $this->versions['software']['title'] ?? 'No title';
+        } else {
+            $title = $this->versions['software']['title'] ?? 'No title';
+        }
+
+        return $title ?? 'No title';
+    }
+
+    public function getWebsiteVersion(bool $software = false) : string
+    {
+        if ($software !== true) {
+            $version = $this->versions['website']['version'] ?? $this->versions['software']['version'] ?? 'No version';
+        } else {
+            $version = $this->versions['software']['version'] ?? 'No version';
+        }
+
+        return $version ?? 'No version';
+    }
+
+    public function getWebsiteDate(bool $software = false) : string
+    {
+        if ($software !== true) {
+            $date = $this->versions['website']['date'] ?? $this->versions['software']['date'] ?? 'No date';
+        } else {
+            $date = $this->versions['software']['date'] ?? 'No date';
+        }
+
+        return $date ?? 'No date';
+    }
+
+    public function getWebsiteCommit(bool $software = false) : int
+    {
+        if ($software !== true) {
+            $commit = $this->versions['website']['commit'] ?? $this->versions['software']['commit'] ?? 0;
+        } else {
+            $commit = $this->versions['software']['commit'] ?? 0;
+        }
+
+        return intval($commit) ?: 0;
     }
 }

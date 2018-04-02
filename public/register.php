@@ -30,7 +30,7 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'register') {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
-    <title>Registration :: BronyCenter</title>
+    <title>Registration :: <?= $o_config->getWebsiteTitle() ?></title>
 
     <?php
     // Include stylesheets for all pages

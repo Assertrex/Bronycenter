@@ -6,8 +6,8 @@
             <p class="text-center font-weight-bold"><i class="fa fa-code text-primary mr-2" aria-hidden="true"></i> Website software</p>
 
             <p class="mb-0">Name: <b>BronyCenter</b></p>
-            <p class="mb-0">Version: <b><?= $websiteVersion['version']; ?></b> (<b><?= $websiteVersion['date'] ?></b>)</p>
-            <p>Build: <i class="fa fa-github" aria-hidden="true"></i> <b><?= $websiteVersion['commit'] ?></b></p>
+            <p class="mb-0">Version: <b><?= $o_config->getWebsiteVersion() ?></b> (<b><?= $o_config->getWebsiteDate() ?></b>)</p>
+            <p>Build: <i class="fa fa-github" aria-hidden="true"></i> <b><?= $o_config->getWebsiteCommit() ?></b></p>
 
             <p class="text-info mb-0"><i class="fa fa-exclamation-triangle mr-1" aria-hidden="true"></i> These values are used for main software versioning. You'll be able to edit version of your modifications soon.</p>
         </div>

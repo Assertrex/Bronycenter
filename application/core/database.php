@@ -26,7 +26,7 @@ class Database
      *
      * @since Release 0.1.0
      */
-    private $config = null;
+    private $o_config = null;
 
     /**
      * Place for object of a database PDO connection
@@ -42,10 +42,10 @@ class Database
      */
     public function __construct()
     {
-        $this->config = Config::getInstance();
+        $this->o_config = Config::getInstance();
 
         // Get database configuration
-        $credentials = $this->config->getSection('database');
+        $credentials = $this->o_config->getSettings('database');
 
         // Try to create a database connection with PDO
         try {

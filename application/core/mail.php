@@ -30,7 +30,7 @@ class Mail
      *
      * @since Release 0.1.0
      */
-    private $config = null;
+    private $o_config = null;
 
     /**
      * Get instances of required classes
@@ -39,7 +39,7 @@ class Mail
      */
     public function __construct()
     {
-        $this->config = Config::getInstance();
+        $this->o_config = Config::getInstance();
     }
 
     /**
@@ -68,7 +68,7 @@ class Mail
      */
     public function send($email, $subject, $message) {
         // Get website's settings
-        $mailSettings = $this->config->getSection('mail');
+        $mailSettings = $this->o_config->getSettings('mail');
 
         // Create a PHPMailer instance
         $mail = new PHPMailer;

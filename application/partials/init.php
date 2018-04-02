@@ -16,12 +16,11 @@ require(__DIR__ . '/../core/post.php');
 require(__DIR__ . '/../core/statistics.php');
 require(__DIR__ . '/../core/message.php');
 
-$config = BronyCenter\Config::getInstance();
+$o_config = BronyCenter\Config::getInstance();
 $o_translation = BronyCenter\Translation::getInstance();
 
-$websiteSettings = $config->getSection('system');
-$websiteVersion = $config->getVersion();
-$websiteEncryptionKey = $config->getSection('messages')['key'];
+$websiteSettings = $o_config->getSettings('system');
+$websiteEncryptionKey = $o_config->getSettings('messages')['key'];
 
 if ($websiteSettings['enableDebug']) {
     ini_set('display_errors', 1);

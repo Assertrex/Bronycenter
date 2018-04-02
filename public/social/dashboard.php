@@ -14,7 +14,7 @@ $o_post = Post::getInstance();
 $dashboardCategory = $_GET['cat'] ?? 'dashboard';
 
 // Page settings
-$pageTitle = 'Dashboard :: BronyCenter';
+$pageTitle = 'Dashboard';
 
 // Include social head content for all pages
 require('../../application/partials/social/head.php');

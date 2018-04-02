@@ -9,7 +9,7 @@ require('../application/partials/init.php');
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
-    <title>Welcome to BronyCenter! Social network designed to share love and tolerance.</title>
+    <title>Welcome to <?= $o_config->getWebsiteTitle() ?>! Social network designed to share love and tolerance.</title>
 
     <?php
     // Include stylesheets for all pages
@@ -24,7 +24,7 @@ require('../application/partials/init.php');
 
     <div class="jumbotron text-light mb-0">
         <div class="container">
-            <h1 class="display-4 mb-3">Welcome to the BronyCenter</h1>
+            <h1 class="display-4 mb-3">Welcome to the <?= $o_config->getWebsiteTitle() ?></h1>
 
             <p class="lead">
                 Social network created for those who love My Little Pony
@@ -55,8 +55,8 @@ require('../application/partials/init.php');
         </section>
 
         <section id="website" class="text-center mb-0">
-            <p class="mb-0">Version: <?php echo $websiteVersion['version']; ?> (<?php echo $websiteVersion['date']; ?>)</p>
-            <p class="mb-0">BronyCenter &copy; 2017 - 2018</p>
+            <p class="mb-0">Version: <?= $o_config->getWebsiteVersion() ?> (<?= $o_config->getWebsiteDate() ?>)</p>
+            <p class="mb-0"><?= $o_config->getWebsiteTitle() ?> &copy; 2017 - 2018</p>
         </section>
     </div>
 

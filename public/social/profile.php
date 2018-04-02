@@ -36,7 +36,7 @@ $profileDetails = array_merge(
 );
 
 // Page settings
-$pageTitle = 'Profile :: BronyCenter';
+$pageTitle = 'Profile :: ' . $o_config->getWebsiteTitle();
 $pageStylesheet = '
 #aside-tabs { background: #EEE; justify-content: center; }
 #aside-tabs .nav-item { flex: 1; text-align: center; }

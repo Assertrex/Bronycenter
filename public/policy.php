@@ -9,7 +9,7 @@ require('../application/partials/init.php');
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
-    <title>Privacy Policy :: BronyCenter</title>
+    <title>Privacy Policy :: <?= $o_config->getWebsiteTitle() ?></title>
 
     <?php
     // Include stylesheets for all pages

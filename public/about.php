@@ -9,7 +9,7 @@ require('../application/partials/init.php');
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
-    <title>About :: BronyCenter</title>
+    <title>About :: <?= $o_config->getWebsiteTitle() ?></title>
 
     <?php
     // Include stylesheets for all pages
@@ -29,7 +29,7 @@ require('../application/partials/init.php');
         ?>
 
         <section id="about" class="mb-4">
-            <h1 class="text-center text-lg-left mb-4">About BronyCenter</h1>
+            <h1 class="text-center text-lg-left mb-4">About <?= $o_config->getWebsiteTitle() ?></h1>
 
             <p>
                 This website has been created for the fans of the My Little Pony

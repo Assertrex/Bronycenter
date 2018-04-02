@@ -1,7 +1,7 @@
 <?php
 
 // Page settings
-$pageTitle = 'Settings :: BronyCenter';
+$pageTitle = 'Settings';
 $pageStylesheet = '
 aside .fa { width: 15px; }
 aside .list-group-item { border-radius: 0 !important; cursor: pointer; }

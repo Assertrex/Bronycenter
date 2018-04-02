@@ -9,12 +9,12 @@ use DateTime;
 class Utilities
 {
     private static $instance = null;
-    private $config = null;
+    private $o_config = null;
     private $o_translation = null;
 
     public function __construct()
     {
-        $this->config = Config::getInstance();
+        $this->o_config = Config::getInstance();
         $this->o_translation = Translation::getInstance();
     }
 
@@ -54,7 +54,7 @@ class Utilities
 
     public function doHashPassword(string $password) : string
     {
-        $websiteSettings = $this->config->getSection('system');
+        $websiteSettings = $this->o_config->getSettings('system');
 
         // Hash a password, fallback to BCrypt if PHP version is older than 7.2
         if (version_compare(PHP_VERSION, '7.2.0') >= 0) {

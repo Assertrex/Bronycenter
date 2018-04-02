@@ -6,7 +6,7 @@ require('../../application/partials/init.php');
 $members = $user->getMembersList(50);
 
 // Page settings
-$pageTitle = 'Members :: BronyCenter';
+$pageTitle = 'Members';
 $pageStylesheet = '
 #members-list div a { color: #000; text-decoration: none; border-top: 1px solid #E9ECEF; }
 #members-list div a:first-child { border-top: 0; }

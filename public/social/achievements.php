@@ -6,7 +6,7 @@ $loginRequired = true;
 require('../../application/partials/init.php');
 
 // Page settings
-$pageTitle = 'Achievements :: BronyCenter';
+$pageTitle = 'Achievements';
 
 // Get an array containing user's statistics
 $userStatistics = $statistics->get();

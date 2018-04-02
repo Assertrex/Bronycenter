@@ -3,7 +3,7 @@
 require('../../application/partials/init.php');
 
 // Page settings
-$pageTitle = 'Messages :: BronyCenter';
+$pageTitle = 'Messages';
 $pageStylesheet = '';
 
 // Include social head content for all pages

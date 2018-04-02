@@ -30,7 +30,7 @@ if (isset($_POST['submit'])) {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
-    <title>Login :: BronyCenter</title>
+    <title>Login :: <?= $o_config->getWebsiteTitle() ?></title>
 
     <?php
     // Include stylesheets for all pages

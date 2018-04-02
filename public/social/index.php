@@ -10,7 +10,7 @@ use BronyCenter\Post;
 $posts = Post::getInstance();
 
 // Page settings
-$pageTitle = 'Posts :: BronyCenter';
+$pageTitle = 'Posts';
 $pageStylesheet = '
 .posts-container-from { margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(189, 189, 189, .5); }
 .post-content-text { word-break: break-word; }

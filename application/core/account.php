@@ -22,7 +22,7 @@ class Account
      *
      * @since Release 0.1.0
      */
-    private $config = null;
+    private $o_config = null;
 
     /**
      * Place for instance of a database class
@@ -73,7 +73,7 @@ class Account
      */
     public function __construct()
     {
-        $this->config = Config::getInstance();
+        $this->o_config = Config::getInstance();
         $this->database = Database::getInstance();
         $this->flash = Flash::getInstance();
         $this->session = Session::getInstance();
@@ -107,7 +107,7 @@ class Account
     public function login()
     {
         // Get website's settings
-        $websiteSettings = $this->config->getSection('system');
+        $websiteSettings = $this->o_config->getSettings('system');
 
         // Check if login form has been submitted correctly
         if (empty($_POST['submit']) || $_POST['submit'] !== 'login') {
@@ -215,7 +215,7 @@ class Account
     public function register()
     {
         // Get website's settings
-        $websiteSettings = $this->config->getSection('system');
+        $websiteSettings = $this->o_config->getSettings('system');
 
         /**
          * Step 1: Registration validation

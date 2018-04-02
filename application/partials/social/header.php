@@ -4,12 +4,12 @@
         // Display links for logged users
         if ($loggedIn) {
         ?>
-        <a class="navbar-brand" href="index.php">BronyCenter</a>
+        <a class="navbar-brand" href="index.php"><?= $o_config->getWebsiteTitle() ?></a>
         <?php
         } // if
         else {
         ?>
-        <a class="navbar-brand" href="../index.php">BronyCenter</a>
+        <a class="navbar-brand" href="../index.php"><?= $o_config->getWebsiteTitle() ?></a>
         <?php
         } // if
         ?>

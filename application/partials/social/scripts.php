@@ -6,8 +6,8 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.13.0/umd/popper.min.js" integrity="sha256-pS96pU17yq+gVu4KBQJi38VpSuKN7otMrDQprzf/DWY=" crossorigin="anonymous"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha256-5+02zu5UULQkO7w1GIr6vftCgMfFdZcAHeDtFnKZsBs=" crossorigin="anonymous"></script>
-<script type="text/javascript" src="../resources/scripts/core.js?v=<?php echo $websiteVersion['commit']; ?>"></script>
+<script type="text/javascript" src="../resources/scripts/core.js?v=<?= $o_config->getWebsiteCommit(true) ?>"></script>
 
 <?php if (file_exists(__DIR__ . '/../../../public/resources/scripts/custom.js')) { ?>
-<script type="text/javascript" src="../resources/scripts/custom.js"></script>
+<script type="text/javascript" src="../resources/scripts/custom.js?v=<?= $o_config->getWebsiteCommit() ?>"></script>
 <?php } ?>
