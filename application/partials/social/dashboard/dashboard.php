@@ -27,7 +27,9 @@
         <div class="col-lg m-3" style="font-size: 14px;">
             <p class="text-center font-weight-bold"><i class="fa fa-sliders text-primary mr-2" aria-hidden="true"></i> Used settings</p>
 
-            <p class="mb-0">Error debugging: <?= $websiteSettings['enableDebug'] ? '<span class="text-danger"><b>Enabled</b></span>' : '<span class="text-success"><b>Disabled</b></span>' ?></p>
+
+            <p class="mb-0">PHP errors: <?= $websiteSettings['enableErrors'] ? '<span class="text-danger"><b>Enabled</b></span>' : '<span class="text-success"><b>Disabled</b></span>' ?></p>
+            <p class="mb-0">Performance debug: <?= $websiteSettings['enableDebug'] ? '<span class="text-secondary"><b>Enabled</b></span>' : '<span class="text-success"><b>Disabled</b></span>' ?></p>
             <p class="mb-0">Login form: <?= $websiteSettings['enableLogin'] ? '<span class="text-success"><b>Enabled</b></span>' : '<span class="text-danger"><b>Disabled</b></span>' ?></p>
             <p class="mb-0">Registration form: <?= $websiteSettings['enableRegistration'] ? '<span class="text-success"><b>Enabled</b></span>' : '<span class="text-danger"><b>Disabled</b></span>' ?></p>
         </div>
