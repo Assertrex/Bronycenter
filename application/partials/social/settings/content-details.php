@@ -1,11 +1,11 @@
 <div id="content-details" style="display: none;">
-    <h6 class="text-center mb-0">Tell about yourself</h6>
+    <h6 class="text-center mb-0"><?= $o_translation->getString('settings', 'tellAboutYourself') ?></h6>
 
     <div class="p-3">
-        <p><small>You can write there more about yourself and about things that you like.</small></p>
+        <p><small><?= $o_translation->getString('settings', 'tellAboutYourselfDescription') ?></small></p>
 
         <div class="content-block mb-3">
-            <p class="content-title mb-2">Full description (in about tab)</p>
+            <p class="content-title mb-2"><?= $o_translation->getString('settings', 'fullDescription') ?></p>
 
             <?php
             if (!$readonlyState) {
@@ -17,7 +17,7 @@
                         <span id="content-counter-fulldescription">0</span> / 1000
                     </small>
                 </div>
-                <button class="btn btn-outline-primary btn-block" type="submit">Change</button>
+                <button class="btn btn-outline-primary btn-block" type="submit"><?= $o_translation->getString('common', 'change') ?></button>
             </form>
             <?php
             } else {
@@ -32,7 +32,7 @@
         </div>
 
         <div class="content-block mb-3">
-            <p class="content-title mb-2">How can someone contact with you?</p>
+            <p class="content-title mb-2"><?= $o_translation->getString('settings', 'contactDetails') ?></p>
 
             <?php
             if (!$readonlyState) {
@@ -44,7 +44,7 @@
                         <span id="content-counter-contactmethods">0</span> / 500
                     </small>
                 </div>
-                <button class="btn btn-outline-primary btn-block" type="submit">Change</button>
+                <button class="btn btn-outline-primary btn-block" type="submit"><?= $o_translation->getString('common', 'change') ?></button>
             </form>
             <?php
             } else {
@@ -59,7 +59,7 @@
         </div>
 
         <div class="content-block mb-3">
-            <p class="content-title mb-2">What music do you like to listen to?</p>
+            <p class="content-title mb-2"><?= $o_translation->getString('settings', 'favouriteMusic') ?></p>
 
             <?php
             if (!$readonlyState) {
@@ -71,7 +71,7 @@
                         <span id="content-counter-favouritemusic">0</span> / 500
                     </small>
                 </div>
-                <button class="btn btn-outline-primary btn-block" type="submit">Change</button>
+                <button class="btn btn-outline-primary btn-block" type="submit"><?= $o_translation->getString('common', 'change') ?></button>
             </form>
             <?php
             } else {
@@ -86,7 +86,7 @@
         </div>
 
         <div class="content-block mb-3">
-            <p class="content-title mb-2">Which movies you like the most?</p>
+            <p class="content-title mb-2"><?= $o_translation->getString('settings', 'favouriteMovies') ?></p>
 
             <?php
             if (!$readonlyState) {
@@ -98,7 +98,7 @@
                         <span id="content-counter-favouritemovies">0</span> / 500
                     </small>
                 </div>
-                <button class="btn btn-outline-primary btn-block" type="submit">Change</button>
+                <button class="btn btn-outline-primary btn-block" type="submit"><?= $o_translation->getString('common', 'change') ?></button>
             </form>
             <?php
             } else {
@@ -113,7 +113,7 @@
         </div>
 
         <div class="content-block mb-3">
-            <p class="content-title mb-2">Which games are your favourite?</p>
+            <p class="content-title mb-2"><?= $o_translation->getString('settings', 'favouriteGames') ?></p>
 
             <?php
             if (!$readonlyState) {
@@ -125,7 +125,7 @@
                         <span id="content-counter-favouritegames">0</span> / 500
                     </small>
                 </div>
-                <button class="btn btn-outline-primary btn-block" type="submit">Change</button>
+                <button class="btn btn-outline-primary btn-block" type="submit"><?= $o_translation->getString('common', 'change') ?></button>
             </form>
             <?php
             } else {

@@ -1,11 +1,11 @@
 <div id="content-email" style="display: none;">
-    <h6 class="text-center mb-0">E-mail settings</h6>
+    <h6 class="text-center mb-0"><?= $o_translation->getString('settings', 'emailSettings') ?></h6>
 
     <div class="p-3">
-        <p><small>Change your email address and what types of emails you want to receive.</small></p>
+        <p><small><?= $o_translation->getString('settings', 'emailSettingsDescription') ?></small></p>
 
         <div class="content-block mb-3">
-            <p class="content-title mb-2 text-danger">E-mail address</p>
+            <p class="content-title mb-2"><?= $o_translation->getString('common', 'emailAddress') ?></p>
             <p class="mb-2 text-info text-center">
                 <i class="fa fa-exclamation-triangle mr-1" aria-hidden="true"></i>
                 <?= $o_translation->getString('common', 'featureNotAvailable') ?>
@@ -21,7 +21,7 @@
         </div>
 
         <div class="content-block mb-3">
-            <p class="content-title mb-2">Types of received e-mails</p>
+            <p class="content-title mb-2"><?= $o_translation->getString('settings', 'typesOfReceivedEmails') ?></p>
             <div>
                 <p class="mb-0 text-info text-center">
                     <i class="fa fa-exclamation-triangle mr-1" aria-hidden="true"></i>

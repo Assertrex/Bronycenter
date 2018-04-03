@@ -23,15 +23,15 @@ $dashboardCategory = $_GET['cat'] ?? 'dashboard';
 
     <div class="container">
         <section class="fancybox mt-0">
-            <h6 class="text-center mb-0">Navigation</h6>
+            <h6 class="text-center mb-0"><?= $o_translation->getString('dashboard', 'navigation') ?></h6>
 
             <div id="mobile-nav-category" style="font-size: 14px;">
                 <nav class="nav flex-column">
                     <a class="nav-link <?= ($dashboardCategory == 'dashboard') ? 'active' : '' ?>" href="?cat=dashboard">
-                        <i class="fa fa-tachometer text-primary mr-3" aria-hidden="true"></i> Dashboard
+                        <i class="fa fa-tachometer text-primary mr-3" aria-hidden="true"></i> <?= $o_translation->getString('dashboard', 'summary') ?>
                     </a>
                     <a class="nav-link <?= ($dashboardCategory == 'members') ? 'active' : '' ?>" href="?cat=members">
-                        <i class="fa fa-users text-primary mr-3" aria-hidden="true"></i> Members
+                        <i class="fa fa-users text-primary mr-3" aria-hidden="true"></i> <?= $o_translation->getString('header', 'members') ?>
                     </a>
                 </nav>
             </div>

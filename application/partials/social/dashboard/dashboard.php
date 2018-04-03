@@ -1,5 +1,5 @@
 <section class="fancybox">
-    <h6 class="text-center mb-0">Details</h6>
+    <h6 class="text-center mb-0"><?= $o_translation->getString('dashboard', 'details') ?></h6>
 
     <div class="row">
         <div class="col-lg m-3" style="font-size: 14px;">
@@ -35,7 +35,7 @@
 </section>
 
 <section class="fancybox">
-    <h6 class="text-center mb-0">Statistics</h6>
+    <h6 class="text-center mb-0"><?= $o_translation->getString('dashboard', 'statistics') ?></h6>
 
     <div class="row">
         <div class="col-lg m-3" style="font-size: 14px;">
@@ -86,7 +86,7 @@
 </section>
 
 <section class="fancybox">
-    <h6 class="text-center mb-0">Performance</h6>
+    <h6 class="text-center mb-0"><?= $o_translation->getString('dashboard', 'performance') ?></h6>
 
     <div class="row">
         <?php
@@ -106,7 +106,7 @@
 
             <p class="text-info text-center mb-0">
                 <i class="fa fa-exclamation-triangle mr-1" aria-hidden="true"></i>
-                Feature is not implemented yet!
+                <?= $o_translation->getString('common', 'featureNotAvailable') ?>.
             </p>
         </div>
 
@@ -115,7 +115,7 @@
 
             <p class="text-info text-center mb-0">
                 <i class="fa fa-exclamation-triangle mr-1" aria-hidden="true"></i>
-                Feature is not implemented yet!
+                <?= $o_translation->getString('common', 'featureNotAvailable') ?>.
             </p>
         </div>
 

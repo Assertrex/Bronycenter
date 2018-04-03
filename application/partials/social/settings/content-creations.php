@@ -1,11 +1,11 @@
 <div id="content-creations" style="display: none;">
-    <h6 class="text-center mb-0">Share your creativity</h6>
+    <h6 class="text-center mb-0"><?= $o_translation->getString('settings', 'shareYourCreativity') ?></h6>
 
     <div class="p-3">
-        <p><small>If you're creating something, you can share links to anything that you've made.</small></p>
+        <p><small><?= $o_translation->getString('settings', 'shareYourCreativityDescription') ?></small></p>
 
         <div class="content-block mb-3">
-            <p class="content-title mb-2">Share what you've made</p>
+            <p class="content-title mb-2"><?= $o_translation->getString('settings', 'shareWhatYouMade') ?></p>
 
             <?php
             if (!$readonlyState) {
@@ -17,7 +17,7 @@
                         <span id="content-counter-creationslinks">0</span> / 1000
                     </small>
                 </div>
-                <button class="btn btn-outline-primary btn-block">Change</button>
+                <button class="btn btn-outline-primary btn-block"><?= $o_translation->getString('common', 'change') ?></button>
             </form>
             <?php
             } else {

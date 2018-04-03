@@ -72,24 +72,24 @@ switch ($_SESSION['account']['reason_readonly']) {
         <div class="row">
             <aside id="aside-list" class="col-12 col-lg-4">
                 <section class="fancybox mt-0">
-                    <h6 class="text-center mb-0">Account settings</h6>
+                    <h6 class="text-center mb-0"><?= $o_translation->getString('headings', 'accountSettings') ?></h6>
 
                     <ul class="list-group">
-                        <li class="list-group-item active" id="aside-list-credentials"><a href="#credentials" class="d-flex align-items-center"><i class="fa fa-key mr-2" aria-hidden="true"></i> <span>Login credentials</span></a></li>
-                        <li class="list-group-item" id="aside-list-email"><a href="#email" class="d-flex align-items-center"><i class="fa fa-envelope-o mr-2" aria-hidden="true"></i> <span>E-mail settings</span></a></li>
-                        <li class="list-group-item" id="aside-list-standing"><a href="#standing" class="d-flex align-items-center"><i class="fa fa-exclamation-triangle mr-2" aria-hidden="true"></i> <span>Account standing</span></a></li>
-                        <li class="list-group-item" id="aside-list-login"><a href="#login" class="d-flex align-items-center"><i class="fa fa-clock-o mr-2" aria-hidden="true"></i> <span>Login history</span></a></li>
+                        <li class="list-group-item active" id="aside-list-credentials"><a href="#credentials" class="d-flex align-items-center"><i class="fa fa-key mr-2" aria-hidden="true"></i> <span><?= $o_translation->getString('settings', 'loginCredentials') ?></span></a></li>
+                        <li class="list-group-item" id="aside-list-email"><a href="#email" class="d-flex align-items-center"><i class="fa fa-envelope-o mr-2" aria-hidden="true"></i> <span><?= $o_translation->getString('settings', 'emailSettings') ?></span></a></li>
+                        <li class="list-group-item" id="aside-list-standing"><a href="#standing" class="d-flex align-items-center"><i class="fa fa-exclamation-triangle mr-2" aria-hidden="true"></i> <span><?= $o_translation->getString('settings', 'accountStanding') ?></span></a></li>
+                        <li class="list-group-item" id="aside-list-login"><a href="#login" class="d-flex align-items-center"><i class="fa fa-clock-o mr-2" aria-hidden="true"></i> <span><?= $o_translation->getString('settings', 'loginHistory') ?></span></a></li>
                     </ul>
                 </section>
 
                 <section class="fancybox mt-lg-0">
-                    <h6 class="text-center mb-0">Profile settings</h6>
+                    <h6 class="text-center mb-0"><?= $o_translation->getString('headings', 'profileSettings') ?></h6>
 
                     <ul class="list-group">
-                        <li class="list-group-item" id="aside-list-basic"><a href="#basic" class="d-flex align-items-center"><i class="fa fa-user-circle-o mr-2" aria-hidden="true"></i> <span>Basic information</span></a></li>
-                        <li class="list-group-item" id="aside-list-details"><a href="#details" class="d-flex align-items-center"><i class="fa fa-file-text-o mr-2" aria-hidden="true"></i> <span>Tell about yourself</span></a></li>
-                        <li class="list-group-item" id="aside-list-fandom"><a href="#fandom" class="d-flex align-items-center"><i class="fa fa-users mr-2" aria-hidden="true"></i> <span>You in a fandom</span></a></li>
-                        <li class="list-group-item" id="aside-list-creations"><a href="#creations" class="d-flex align-items-center"><i class="fa fa-star-o mr-2" aria-hidden="true"></i> <span>Share your creativity</span></a></li>
+                        <li class="list-group-item" id="aside-list-basic"><a href="#basic" class="d-flex align-items-center"><i class="fa fa-user-circle-o mr-2" aria-hidden="true"></i> <span><?= $o_translation->getString('settings', 'basicInformation') ?></span></a></li>
+                        <li class="list-group-item" id="aside-list-details"><a href="#details" class="d-flex align-items-center"><i class="fa fa-file-text-o mr-2" aria-hidden="true"></i> <span><?= $o_translation->getString('settings', 'tellAboutYourself') ?></span></a></li>
+                        <li class="list-group-item" id="aside-list-fandom"><a href="#fandom" class="d-flex align-items-center"><i class="fa fa-users mr-2" aria-hidden="true"></i> <span><?= $o_translation->getString('settings', 'youInFandom') ?></span></a></li>
+                        <li class="list-group-item" id="aside-list-creations"><a href="#creations" class="d-flex align-items-center"><i class="fa fa-star-o mr-2" aria-hidden="true"></i> <span><?= $o_translation->getString('settings', 'shareYourCreativity') ?></span></a></li>
                     </ul>
                 </section>
             </aside>

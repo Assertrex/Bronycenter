@@ -1,11 +1,11 @@
 <div id="content-fandom" style="display: none;">
-    <h6 class="text-center mb-0">You in a fandom</h6>
+    <h6 class="text-center mb-0"><?= $o_translation->getString('settings', 'youInFandom') ?></h6>
 
     <div class="p-3">
-        <p><small>If you're a fan of My Little Pony show, tell others more about it.</small></p>
+        <p><small><?= $o_translation->getString('settings', 'youInFandomDescription') ?></small></p>
 
         <div class="content-block mb-3">
-            <p class="content-title mb-2">When you've became a brony/pegasister and why?</p>
+            <p class="content-title mb-2"><?= $o_translation->getString('settings', 'becameBrony') ?></p>
 
             <?php
             if (!$readonlyState) {
@@ -17,7 +17,7 @@
                         <span id="content-counter-fandombecameabrony">0</span> / 300
                     </small>
                 </div>
-                <button class="btn btn-outline-primary btn-block" type="submit">Change</button>
+                <button class="btn btn-outline-primary btn-block" type="submit"><?= $o_translation->getString('common', 'change') ?></button>
             </form>
             <?php
             } else {
@@ -32,7 +32,7 @@
         </div>
 
         <div class="content-block mb-3">
-            <p class="content-title mb-2">Which is your favourite pony and why?</p>
+            <p class="content-title mb-2"><?= $o_translation->getString('settings', 'favouritePony') ?></p>
 
             <?php
             if (!$readonlyState) {
@@ -44,7 +44,7 @@
                         <span id="content-counter-fandomfavouritepony">0</span> / 300
                     </small>
                 </div>
-                <button class="btn btn-outline-primary btn-block" type="submit">Change</button>
+                <button class="btn btn-outline-primary btn-block" type="submit"><?= $o_translation->getString('common', 'change') ?></button>
             </form>
             <?php
             } else {
@@ -59,7 +59,7 @@
         </div>
 
         <div class="content-block mb-3">
-            <p class="content-title mb-2">Which is your favourite episode and why?</p>
+            <p class="content-title mb-2"><?= $o_translation->getString('settings', 'favouriteEpisode') ?></p>
 
             <?php
             if (!$readonlyState) {
@@ -71,7 +71,7 @@
                         <span id="content-counter-fandomfavouriteepisode">0</span> / 300
                     </small>
                 </div>
-                <button class="btn btn-outline-primary btn-block" type="submit">Change</button>
+                <button class="btn btn-outline-primary btn-block" type="submit"><?= $o_translation->getString('common', 'change') ?></button>
             </form>
             <?php
             } else {
