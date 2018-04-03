@@ -1,0 +1,104 @@
+#page-social-settings {
+    aside {
+        .fa {
+            width: 15px;
+        }
+
+        .list-group-item {
+            margin-bottom: 0;
+            padding: .5rem 1.25rem;
+            border: 0;
+            border-bottom: 1px solid rgba(0, 0, 0, .125);
+            border-radius: 0 !important;
+            cursor: pointer;
+
+            &:hover {
+                background-color: #EEE;
+            }
+
+            &.active {
+                background-color: #1565C0;
+                border-color: #1565C0;
+
+                a {
+                    color: rgba(255, 255, 255, .8);
+                }
+            }
+
+            a {
+                color: #424242;
+                text-decoration: none;
+            }
+
+            span {
+                flex: 1;
+                margin-left: -22px;
+                text-align: center;
+                user-select: none;
+            }
+
+            .badge {
+                margin-top: 2px;
+            }
+
+            &:last-child {
+                border-bottom: 0;
+            }
+        }
+    }
+
+    #tabs-content {
+        h6 {
+            padding: .5rem 0;
+            background-color: #EEEEEE;
+            color: #616161;
+            border-bottom: 1px solid #BDBDBD;
+        }
+
+        .content-block:last-child {
+            margin-bottom: 0 !important;
+        }
+
+        .content-title {
+            font-size: 12px;
+            color: #90949C;
+            text-transform: uppercase;
+            border-bottom: 1px solid #DDDFE2;
+            line-height: 26px;
+        }
+
+        input, textarea, select {
+            font-size: 12px !important;
+        }
+
+        #content-input-avatar {
+            font-size: 12px !important;
+        }
+
+        #content-currentavatar {
+            width: 64px;
+            height: 64px;
+        }
+    }
+
+    @media (min-width: 576px) {
+        #tabs-content {
+            .content-block .form-inline input {
+                flex: 1;
+            }
+
+            .content-title {
+                font-size: 13px;
+            }
+
+            input, textarea, select {
+                font-size: 15px !important;
+            }
+
+            #content-currentavatar {
+                width: 128px;
+                height: 128px;
+            }
+        }
+    }
+}

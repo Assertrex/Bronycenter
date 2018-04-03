@@ -1,0 +1,44 @@
+button, .btn {
+    cursor: pointer;
+}
+
+#button-scroll-top {
+    position: fixed;
+    bottom: 4px;
+    right: 10px;
+    color: #1565C0;
+    font-size: 3rem;
+    cursor: pointer;
+}
+
+.spinner-bcdefault {
+    display: none;
+    width: 48px;
+    height: 48px;
+    margin: 0 auto;
+    border: 3px solid rgba(0, 0, 0, .1);
+    border-radius: 50%;
+    border-top-color: #2962FF;
+    animation: spinbcdefault 1s ease-in-out infinite;
+    -webkit-animation: spinbcdefault 1s ease-in-out infinite;
+
+    &.active {
+        display: block;
+    }
+
+    &.spinner-light {
+        border-color: rgba(255, 255, 255, .2);
+        border-top-color: #BBDEFB;
+    }
+}
+
+@keyframes spinbcdefault { to { -webkit-transform: rotate(360deg); } }
+@-webkit-keyframes spinbcdefault { to { -webkit-transform: rotate(360deg); } }
+
+@media (min-width: 992px) {
+    #button-scroll-top {
+        bottom: 12px;
+        right: 20px;
+        font-size: 3.5rem;
+    }
+}

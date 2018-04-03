@@ -8,11 +8,11 @@
     ?>
 
     <div class="alert <?php echo $message[1]; ?> alert-dismissible fade show" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <button type="button" class="alert-close close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
 
-        <strong><?php echo ucfirst($message[0]); ?>!</strong>
+        <strong class="alert-type"><?php echo ucfirst($message[0]); ?>!</strong>
         <span class="alert-message"><?php echo $message[2]; ?></span>
     </div>
 
