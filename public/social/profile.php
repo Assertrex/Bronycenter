@@ -22,7 +22,7 @@ if (empty($profileId)) {
     $utilities->redirect('members.php');
 }
 
-$profileDetails = $user->generateUserDetails($profileId, ['descriptions' => true]);
+$profileDetails = $user->generateUserDetails($profileId, ['descriptions' => true, 'statistics' => true]);
 
 if (empty($profileDetails)) {
     $flash->info('You\'ve been redirected into members page, because user doesn\'t exist.');

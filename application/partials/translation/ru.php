@@ -40,6 +40,8 @@ $translationArray = [
         'year' => 'Year',
         'cityName' => 'City name',
         'avatar' => 'Avatar',
+        'userPoints' => 'User points',
+        'points' => 'points',
     ],
     'dates' => [
         'justNow' => 'Just now',

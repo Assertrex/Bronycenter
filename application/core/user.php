@@ -181,8 +181,9 @@ class User
 
         // Add user's statistics to the columns (usually used for statistics)
         if (!empty($settings['statistics'])) {
-            $sql_columns .= ', user_points, posts_created, posts_likes_given, posts_comments_given, ' .
-                            'posts_removed, posts_likes_received, posts_comments_receved';
+            $sql_columns .= ', s.user_points, s.posts_created, s.posts_likes_given, s.posts_comments_given, ' .
+                            's.posts_removed, s.posts_removed_mod, s.posts_comments_removed, ' .
+                            's.posts_comments_removed_mod, s.posts_likes_received, s.posts_comments_received';
             $sql_additional .= ' INNER JOIN users_statistics s ON u.id = s.user_id';
         }
 
