@@ -56,6 +56,6 @@ $posts = Post::getInstance();
     require('../../application/partials/social/scripts.php');
     ?>
 
-    <script src="../resources/scripts/social/index.js?v=<?= $o_config->getWebsiteCommit() ?>"></script>
+    <script src="../resources/scripts/social/index.js?v=<?= $o_config->getWebsiteCommit(true) ?>"></script>
 </body>
 </html>

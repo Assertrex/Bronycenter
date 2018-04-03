@@ -69,6 +69,6 @@ $profileDetails = array_merge(
     <?php require('../../application/partials/social/footer.php'); ?>
     <?php require('../../application/partials/social/scripts.php'); ?>
 
-    <script src="../resources/scripts/social/profile.js?v=<?= $o_config->getWebsiteCommit() ?>"></script>
+    <script src="../resources/scripts/social/profile.js?v=<?= $o_config->getWebsiteCommit(true) ?>"></script>
 </body>
 </html>
