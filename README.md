@@ -87,3 +87,18 @@ create new files:
 Just remember, when you modify CSS/JS, it won't be changed in your visitors
 browsers immediately. You have to use a custom website versioning to
 bypass browser's cache. You can read more about it above.
+
+### Custom translation file
+To add a different language, you have to copy
+**/application/partials/translation/en.php**
+translation file and name it with a country code (two-letters). Then you have
+to change language to it in your settings.dev.ini or settings.ini file.
+
+If you want to create a custom values for an existing translation, you have to
+duplicate it's translation file and add **custom-** before a country code, for
+example:
+
+* /application/partials/translation/**custom-**en.php
+
+You can't modify anything except an array contents. It can contain only used
+values. Not found values will be taken from an original translation file.
