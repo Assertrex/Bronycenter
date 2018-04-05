@@ -100,6 +100,16 @@ class Utilities
 		return $string;
 	}
 
+    public function replaceURLsWithLinks(string $string) : string
+    {
+        $pattern = '~[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]~';
+        $replacement = '<a href="\0" target="_blank">\0</a>';
+
+        $string = preg_replace($pattern, $replacement, $string);
+
+        return $string;
+    }
+
     public function countDateInterval(string $date1, string $date2 = '') : int
     {
 		if (empty($date2)) {

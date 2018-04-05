@@ -849,6 +849,10 @@ class Post
         // Reverse an array to display newest post on bottom
         $comments = array_reverse($comments);
 
+        for ($i = 0; $i < count($comments); $i++) {
+            $comments[$i]['content'] = $this->utilities->replaceURLsWithLinks($this->utilities->doEscapeString($comments[$i]['content']));
+        }
+
         // Return array of selected post comments
         return $comments;
     }

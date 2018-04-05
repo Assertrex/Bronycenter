@@ -27,21 +27,21 @@ foreach ($comments as $comment) {
     $comment['author'] = $user->generateUserDetails($comment['user_id']);
 ?>
 
-<div class="d-flex py-2 comment-container" id="comment-<?php echo $comment['id']; ?>" data-commentid="<?php echo $comment['id']; ?>" data-fetchamount="<?php echo $commentsAmount; ?>">
+<div class="d-flex py-2 comment-container" id="comment-<?= $comment['id']; ?>" data-commentid="<?= $comment['id']; ?>" data-fetchamount="<?= $commentsAmount; ?>">
     <div class="mr-2">
-        <img src="../media/avatars/<?php echo $comment['author']['avatar'] ?? 'default'; ?>/minres.jpg" class="rounded" style="display: block; width: 26px; height: 26px;" />
+        <img src="../media/avatars/<?= $comment['author']['avatar'] ?? 'default'; ?>/minres.jpg" class="rounded" style="display: block; width: 26px; height: 26px;" />
     </div>
     <div class="mr-2" style="flex: 1;">
         <small class="d-block pb-1" style="line-height: 1;">
-            <a href="profile.php?u=<?php echo $comment['author']['id']; ?>" data-toggle="tooltip" data-html="true" title="<?php echo $comment['author']['tooltip']; ?>"><?php echo $utilities->doEscapeString($comment['author']['display_name']); ?></a>
+            <a href="profile.php?u=<?= $comment['author']['id']; ?>" data-toggle="tooltip" data-html="true" title="<?= $comment['author']['tooltip']; ?>"><?= $utilities->doEscapeString($comment['author']['display_name']); ?></a>
         </small>
         <small class="d-block pt-1" style="line-height: 1.4; word-break: break-word;">
-            <?php echo $utilities->doEscapeString($comment['content']); ?>
+            <?= $comment['content']; ?>
         </small>
     </div>
     <div>
-        <small style="color: #BDBDBD; line-height: 1; vertical-align: top; cursor: help;" data-toggle="tooltip" data-placement="top" title="<?php echo $comment['datetime']; ?> (UTC)">
-            <?php echo $comment['datetime_string']; ?>
+        <small style="color: #BDBDBD; line-height: 1; vertical-align: top; cursor: help;" data-toggle="tooltip" data-placement="top" title="<?= $comment['datetime']; ?> (UTC)">
+            <?= $comment['datetime_string']; ?>
         </small>
     </div>
 </div>

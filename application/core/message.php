@@ -291,6 +291,9 @@ class Message
             // Decrypt a message
             $messages[$i]['message'] = $this->doMessageDecrypt($messages[$i]['message']);
 
+            $messages[$i]['message'] = $this->utilities->doEscapeString($messages[$i]['message']);
+            $messages[$i]['message'] = $this->utilities->replaceURLsWithLinks($messages[$i]['message']);
+
             // Remember that the sender is a current user
             $messages[$i]['sender_current_user'] = $_SESSION['account']['id'] == $messages[$i]['sender_id'];
         }

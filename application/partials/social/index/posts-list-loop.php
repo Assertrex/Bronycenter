@@ -37,7 +37,7 @@ foreach ($listPosts as $post) {
                     <?php
                     if ($post['content'] != NULL) {
                         echo $post['was_edited'] ? '<div><small class="font-weight-bold text-dark" style="opacity: .5;">' . $o_translation->getString('postslist', 'postBeenEdited', [$post['edit_count_string']]) . '.</small></div>' : '';
-                        echo '<span class="post-content-text">' . $utilities->doEscapeString($post['content']) . '</span>';
+                        echo '<span class="post-content-text">' . $utilities->replaceURLsWithLinks($utilities->doEscapeString($post['content'])) . '</span>';
                     } else {
                     ?>
 
@@ -256,7 +256,7 @@ foreach ($listPosts as $post) {
                                 <a href="profile.php?u=<?= $comment['author']['id']; ?>" data-toggle="tooltip" data-html="true" title="<?= $comment['author']['tooltip']; ?>"><?= $utilities->doEscapeString($comment['author']['display_name'], false); ?></a>
                             </small>
                             <small class="d-block pt-1" style="line-height: 1.4; word-break: break-word;">
-                                <?= $utilities->doEscapeString($comment['content']); ?>
+                                <?= $comment['content'] ?>
                             </small>
                         </div>
                         <div>

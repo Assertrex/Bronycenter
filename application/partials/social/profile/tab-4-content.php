@@ -10,7 +10,7 @@
 
         <div class="aside-content-blocks mb-3">
             <p class="aside-content-titles mb-2"><?= $o_translation->getString('profile', 'tab_3_custom_field_1') ?></p>
-            <div><?= $utilities->doEscapeString($profileDetails['creations_links']); ?></div>
+            <div><?= $utilities->replaceURLsWithLinks($utilities->doEscapeString($profileDetails['creations_links'])) ?></div>
         </div>
     </div>
 </div>
