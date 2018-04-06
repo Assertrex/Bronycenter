@@ -75,8 +75,9 @@ $translationArray = [
         'loggedOut' => 'You have been logged out.',
     ],
     'ajax' => [
-        'loginRequired' => 'You have to be logged in to access content of this AJAX file.',
         'unknownError' => 'There was an unknown error while running an AJAX code.',
+        'loginRequired' => 'You have to be logged in to access content of this AJAX file.',
+        'postReported' => 'Post has been reported.',
     ],
     'header' => [
         'account' => 'Account',

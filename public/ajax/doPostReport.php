@@ -8,26 +8,24 @@ $pageSettings = [
 
 require_once('../../application/partials/init.php');
 
-// Use a Post class for handling users posts
 use BronyCenter\Post;
 $o_post = Post::getInstance();
 
-// Report a post
-$status = $o_post->doReport($_POST['id'], $_POST['category'], $_POST['reason']);
+$methodStatus = $o_post->doReport($_POST['id'], $_POST['category'], $_POST['reason']);
 
-// Prepare array with result
-if ($status === true) {
-    $JSON = [
-        'status' => 'success'
+if ($methodStatus) {
+    $AJAXCallJSON = [
+        'status' => 'success',
+        'resultMessage' => $o_translation->getString('ajax', 'postReported'),
+        'data' => [
+            'postID' => intval($_POST['id'])
+        ],
     ];
 } else {
-    $JSON = [
-        'status' => 'error'
+    $AJAXCallJSON = [
+        'status' => 'error',
+        'resultMessage' => $o_translation->getString('ajax', 'unknownError'),
     ];
 }
 
-// Format array into JSON
-$JSON = json_encode($JSON);
-
-// Display JSON result
-echo $JSON;
+die($utilities->encodeJSON($AJAXCallJSON));

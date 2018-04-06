@@ -520,7 +520,7 @@ function listenToPostsReportShowModalButton(containerName) {
             'Report a post',
             `
             <div class="form-group">
-                <label for="">Why do you think that this post shouldn't be here?</label>
+                <label for="">Why do you think this post shouldn't be here? <small class="text-muted">(optional)</small></label>
                 <select class="form-control" id="input-post-report-category">
                     <option value="0" selected>Not selected / Other reason</option>
                     <option value="1">NSFW (sexual content)</option>
