@@ -9,6 +9,7 @@ use DateTime;
 class Post
 {
     private static $instance = null;
+    private $o_config = null;
     private $o_translation = null;
     private $user = null;
     private $database = null;
@@ -19,6 +20,7 @@ class Post
 
     public function __construct()
     {
+        $this->o_config = Config::getInstance();
         $this->o_translation = Translation::getInstance();
         $this->user = User::getInstance();
         $this->database = Database::getInstance();
@@ -49,7 +51,6 @@ class Post
     public function add($postContent, $postType, $serverPostUserID = null)
     {
         // Store common system values
-        $currentIP = $this->utilities->getVisitorIP();
         $currentDatetime = $this->utilities->getDatetime();
 
         // Validate content of a post
@@ -59,10 +60,10 @@ class Post
 
         // Insert post into database
         $postID = $this->database->create(
-            'user_id, ip, datetime, content, type',
+            'user_id, datetime, content, type',
             'posts',
             '',
-            [$serverPostUserID ?? $_SESSION['account']['id'], $currentIP, $currentDatetime, $postContent, $postType]
+            [$serverPostUserID ?? $_SESSION['account']['id'], $currentDatetime, $postContent, $postType]
         );
 
         // Return a post ID if post has been successfully added
@@ -186,7 +187,6 @@ class Post
         // Define required details
         $isCurrentAuthor = $_SESSION['account']['id'] == $postDetails[0]['user_id'];
         $isCurrentModerator = $this->user->isCurrentModerator();
-        $currentIP = $this->utilities->getVisitorIP();
         $currentDatetime = $this->utilities->getDatetime();
         $removeAsModerator = ($isCurrentModerator && !$isCurrentAuthor);
 
@@ -198,10 +198,10 @@ class Post
 
         // Turn post into a removed state
         $postRemovedID = $this->database->update(
-            'status, delete_moderator, delete_id, delete_ip, delete_datetime, delete_reason',
+            'status, delete_moderator, delete_id, delete_datetime, delete_reason',
             'posts',
             'WHERE id = ?',
-            [9, intval($removeAsModerator), $_SESSION['account']['id'], $currentIP, $currentDatetime, $reason, $postID]
+            [9, intval($removeAsModerator), $_SESSION['account']['id'], $currentDatetime, $reason, $postID]
         );
 
         // Check if post has been successfully removed
@@ -254,8 +254,8 @@ class Post
         }
 
         // Search for a selected post
-        $post_status = $this->database->read(
-            'status',
+        $postDetails = $this->database->read(
+            'id, status, report_count',
             'posts',
             'WHERE id = ?',
             [$id],
@@ -263,7 +263,7 @@ class Post
         );
 
         // Check if post have been found
-        if (empty($post_status)) {
+        if (empty($postDetails)) {
             $method_errors[] = 'Post could not be reported because it\'s ID number does not exist.';
             $this->flash->error($method_errors[0]);
 
@@ -271,7 +271,7 @@ class Post
         }
 
         // Check if post is still available
-        if ($post_status['status'] != 0) {
+        if ($postDetails['status'] != 0) {
             $method_errors[] = 'Post could not be reported because it has been already suspended or removed.';
             $this->flash->error($method_errors[0]);
 
@@ -311,12 +311,16 @@ class Post
             return $method_errors;
         }
 
-        // TODO Send an e-mail to the administrator about a post to review
-        // TODO Send an e-mail to the moderators that agreed to receive this type of emails
-        // TODO Send an e-mail only once for a post
+        // Add one to a report counter
+        $this->database->update(
+            'report_count',
+            'posts',
+            'WHERE id = ?',
+            [++$postDetails['report_count'], $postDetails['id']]
+        );
 
         // Return an successful notification
-        $this->flash->success('Thank you for helping us with keeping BronyCenter safe. Moderators will receive a notification to review a post that you have reported.');
+        $this->flash->success('Thank you for helping us with keeping ' . $this->o_config->getWebsiteTitle() . ' safe. Moderators will receive a notification to review a post that you have reported.');
         return true;
     }
 
