@@ -16,10 +16,7 @@ $dashboardCategory = $_GET['cat'] ?? 'dashboard';
 ?>
 
 <body id="page-social-dashboard">
-    <?php
-    // Include social header for all pages
-    require('../../application/partials/social/header.php');
-    ?>
+    <?php require('../../application/partials/social/header.php'); ?>
 
     <div class="container">
         <section class="fancybox mt-0">
@@ -33,13 +30,15 @@ $dashboardCategory = $_GET['cat'] ?? 'dashboard';
                     <a class="nav-link <?= ($dashboardCategory == 'members') ? 'active' : '' ?>" href="?cat=members">
                         <i class="fa fa-users text-primary mr-3" aria-hidden="true"></i> <?= $o_translation->getString('header', 'members') ?>
                     </a>
+                    <a class="nav-link <?= ($dashboardCategory == 'posts') ? 'active' : '' ?>" href="?cat=posts">
+                        <i class="fa fa-users text-primary mr-3" aria-hidden="true"></i> <?= $o_translation->getString('dashboard', 'posts') ?>
+                    </a>
                 </nav>
             </div>
         </section>
 
 
         <?php
-        // Display selected page
         switch ($dashboardCategory) {
             case 'dashboard':
                 require_once('../../application/partials/social/dashboard/dashboard.php');
@@ -47,11 +46,17 @@ $dashboardCategory = $_GET['cat'] ?? 'dashboard';
             case 'members':
                 require_once('../../application/partials/social/dashboard/members.php');
                 break;
+            case 'posts':
+                require_once('../../application/partials/social/dashboard/posts.php');
+                break;
         }
         ?>
     </div>
 
     <?php require('../../application/partials/social/footer.php'); ?>
+    <?php require('../../application/partials/modal.php'); ?>
     <?php require('../../application/partials/social/scripts.php'); ?>
+
+    <script src="../resources/scripts/social/dashboard.js?v=<?= $o_config->getWebsiteCommit(true) ?>"></script>
 </body>
 </html>

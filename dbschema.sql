@@ -64,7 +64,6 @@ CREATE TABLE IF NOT EXISTS `posts` (
   `delete_moderator` tinyint(1) NOT NULL DEFAULT 0,
   `delete_id` int(10) UNSIGNED DEFAULT NULL,
   `delete_datetime` datetime DEFAULT NULL,
-  `delete_reason` tinytext DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -102,8 +101,6 @@ CREATE TABLE IF NOT EXISTS `posts_reported` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `post_id` int(10) UNSIGNED NOT NULL,
   `user_id` int(10) UNSIGNED NOT NULL,
-  `category` tinyint(3) UNSIGNED NOT NULL DEFAULT 0,
-  `reason` tinytext DEFAULT NULL,
   `datetime` datetime NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

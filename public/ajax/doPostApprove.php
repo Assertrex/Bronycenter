@@ -3,7 +3,7 @@ $pageSettings = [
     'isAJAXCall' => true,
     'readonlyDenied' => true,
     'loginRequired' => true,
-    'moderatorRequired' => false,
+    'moderatorRequired' => true,
 ];
 
 require_once('../../application/partials/init.php');
@@ -11,14 +11,15 @@ require_once('../../application/partials/init.php');
 use BronyCenter\Post;
 $o_post = Post::getInstance();
 
-$methodStatus = $o_post->doReport($_POST['id']);
+$postID = intval($_POST['id']);
+$methodStatus = $o_post->doApprove($postID);
 
 if ($methodStatus) {
     $AJAXCallJSON = [
         'status' => 'success',
-        'resultMessage' => $o_translation->getString('ajax', 'postReported'),
+        'resultMessage' => $o_translation->getString('ajax', 'postApproved'),
         'data' => [
-            'postID' => intval($_POST['id'])
+            'postID' => $postID
         ],
     ];
 } else {

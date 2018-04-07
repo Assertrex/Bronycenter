@@ -13,7 +13,7 @@ use BronyCenter\Post;
 $posts = Post::getInstance();
 
 // Try to remove a post
-$postID = $posts->delete($_POST['id'], $_POST['reason'] ?? null);
+$postID = $posts->delete($_POST['id']);
 
 // Prepare array with result
 if (!empty($postID)) {

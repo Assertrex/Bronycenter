@@ -39,6 +39,24 @@ class Post
         return self::$instance;
     }
 
+    public function isPostExisting(int $postID) : bool
+    {
+        $isPostExisting = $this->database->read(
+            'p.id',
+            'posts p',
+            'WHERE p.id = ? AND p.status != 9',
+            [$postID]
+        );
+
+        $isPostExisting = count($isPostExisting);
+
+        if (!$isPostExisting) {
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * Validate and create a new post
      *
@@ -150,24 +168,42 @@ class Post
         }
     }
 
+    public function doApprove(int $postID) : bool
+    {
+        if (!$this->isPostExisting($postID)) {
+            return false;
+        }
+
+        if (!$this->user->isCurrentModerator()) {
+            return false;
+        }
+
+        $postApproved = $this->database->update(
+            'report_checked, status',
+            'posts',
+            'WHERE id = ?',
+            [1, 0, $postID]
+        );
+
+        if (!intval($postApproved)) {
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * Remove an own post or someone's as an moderator
      *
      * @since Release 0.1.0
      * @var string $postID ID of a post to remove
-     * @var string|null $reason Moderator's reason for removing a post
      * @return boolean Result of a function
      */
-    public function delete($postID, $reason)
+    public function delete($postID)
     {
         // Check if post ID is valid
         if (empty(intval($postID))) {
             return false;
-        }
-
-        // Store removing reason as null if it is empty
-        if (empty($reason)) {
-            $reason = null;
         }
 
         // Get details about post author
@@ -198,10 +234,10 @@ class Post
 
         // Turn post into a removed state
         $postRemovedID = $this->database->update(
-            'status, delete_moderator, delete_id, delete_datetime, delete_reason',
+            'status, delete_moderator, delete_id, delete_datetime',
             'posts',
             'WHERE id = ?',
-            [9, intval($removeAsModerator), $_SESSION['account']['id'], $currentDatetime, $reason, $postID]
+            [9, intval($removeAsModerator), $_SESSION['account']['id'], $currentDatetime, $postID]
         );
 
         // Check if post has been successfully removed
@@ -225,11 +261,9 @@ class Post
      *
      * @since Release 0.1.0
      * @var integer $id ID of a reported post
-     * @var string $category Selected reason category of a report
-     * @var string|null $reason Additional message to the moderators
      * @return boolean|array Returns true or an array of errors
      */
-    public function doReport($id, $category, $reason = '')
+    public function doReport($id)
     {
         // Define an array for holding error messages
         $method_errors = [];
@@ -297,10 +331,10 @@ class Post
 
         // Report a post if all above conditions have been met
         $report_created = $this->database->create(
-            'post_id, user_id, category, reason, datetime',
+            'post_id, user_id, datetime',
             'posts_reported',
             '',
-            [$id, $_SESSION['account']['id'], $category ?? 0, $reason ?? null, $this->utilities->getDatetime()]
+            [$id, $_SESSION['account']['id'], $this->utilities->getDatetime()]
         );
 
         // Check if post has been successfully reported
@@ -449,6 +483,64 @@ class Post
         )['amount'];
 
         return intval($posts) ?: 0;
+    }
+
+    public function countAllReportedPosts(): int
+    {
+        $posts = $this->database->read(
+            'count(id) AS amount',
+            'posts',
+            'WHERE report_count != 0',
+            [],
+            false
+        )['amount'];
+
+        return intval($posts) ?: 0;
+    }
+
+    public function countReportedPosts(): int
+    {
+        $posts = $this->database->read(
+            'count(id) AS amount',
+            'posts',
+            'WHERE report_count != 0 AND report_checked = 0 AND status != 9',
+            [],
+            false
+        )['amount'];
+
+        return intval($posts) ?: 0;
+    }
+
+    public function getReportedPosts(int $amount) : array
+    {
+        $fetchColumns = 'p.id, p.user_id, p.datetime, p.content, p.like_count, p.comment_count, p.edit_count, p.report_count, p.type, p.status, u.display_name';
+
+        $posts = $this->database->read(
+            $fetchColumns,
+            'posts p',
+            'INNER JOIN users u ON p.user_id = u.id ' .
+                'INNER JOIN posts_reported r ON r.post_id = p.id ' .
+                'WHERE p.report_count != 0 AND p.report_checked = 0 AND p.status != 9 ' .
+                'ORDER BY r.datetime LIMIT ?',
+            [$amount]
+        );
+
+        return $posts ?: [];
+    }
+
+    public function getUsersThatReportedPost(int $postID) : array
+    {
+        $fetchColumns = 'u.id, u.display_name';
+
+        $posts = $this->database->read(
+            $fetchColumns,
+            'posts_reported r',
+            'INNER JOIN users u ON r.user_id = u.id ' .
+                'WHERE r.post_id = ?',
+            [$postID]
+        );
+
+        return $posts ?: [];
     }
 
     // Count created posts (Legacy method)

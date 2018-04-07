@@ -432,27 +432,17 @@ function listenToPostsDeleteButton(containerName) {
         let button = $(this);
         let postID = $(button).data('postid');
         let userModerator = $(button).data('moderate');
-        let deleteReason = '';
 
         // Display a reason form if moderator wants to remove a post
         if (userModerator) {
             displayModal(
                 'Remove a post (as moderator)',
                 `
-                <div class="form-group">
-                    <label for="input-post-delete-reason">Provide a reason for removing this post <small class="text-muted">(optional)</small></label>
-                    <textarea class="form-control" id="input-post-delete-reason" maxlength="255" rows="4"></textarea>
-                    <small class="d-block text-muted text-right mt-1">
-                        <span id="post-delete-reason-lettercounter">0</span> / 255
-                    </small>
-                </div>
+                Are you sure that you want to remove this post?
                 `,
                 '<button type="button" class="btn btn-danger" id="btn-postdeleteconfirm" data-dismiss="modal" data-postid="' + postID + '">Remove</button>' +
                 '<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>'
             );
-
-            // Add letters counter to the delete reason textarea
-            addLettersCounter("input-post-delete-reason", "post-delete-reason-lettercounter");
         } else {
             displayModal(
                 'Remove own post',
@@ -468,12 +458,8 @@ function listenToPostsDeleteButton(containerName) {
         $('#mainModal #btn-postdeleteconfirm').click((e) => {
             let postID = e.currentTarget.getAttribute('data-postid');
 
-            if ($("#mainModal #input-post-delete-reason").length) {
-                deleteReason = $("#mainModal #input-post-delete-reason").val();
-            }
-
             // Send a new post content
-            $.post('../ajax/doPostDelete.php', { id: postID, reason: deleteReason }, function(response) {
+            $.post('../ajax/doPostDelete.php', { id: postID }, function(response) {
                 let result;
 
                 // Try to parse a JSON
@@ -519,37 +505,18 @@ function listenToPostsReportShowModalButton(containerName) {
         displayModal(
             'Report a post',
             `
-            <div class="form-group">
-                <label for="">Why do you think this post shouldn't be here? <small class="text-muted">(optional)</small></label>
-                <select class="form-control" id="input-post-report-category">
-                    <option value="0" selected>Not selected / Other reason</option>
-                    <option value="1">NSFW (sexual content)</option>
-                    <option value="2">Hate speech or trolling</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="input-post-report-reason">Write a message to the moderators <small class="text-muted">(optional)</small></label>
-                <textarea class="form-control" id="input-post-report-reason" maxlength="255" rows="4"></textarea>
-                <small class="d-block text-muted text-right mt-1">
-                    <span id="post-report-reason-lettercounter">0</span> / 255
-                </small>
-            </div>
+            Are you sure that you want to report this post?
             `,
             '<button type="button" class="btn btn-danger" id="btn-postreportconfirm" data-dismiss="modal" data-postid="' + postID + '">Report</button>' +
             '<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>'
         );
 
-        // Add letters counter to the report reason textarea
-        addLettersCounter("input-post-report-reason", "post-report-reason-lettercounter");
-
         // Listen for an apply button click
         $('#mainModal #btn-postreportconfirm').click((e) => {
             let postID = e.currentTarget.getAttribute('data-postid');
-            let category = $('#mainModal #input-post-report-category').val();
-            let reason = $('#mainModal #input-post-report-reason').val();
 
             // Send a new post content
-            $.post('../ajax/doPostReport.php', { id: postID, category: category, reason: reason }, function(response) {
+            $.post('../ajax/doPostReport.php', { id: postID }, function(response) {
                 let result;
 
                 // Try to parse a JSON

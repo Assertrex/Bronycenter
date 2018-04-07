@@ -55,10 +55,10 @@
             <p class="text-center font-weight-bold"><i class="fa fa-file-text-o text-primary mr-2" aria-hidden="true"></i> Posts</p>
 
             <p class="mb-0">Existing posts: <b><?= number_format($o_post->countAvailablePosts(), 0, '.', ' ') ?></b></p>
-            <p>Posts to review: <span class="text-info">Coming soon!</span></p>
+            <p>Posts to review: <b><?= number_format($o_post->countReportedPosts(), 0, '.', ' ') ?></b></p>
 
             <p class="mb-0">All created posts: <b><?= number_format($o_post->countCreatedPosts(), 0, '.', ' ') ?></b></p>
-            <p class="mb-0">All reported posts: <span class="text-info">Coming soon!</span></p>
+            <p class="mb-0">All reported posts: <b><?= number_format($o_post->countAllReportedPosts(), 0, '.', ' ') ?></b></p>
         </div>
 
         <div class="col-lg m-3" style="font-size: 14px;">

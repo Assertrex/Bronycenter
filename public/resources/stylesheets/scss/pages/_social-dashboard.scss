@@ -19,4 +19,29 @@
             }
         }
     }
+
+    #reported-posts {
+        .reported-posts-amount {
+            border-bottom: 1px solid #E9ECEF;
+        }
+
+        .reported-item {
+            border: 1px solid #CCC;
+            border-radius: 8px;
+
+            .reported-users {
+                .reported-users-item {
+
+                }
+            }
+
+            .reported-post {
+                background-color: #EEEEEE;
+            }
+
+            .reported-actions {
+
+            }
+        }
+    }
 }
