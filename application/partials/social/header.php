@@ -122,7 +122,7 @@
                                 <img class="rounded" id="header-user-avatar" src="../media/avatars/<?= $_SESSION['user']['avatar']; ?>/minres.jpg" alt="<?= $o_translation->getString('common', 'yourAvatar') ?>" />
                             </div>
                             <div class="pr-2" id="profile-actions-dropdown-button-username">
-                                <?= $utilities->doEscapeString($_SESSION['user']['displayname'], false); ?><br />
+                                <div id="profile-actions-dropdown-displayname"><?= $utilities->doEscapeString($_SESSION['user']['displayname'], false); ?></div>
                                 <small>@<?= $_SESSION['account']['username']; ?></small>
                             </div>
                         </a>

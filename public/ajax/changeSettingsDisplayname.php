@@ -8,12 +8,24 @@ $pageSettings = [
 
 require_once('../../application/partials/init.php');
 
-// Try to change user's display name
-$newValue = $user->changeUserDisplayname($_POST['value']);
+$o_account = BronyCenter\Account::getInstance();
+$methodStatus = $o_account->changeDisplayname($_POST['value']);
 
-// Return a new value
-if ($newValue != false) {
-    echo $newValue;
+if ($methodStatus) {
+    $userDetails = $user->getUserDetails($_SESSION['account']['id'], []);
+
+    $AJAXCallJSON = [
+        'status' => 'success',
+        'resultMessage' => $o_translation->getString('ajax', 'displaynameChanged'),
+        'data' => [
+            'displayname' => $userDetails['display_name'],
+        ],
+    ];
+} else {
+    $AJAXCallJSON = [
+        'status' => 'error',
+        'resultMessage' => $o_translation->getString('ajax', 'unknownError'),
+    ];
 }
 
-// TODO Return error in JSON if not
+die($utilities->encodeJSON($AJAXCallJSON));

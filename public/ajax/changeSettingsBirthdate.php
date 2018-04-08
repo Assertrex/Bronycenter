@@ -8,12 +8,19 @@ $pageSettings = [
 
 require_once('../../application/partials/init.php');
 
-// Try to change user's display name
-$newValue = $user->changeUserBirthdate($_POST['day'], $_POST['month'], $_POST['year']);
+$o_account = BronyCenter\Account::getInstance();
+$methodStatus = $o_account->changeBirthdate(intval($_POST['day']), intval($_POST['month']), intval($_POST['year']));
 
-// Return a new value
-if ($newValue != false) {
-    echo $newValue;
+if ($methodStatus) {
+    $AJAXCallJSON = [
+        'status' => 'success',
+        'resultMessage' => $o_translation->getString('ajax', 'birthdateChanged'),
+    ];
+} else {
+    $AJAXCallJSON = [
+        'status' => 'error',
+        'resultMessage' => $o_translation->getString('ajax', 'unknownError'),
+    ];
 }
 
-// TODO Return error in JSON if not
+die($utilities->encodeJSON($AJAXCallJSON));

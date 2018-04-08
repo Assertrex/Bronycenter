@@ -8,12 +8,19 @@ $pageSettings = [
 
 require_once('../../application/partials/init.php');
 
-// Try to change a selected user details value
-$newValue = $user->changeSettingsDetails($_POST['field'], $_POST['value']);
+$o_account = BronyCenter\Account::getInstance();
+$methodStatus = $o_account->changeDetails($_POST['field'], $_POST['value']);
 
-// Return a new value
-if ($newValue != false) {
-    echo $newValue;
+if ($methodStatus) {
+    $AJAXCallJSON = [
+        'status' => 'success',
+        'resultMessage' => $o_translation->getString('ajax', 'detailsChanged'),
+    ];
+} else {
+    $AJAXCallJSON = [
+        'status' => 'error',
+        'resultMessage' => $o_translation->getString('ajax', 'unknownError'),
+    ];
 }
 
-// TODO Return error in JSON if not
+die($utilities->encodeJSON($AJAXCallJSON));

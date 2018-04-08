@@ -203,7 +203,7 @@ class Message
             }
 
             // Get details about person in this conversation
-            $conversations[$i]['user_details'] = $this->user->generateUserDetails($conversations[$i]['person_id']);
+            $conversations[$i]['user_details'] = $this->user->generateUserDetails($conversations[$i]['person_id'], []);
 
             // Escape HTML characters
             $conversations[$i]['user_details']['display_name'] = $this->utilities->doEscapeString($conversations[$i]['user_details']['display_name'], false);

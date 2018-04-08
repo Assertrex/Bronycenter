@@ -42,6 +42,9 @@ $translationArray = [
         'avatar' => 'Avatar',
         'userPoints' => 'User points',
         'points' => 'points',
+        'unknownAge' => 'Unknown age',
+        'unknownGender' => 'Unknown gender',
+        'unknownCountry' => 'Unknown country',
     ],
     'dates' => [
         'justNow' => 'Just now',
@@ -79,6 +82,11 @@ $translationArray = [
         'loginRequired' => 'You have to be logged in to access content of this AJAX file.',
         'postReported' => 'Post has been reported.',
         'postApproved' => 'Post has been approved.',
+        'passwordChanged' => 'Your password has been changed.',
+        'displaynameChanged' => 'Your display name has been changed.',
+        'birthdateChanged' => 'Your birthdate has been changed.',
+        'avatarChanged' => 'Your avatar has been changed.',
+        'detailsChanged' => 'Your details have been changed.',
     ],
     'header' => [
         'account' => 'Account',

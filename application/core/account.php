@@ -1,95 +1,45 @@
 <?php
 
-/**
-* Handles user login requests
-*
-* @since Release 0.1.0
-*/
+declare(strict_types=1);
 
 namespace BronyCenter;
 
-class Account
+interface AccountInterface
 {
-    /**
-     * Singleton instance of a current class
-     *
-     * @since Release 0.1.0
-     */
+    public static function getInstance(bool $reset);
+    public function doLogin();
+    public function doRegister();
+    public function doVerifyEmail($accountID, $tokenEmail);
+    public function changePassword(string $currentPassword, string $newPassword, string $newPasswordRepeat) : bool;
+    public function changeDisplayname(string $value) : bool;
+    public function changeBirthdate(int $day, int $month, int $year) : bool;
+    public function changeAvatar(array $file) : bool;
+    public function changeDetails(string $field, string $value) : bool;
+}
+
+class Account implements AccountInterface
+{
     private static $instance = null;
-
-    /**
-     * Place for instance of a config class
-     *
-     * @since Release 0.1.0
-     */
     private $o_config = null;
+    private $o_database = null;
+    private $o_flash = null;
+    private $o_session = null;
+    private $o_utilities = null;
+    private $o_validator = null;
+    private $o_post = null;
 
-    /**
-     * Place for instance of a database class
-     *
-     * @since Release 0.1.0
-     */
-    private $database = null;
-
-    /**
-     * Place for instance of a flash class
-     *
-     * @since Release 0.1.0
-     */
-    private $flash = null;
-
-    /**
-     * Place for instance of a session class
-     *
-     * @since Release 0.1.0
-     */
-    private $session = null;
-
-    /**
-     * Place for instance of a utilities class
-     *
-     * @since Release 0.1.0
-     */
-    private $utilities = null;
-
-    /**
-     * Place for instance of a validator class
-     *
-     * @since Release 0.1.0
-     */
-    private $validator = null;
-
-    /**
-     * Place for instance of a post class
-     *
-     * @since Release 0.1.0
-     */
-    private $post = null;
-
-    /**
-     * Get instances of required classes
-     *
-     * @since Release 0.1.0
-     */
     public function __construct()
     {
         $this->o_config = Config::getInstance();
-        $this->database = Database::getInstance();
-        $this->flash = Flash::getInstance();
-        $this->session = Session::getInstance();
-        $this->utilities = Utilities::getInstance();
-        $this->validator = Validator::getInstance();
-        $this->post = Post::getInstance();
+        $this->o_database = Database::getInstance();
+        $this->o_flash = Flash::getInstance();
+        $this->o_session = Session::getInstance();
+        $this->o_utilities = Utilities::getInstance();
+        $this->o_validator = Validator::getInstance();
+        $this->o_post = Post::getInstance();
     }
 
-    /**
-     * Check if instance of current class is existing and create and/or return it
-     *
-     * @since Release 0.1.0
-     * @var boolean $reset Set as true to reset class instance
-     * @return object Instance of a current class
-     */
-    public static function getInstance($reset = false)
+    public static function getInstance(bool $reset = false)
     {
         if (!self::$instance || $reset === true) {
             self::$instance = new Account();
@@ -104,20 +54,20 @@ class Account
      * @since Release 0.1.0
      * @return boolean Result of a login attempt
      */
-    public function login()
+    public function doLogin()
     {
         // Get website's settings
         $websiteSettings = $this->o_config->getSettings('system');
 
         // Check if login form has been submitted correctly
         if (empty($_POST['submit']) || $_POST['submit'] !== 'login') {
-            $this->flash->error('Login method has been called incorrectly. Please, refresh a page and try again.');
+            $this->o_flash->error('Login method has been called incorrectly. Please, refresh a page and try again.');
             return false;
         }
 
         // Stop executing if login is disabled in website's settings
         if (!$websiteSettings['enableLogin']) {
-            $this->flash->error('Login has been temporary disabled. Sorry about that. Please, try again later.');
+            $this->o_flash->error('Login has been temporary disabled. Sorry about that. Please, try again later.');
             return false;
         }
 
@@ -133,17 +83,17 @@ class Account
 
         // Check if username or e-mail address is valid
         if ($isEmail) {
-            if (!$this->validator->checkEmail($username)) {
+            if (!$this->o_validator->checkEmail($username)) {
                 return false;
             }
         } else {
-            if (!$this->validator->checkUsername($username)) {
+            if (!$this->o_validator->checkUsername($username)) {
                 return false;
             }
         }
 
         // Get selected details about user from database
-        $user = $this->database->read(
+        $user = $this->o_database->read(
             'id, display_name, username, email, password, login_count, avatar, account_type, account_standing',
             'users',
             $isEmail ? 'WHERE email = ?' : 'WHERE username = ?',
@@ -153,32 +103,32 @@ class Account
         // Check if any user has been found
 		if (count($user) != 1) {
             // Hash a fake password to prevent timing attacks
-            $this->utilities->doHashPassword(md5(rand()));
+            $this->o_utilities->doHashPassword(md5(rand()));
 
-            $this->flash->error('Wrong username/e-mail or password.');
+            $this->o_flash->error('Wrong username/e-mail or password.');
 			return false;
 		}
 
         // Check if password is correct
 		if (!password_verify($password, $user[0]['password'])) {
-            $this->flash->error('Wrong username/e-mail or password.');
+            $this->o_flash->error('Wrong username/e-mail or password.');
 			return false;
 		}
 
         // Check if user is banned
         if ($user[0]['account_standing'] == 2) {
-            $this->flash->error('Your account has been banned.');
+            $this->o_flash->error('Your account has been banned.');
             return false;
         }
 
         // Store common variables
 		$currentLoginCount = $user[0]['login_count'] + 1;
-		$currentIP = $this->utilities->getVisitorIP();
-		$currentDatetime = $this->utilities->getDatetime();
-		$currentAgent = substr($this->utilities->getVisitorAgent(), 0, 256);
+		$currentIP = $this->o_utilities->getVisitorIP();
+		$currentDatetime = $this->o_utilities->getDatetime();
+		$currentAgent = substr($this->o_utilities->getVisitorAgent(), 0, 256);
 
         // Update user's login details
-		$this->database->update(
+		$this->o_database->update(
 			'login_ip, login_datetime, login_count, last_online',
 			'users',
 			'WHERE id = ?',
@@ -186,7 +136,7 @@ class Account
 		);
 
         // Log details about successful login
-		$this->database->create(
+		$this->o_database->create(
 			'user_id, ip, datetime, agent',
 			'log_logins',
 			'',
@@ -194,7 +144,7 @@ class Account
 		);
 
         // Create a user session
-        $this->session->create([
+        $this->o_session->create([
             'id' => $user[0]['id'],
             'displayname' => $user[0]['display_name'],
             'username' => $user[0]['username'],
@@ -212,7 +162,7 @@ class Account
      * @since Release 0.1.0
      * @return boolean Result of a register attempt
      */
-    public function register()
+    public function doRegister()
     {
         // Get website's settings
         $websiteSettings = $this->o_config->getSettings('system');
@@ -223,13 +173,13 @@ class Account
 
         // Check if registration form has been submitted correctly
         if (empty($_POST['submit']) || $_POST['submit'] !== 'register') {
-            $this->flash->error('Register method has been called incorrectly. Please, refresh a page and try again.');
+            $this->o_flash->error('Register method has been called incorrectly. Please, refresh a page and try again.');
             return false;
         }
 
         // Stop executing if registration is disabled in website's settings
         if (!$websiteSettings['enableRegistration']) {
-            $this->flash->error('Registration has been temporary disabled. Sorry about that. Please, try again later.');
+            $this->o_flash->error('Registration has been temporary disabled. Sorry about that. Please, try again later.');
             return false;
         }
 
@@ -241,10 +191,10 @@ class Account
         $passwordRepeat = $_POST['passwordrepeat'];
 
         // Validate new display name
-        $isDisplaynameValid = $this->validator->checkDisplayname($displayname);
-        $isUsernameValid = $this->validator->checkUsername($username);
-        $isEmailValid = $this->validator->checkEmail($email);
-        $arePasswordsValid = $this->validator->checkPasswords($password, $passwordRepeat);
+        $isDisplaynameValid = $this->o_validator->checkDisplayname($displayname);
+        $isUsernameValid = $this->o_validator->checkUsername($username);
+        $isEmailValid = $this->o_validator->checkEmail($email);
+        $arePasswordsValid = $this->o_validator->checkPasswords($password, $passwordRepeat);
 
         // Check if all input fields are valid
         if (!$isDisplaynameValid || !$isUsernameValid || !$isEmailValid || !$arePasswordsValid) {
@@ -256,7 +206,7 @@ class Account
         **/
 
         // Get any of other users using same values in a database
-        $duplicateValues = $this->database->read(
+        $duplicateValues = $this->o_database->read(
             'id, display_name, username, email',
             'users',
             'WHERE display_name = ? OR username = ? OR email = ?',
@@ -268,17 +218,17 @@ class Account
 			foreach ($duplicateValues as $duplicateAccount) {
                 // Check if user using same display name has been found
 				if ($displayname === $duplicateAccount['display_name']) {
-                    $this->flash->error('Different user is already using this display name!');
+                    $this->o_flash->error('Different user is already using this display name!');
 				}
 
                 // Check if user using same username has been found
 				if ($username === $duplicateAccount['username']) {
-                    $this->flash->error('Different user is already using this username!');
+                    $this->o_flash->error('Different user is already using this username!');
 				}
 
                 // Check if user using same e-mail address has been found
 				if ($email === $duplicateAccount['email']) {
-                    $this->flash->error('Different user is already using this e-mail address!');
+                    $this->o_flash->error('Different user is already using this e-mail address!');
 				}
 			}
 
@@ -290,18 +240,18 @@ class Account
         **/
 
         // Store common variables
-        $currentIP = $this->utilities->getVisitorIP();
-		$currentDatetime = $this->utilities->getDatetime();
+        $currentIP = $this->o_utilities->getVisitorIP();
+		$currentDatetime = $this->o_utilities->getDatetime();
 
         // Get user's country code and timezone
 		$o_geoip = new GeoIP();
         $o_geoip->getDetails($currentIP);
 
         // Hash a password
-        $password = $this->utilities->doHashPassword($password);
+        $password = $this->o_utilities->doHashPassword($password);
 
         // Insert new user into database if nothing has returned an error
-        $accountID = $this->database->create(
+        $accountID = $this->o_database->create(
             'display_name, username, email, password, registration_ip, registration_datetime, country_code, timezone',
             'users',
             '',
@@ -319,16 +269,16 @@ class Account
 
         // Check if account has been created successfully
         if (empty($accountID)) {
-            $this->flash->error('There was an unknown error while trying to create an account. Sorry about that. Please, try again later.');
+            $this->o_flash->error('There was an unknown error while trying to create an account. Sorry about that. Please, try again later.');
             return false;
         }
 
         // Add user to additional tables
-        $this->database->create('user_id', 'users_details', '', [$accountID]);
-        $this->database->create('user_id', 'users_statistics', '', [$accountID]);
+        $this->o_database->create('user_id', 'users_details', '', [$accountID]);
+        $this->o_database->create('user_id', 'users_statistics', '', [$accountID]);
 
         // Show successful system flash message about created account
-        $this->flash->success(
+        $this->o_flash->success(
             'Account has been created successfully.
             Check your e-mail address and click on a link that we\'ve sent to you to activate your account.<br />
             If you\'re not getting any, then check your <b>Spam folder</b> or log in here (with username) and click a <b>re-send e-mail button</b>.'
@@ -339,10 +289,10 @@ class Account
         **/
 
         // Generate a token key used for e-mail verification
-        $tokenEmail = $this->utilities->getRandomHash(16);
+        $tokenEmail = $this->o_utilities->getRandomHash(16);
 
         // Insert a new row to allow e-mail address verification
-        $this->database->create(
+        $this->o_database->create(
             'user_id, hash, email, date',
             'key_email',
             '',
@@ -367,7 +317,7 @@ class Account
     public function doVerifyEmail($accountID, $tokenEmail)
     {
         // Find selected account ID and e-mail token pair in database
-        $foundHash = $this->database->read(
+        $foundHash = $this->o_database->read(
             'id, email',
             'key_email',
             'WHERE user_id = ? AND hash = ? AND used_datetime IS NULL',
@@ -380,11 +330,11 @@ class Account
         }
 
         // Store common variables
-        $currentIP = $this->utilities->getVisitorIP();
-		$currentDatetime = $this->utilities->getDatetime();
+        $currentIP = $this->o_utilities->getVisitorIP();
+		$currentDatetime = $this->o_utilities->getDatetime();
 
         // Update user account with an e-mail address and new registration datetime
-        $hasChanged = $this->database->update(
+        $hasChanged = $this->o_database->update(
             'email, registration_datetime, account_type',
             'users',
             'WHERE id = ?',
@@ -393,7 +343,7 @@ class Account
 
         // Update key_email table row with usage info
         if (!empty($hasChanged)) {
-            $this->database->update(
+            $this->o_database->update(
                 'used_ip, used_datetime',
                 'key_email',
                 'WHERE id = ?',
@@ -401,7 +351,7 @@ class Account
             );
 
             // Add a post about account creation
-            $this->post->add(null, 10, $accountID);
+            $this->o_post->add(null, 10, $accountID);
 
             return true;
         }
@@ -409,56 +359,230 @@ class Account
         return false;
     }
 
-    /**
-     * Change user's password
-     *
-     * @since Release 0.1.0
-     * @var string $currentPassword User's old password
-     * @var string $newPassword User's new password
-     * @var string $newPasswordRepeat User's new repeated password
-     * @return boolean Result of a method
-     */
-    public function changePassword($currentPassword, $newPassword, $newPasswordRepeat)
+    public function changePassword(string $currentPassword, string $newPassword, string $newPasswordRepeat) : bool
     {
-        // Check if new password is valid
-        if (!$this->validator->checkPasswords($newPassword, $newPasswordRepeat)) {
+        if (!$this->o_validator->checkPasswords($newPassword, $newPasswordRepeat)) {
             return false;
         }
 
-        // Get user's old password from database
-        $userPassword = $this->database->read(
+        if (!$this->isCurrentPasswordValid($currentPassword)) {
+            $this->o_flash->error('Old password is incorrect.');
+            return false;
+        }
+
+        $hasChanged = $this->o_database->update(
             'password',
+            'users',
+            'WHERE id = ?',
+            [$this->o_utilities->doHashPassword($newPassword), $_SESSION['account']['id']]
+        );
+
+        if ($hasChanged) {
+            $this->o_flash->success('Your password has been successfully changed.');
+            return true;
+        }
+
+        $this->o_flash->error('Your password has not been changed due to unknown error.');
+        return false;
+    }
+
+    private function isCurrentPasswordValid(string $currentPassword) : bool
+    {
+        $userPassword = $this->o_database->read(
+            'password',
+            'users',
+            'WHERE id = ?',
+            [$_SESSION['account']['id']],
+            false
+        )['password'];
+
+        if (!password_verify($currentPassword, $userPassword)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function changeDisplayname(string $value) : bool
+    {
+        if (!$this->o_validator->checkDisplayname($value)) {
+            return false;
+        }
+
+        $isUsed = $this->o_database->read(
+            'id',
+            'users',
+            'WHERE display_name = ?',
+            [$value],
+            false
+        );
+
+        if (!empty($isUsed)) {
+            if ($_SESSION['account']['id'] == $isUsed['id']) {
+                $this->o_flash->info('No changes have been made to your display name.');
+                return false;
+            }
+
+            $this->o_flash->error('Different user is already using this display name.');
+            return false;
+        }
+
+        $userDetails = $this->o_database->read(
+            'display_name, displayname_changes, displaynames_recent',
             'users',
             'WHERE id = ?',
             [$_SESSION['account']['id']],
             false
         );
 
-        // Check if old password is correct
-        if (!password_verify($currentPassword, $userPassword['password'])) {
-            $this->flash->error('Old password is incorrect.');
+        if ($userDetails['displayname_changes'] >= 3) {
+            $this->o_flash->error('You have used the limit of your 3 display name changes.');
             return false;
         }
 
-        // Make a hash from new password
-        $newPassword = $this->utilities->doHashPassword($newPassword);
-
-        // Replace user's password with new one in database
-        $hasChanged = $this->database->update(
-            'password',
-            'users',
-            'WHERE id = ?',
-            [$newPassword, $_SESSION['account']['id']]
-        );
-
-        // Check if password has been changed
-        if ($hasChanged) {
-            // TODO Maybe ask for destroying all active sessions
-            $this->flash->success('Your password has been successfully changed.');
-            return true;
+        if (is_null($userDetails['displaynames_recent'])) {
+            $userDetails['displaynames_recent'] = str_replace(',', '&#44;', $userDetails['display_name']);
+        } else {
+            $userDetails['displaynames_recent'] = $userDetails['displaynames_recent'] . ',' . str_replace(',', '&#44;', $userDetails['display_name']);
         }
 
-        $this->flash->error('Your password has not been changed due to unknown error.');
-        return false;
+        $hasChanged = $this->o_database->update(
+            'display_name, displayname_changes, displaynames_recent',
+            'users',
+            'WHERE id = ?',
+            [$value, $userDetails['displayname_changes'] + 1, $userDetails['displaynames_recent'], $_SESSION['account']['id']]
+        );
+
+        if (!$hasChanged) {
+            $this->o_flash->error('Your display name have not been changed due to an unknown error.');
+            return false;
+        }
+
+        $this->o_post->add(null, 11);
+        $this->o_flash->success('You have successfully changed your display name.');
+        $_SESSION['user']['displayname'] = $value;
+        return true;
+    }
+
+    public function changeBirthdate(int $day, int $month, int $year) : bool
+    {
+        if (!checkdate($month, $day, $year) || $year < 1900) {
+            $this->o_flash->error('Your birthdate seems to be invalid!');
+            return false;
+        }
+
+        $birthdate = $year . '-' . $month . '-' . $day;
+
+        $hasChanged = $this->o_database->update(
+            'birthdate',
+            'users_details',
+            'WHERE id = ?',
+            [$birthdate, $_SESSION['account']['id']]
+        );
+
+        if (!$hasChanged) {
+            $this->o_flash->error('Your birthdate have not been changed due to an unknown error.');
+            return false;
+        }
+
+        $this->o_flash->success('You have successfully changed your birthdate.');
+        return true;
+    }
+
+    public function changeAvatar(array $file) : bool
+    {
+        if (!empty($file['error'])) {
+            return false;
+        }
+
+        $uniqueHash = false;
+
+        while ($uniqueHash === false) {
+            $hashAvatar = $this->o_utilities->getRandomHash(16);
+
+            if (!is_dir(__DIR__ . '/../../public/media/avatars/' . $hashAvatar)) {
+                $uniqueHash = true;
+            }
+        }
+
+        $o_image = Image::getInstance();
+
+        if (!$o_image->createAvatar($file, $hashAvatar)) {
+            return false;
+        }
+
+        $hashPreviousAvatar = $this->o_database->read(
+            'avatar',
+            'users',
+            'WHERE id = ?',
+            [$_SESSION['account']['id']],
+            false
+        )['avatar'];
+
+        if (!is_null($hashPreviousAvatar) && is_dir(__DIR__ . '/../../public/media/avatars/' . $hashAvatar)) {
+            unlink(__DIR__ . '/../../public/media/avatars/' . $hashPreviousAvatar . '/minres.jpg');
+            unlink(__DIR__ . '/../../public/media/avatars/' . $hashPreviousAvatar . '/defres.jpg');
+            unlink(__DIR__ . '/../../public/media/avatars/' . $hashPreviousAvatar . '/maxres.jpg');
+            rmdir(__DIR__ . '/../../public/media/avatars/' . $hashPreviousAvatar);
+        }
+
+        $updatedAvatar = $this->o_database->update(
+            'avatar',
+            'users',
+            'WHERE id = ?',
+            [$hashAvatar, $_SESSION['account']['id']]
+        );
+
+        $_SESSION['user']['avatar'] = $hashAvatar;
+        return true;
+    }
+
+    public function changeDetails(string $field, string $value) : bool
+    {
+        $availableFields = ['city', 'short_description', 'full_description', 'contact_methods', 'favourite_music', 'favourite_movies', 'favourite_games', 'fandom_becameabrony', 'fandom_favouritepony', 'fandom_favouriteepisode', 'creations_links'];
+        if (!in_array($field, $availableFields)) {
+            $this->o_flash->error('Field does not exist or is not available for editing.');
+            return false;
+        }
+
+        switch ($field) {
+            case 'city':
+                $value = substr($value, 0, 32);
+                break;
+            case 'short_description':
+                $value = substr($value, 0, 160);
+                break;
+            case 'fandom_becameabrony':
+            case 'fandom_favouritepony':
+            case 'fandom_favouriteepisode':
+                $value = substr($value, 0, 300);
+                break;
+            case 'contact_methods':
+            case 'favourite_music':
+            case 'favourite_movies':
+            case 'favourite_games':
+                $value = substr($value, 0, 500);
+                break;
+            case 'full_description':
+            case 'creations_links':
+                $value = substr($value, 0, 1000);
+                break;
+        }
+
+        $hasChanged = $this->o_database->update(
+            $field,
+            'users_details',
+            'WHERE id = ?',
+            [$value ?? null, $_SESSION['account']['id']]
+        );
+
+        if (!$hasChanged) {
+            $this->o_flash->error('Your settings have not been changed due to an unknown error.');
+            return false;
+
+        }
+
+        $this->o_flash->success('You have successfully changed your details.');
+        return true;
     }
 }

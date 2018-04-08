@@ -43,9 +43,9 @@
         <div class="col-lg m-3" style="font-size: 14px;">
             <p class="text-center font-weight-bold"><i class="fa fa-users text-primary mr-2" aria-hidden="true"></i> Members</p>
 
-            <p class="mb-0">Online members: <b><?= number_format($user->countOnlineMembers('40 SECOND'), 0, '.', ' ') ?></b></p>
-            <p class="mb-0">- last 1 hour: <b><?= number_format($user->countOnlineMembers('1 HOUR'), 0, '.', ' ') ?></b></p>
-            <p>- last 24 hours: <b><?= number_format($user->countOnlineMembers('1 DAY'), 0, '.', ' ') ?></b></p>
+            <p class="mb-0">Online members: <b><?= number_format($user->countRecentlyOnlineMembers('40 SECOND'), 0, '.', ' ') ?></b></p>
+            <p class="mb-0">- last 1 hour: <b><?= number_format($user->countRecentlyOnlineMembers('1 HOUR'), 0, '.', ' ') ?></b></p>
+            <p>- last 24 hours: <b><?= number_format($user->countRecentlyOnlineMembers('1 DAY'), 0, '.', ' ') ?></b></p>
 
             <p class="mb-0">Active accounts: <b><?= number_format($user->countExistingMembers(), 0, '.', ' ') ?></b></p>
             <p class="mb-0">All created accounts: <b><?= number_format($user->countCreatedAccounts(), 0, '.', ' ') ?></b></p>

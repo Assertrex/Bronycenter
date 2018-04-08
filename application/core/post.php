@@ -174,7 +174,7 @@ class Post
             return false;
         }
 
-        if (!$this->user->isCurrentModerator()) {
+        if (!$this->user->isCurrentUserModerator()) {
             return false;
         }
 
@@ -222,7 +222,7 @@ class Post
 
         // Define required details
         $isCurrentAuthor = $_SESSION['account']['id'] == $postDetails[0]['user_id'];
-        $isCurrentModerator = $this->user->isCurrentModerator();
+        $isCurrentModerator = $this->user->isCurrentUserModerator();
         $currentDatetime = $this->utilities->getDatetime();
         $removeAsModerator = ($isCurrentModerator && !$isCurrentAuthor);
 
@@ -787,7 +787,7 @@ class Post
 
             // Skip current user and get one more person
             if ($array[$i - 1]['id'] != $_SESSION['account']['id']) {
-                $randomUsers[] = $this->user->generateUserDetails($array[$i - 1]['id']);
+                $randomUsers[] = $this->user->generateUserDetails($array[$i - 1]['id'], []);
             }
         }
 

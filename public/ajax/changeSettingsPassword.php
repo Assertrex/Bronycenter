@@ -8,8 +8,19 @@ $pageSettings = [
 
 require_once('../../application/partials/init.php');
 
-// Try to change user's password
-$account = BronyCenter\Account::getInstance();
-$account->changePassword($_POST['currentpassword'], $_POST['newpassword'], $_POST['newpasswordrepeat']);
+$o_account = BronyCenter\Account::getInstance();
+$methodStatus = $o_account->changePassword($_POST['currentpassword'], $_POST['newpassword'], $_POST['newpasswordrepeat']);
 
-// TODO Return error in JSON if not
+if ($methodStatus) {
+    $AJAXCallJSON = [
+        'status' => 'success',
+        'resultMessage' => $o_translation->getString('ajax', 'passwordChanged'),
+    ];
+} else {
+    $AJAXCallJSON = [
+        'status' => 'error',
+        'resultMessage' => $o_translation->getString('ajax', 'unknownError'),
+    ];
+}
+
+die($utilities->encodeJSON($AJAXCallJSON));

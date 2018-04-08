@@ -9,7 +9,11 @@ $pageSettings = [
 require('../../application/partials/init.php');
 require('../../application/partials/social/head.php');
 
-$members = $user->getMembersList(50);
+$members = $user->getMembers([
+    'where' => 'account_type != 0 AND account_standing NOT IN (2, 3)',
+    'orderBy' => 'last_online DESC',
+    'limit' => 25,
+]);
 ?>
 
 <body id="page-social-members">
@@ -42,7 +46,7 @@ $members = $user->getMembersList(50);
                         // Display each member
                         foreach ($members as $member) {
                             // Generate additional user details
-                            $member = $user->generateUserDetails($member['id']);
+                            $member = $user->generateUserDetails($member['id'], []);
 
                             // Generate user badges and add them the array with user details
                             $member = array_merge(

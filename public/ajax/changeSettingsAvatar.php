@@ -7,16 +7,24 @@ $pageSettings = [
 ];
 
 require_once('../../application/partials/init.php');
-
-// Require a class for handling avatar creations
 require_once('../../application/core/image.php');
 
-// Create an avatar and generate a hash for it
-$hash = $user->changeAvatar($_FILES['avatar']);
+$o_account = BronyCenter\Account::getInstance();
+$methodStatus = $o_account->changeAvatar($_FILES['avatar']);
 
-// Return a new value
-if ($hash != false) {
-    echo $hash;
+if ($methodStatus) {
+    $AJAXCallJSON = [
+        'status' => 'success',
+        'resultMessage' => $o_translation->getString('ajax', 'avatarChanged'),
+        'data' => [
+            'avatar' => $_SESSION['user']['avatar'],
+        ],
+    ];
+} else {
+    $AJAXCallJSON = [
+        'status' => 'error',
+        'resultMessage' => $o_translation->getString('ajax', 'unknownError'),
+    ];
 }
 
-// TODO Return error in JSON if not
+die($utilities->encodeJSON($AJAXCallJSON));

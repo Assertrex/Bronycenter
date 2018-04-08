@@ -32,6 +32,20 @@ button, .btn {
     }
 }
 
+.user-tooltip {
+    padding: .5rem .25rem;
+    line-height: 1.2;
+
+    .user-tooltip-details {
+        padding-top: 8px;
+        text-align: left;
+
+        span, i {
+            width: 15px;
+        }
+    }
+}
+
 @keyframes spinbcdefault { to { -webkit-transform: rotate(360deg); } }
 @-webkit-keyframes spinbcdefault { to { -webkit-transform: rotate(360deg); } }
 

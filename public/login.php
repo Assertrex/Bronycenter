@@ -12,7 +12,7 @@ require('../application/partials/head.php');
 if (isset($_POST['submit'])) {
     $account = BronyCenter\Account::getInstance();
 
-    if ($account->login()) {
+    if ($account->doLogin()) {
         $flash->info(
             'Please note, that ' . $o_config->getWebsiteTitle() . ' is currently in early development stage.<br />' .
             'Many features will be added/changed in the future. Website design will change as well.'

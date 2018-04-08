@@ -13,8 +13,8 @@ $membersByAccountStandingCounter = $user->countMembersByAccountStanding();
             <p class="mb-0">Created accounts: <b><?= number_format($user->countCreatedAccounts(), 0, '.', ' ') ?></b></p>
             <p>Active accounts: <b><?= number_format($user->countExistingMembers(), 0, '.', ' ') ?></b></p>
 
-            <p class="mb-0">Online accounts: <b><?= number_format($user->countOnlineMembers('40 SECOND'), 0, '.', ' ') ?></b></p>
-            <p class="mb-0">Online accounts (30 days): <b><?= number_format($user->countOnlineMembers('30 DAY'), 0, '.', ' ') ?></b></p>
+            <p class="mb-0">Online accounts: <b><?= number_format($user->countRecentlyOnlineMembers('40 SECOND'), 0, '.', ' ') ?></b></p>
+            <p class="mb-0">Online accounts (30 days): <b><?= number_format($user->countRecentlyOnlineMembers('30 DAY'), 0, '.', ' ') ?></b></p>
         </div>
 
         <div class="col-lg m-3" style="font-size: 14px;">

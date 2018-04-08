@@ -2,7 +2,7 @@
 // Display each found post
 foreach ($listPosts as $post) {
     // Generate additional details about user or get a cached version of it and add to the array
-    $post['author'] = $user->generateUserDetails($post['user_id']);
+    $post['author'] = $user->generateUserDetails($post['user_id'], []);
     $post['author'] = array_merge($post['author'], $utilities->generateUserBadges($post['author'], 'd-block mt-1 badge badge'));
 ?>
 
@@ -244,7 +244,7 @@ foreach ($listPosts as $post) {
                             $comment['datetime_string'] = $utilities->getDateIntervalString($utilities->countDateInterval($comment['datetime']));
 
                             // Generate additional details about user or get a cached version of it and add to the array
-                            $comment['author'] = $user->generateUserDetails($comment['user_id']);
+                            $comment['author'] = $user->generateUserDetails($comment['user_id'], []);
                     ?>
 
                     <div class="d-flex py-2 comment-container" id="comment-<?= $comment['id']; ?>" data-commentid="<?= $comment['id']; ?>">

@@ -21,7 +21,7 @@ if (!empty($_POST['submit']) && $_POST['submit'] === 'register') {
     $account = BronyCenter\Account::getInstance();
 
     // Try to register a new user
-    if ($account->register()) {
+    if ($account->doRegister()) {
         // Redirect new user into login page
         $utilities->redirect('login.php');
     } else {

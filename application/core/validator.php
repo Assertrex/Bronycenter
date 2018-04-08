@@ -66,8 +66,6 @@ class Validator
             $isValid = false;
         }
 
-        // TODO Cut starting and ending spaces
-
         return $isValid;
     }
 
