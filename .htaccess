@@ -1,5 +1,0 @@
-Options -Indexes -MultiViews
-
-RewriteEngine    On
-RewriteRule      ^$        public/    [L]
-RewriteRule      ((?s).*)  public/$1  [L]

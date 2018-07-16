@@ -1,8 +1,5 @@
-# BronyCenter - Social Networking Site
+# BronyCenter :: Social Networking Site
 
-**Please don't use this code!** It's really bad, insecure and buggy.
-
-I'm reviving this project just to fix some stuff here while I'm still learning
-real OOP, MVC design pattern and much more. It will be rewritten when I will be ready.
-
-![ScreenShot](https://raw.github.com/Assertrex/BronyCenter/master/screenshots/social-index.jpg)
+Project will be rewritten using Slim Framework 3 and Doctrine ORM.
+Note, it's just a source code of a website.
+Don't make own website with it, as I won't work on any customizations.
