@@ -10,6 +10,9 @@ $application->group('', function() {
         $this->get('', BronyCenter\Controller\AuthController::class . ':indexAction')
             ->setName('authIndex');
 
+        $this->get('/verify', BronyCenter\Controller\AuthController::class . ':verifyAction')
+            ->setName('authVerify');
+
         $this->post('/register', BronyCenter\Controller\AuthController::class . ':registerProcessAction')
             ->setName('authRegister');
     });

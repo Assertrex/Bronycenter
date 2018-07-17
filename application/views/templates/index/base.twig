@@ -17,6 +17,8 @@
     {% include "templates/index/header.twig" %}
 
     <div class="layout-content">
+        {% include "templates/index/flash.twig" %}
+
         {% block content %}{% endblock %}
     </div>
 
