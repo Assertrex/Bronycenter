@@ -69,7 +69,8 @@
                     <div class="form-group">
                         <label for="register-field-password">Password</label>
                         <input type="password" name="password" class="form-control" id="register-field-password"
-                               placeholder="$ecretPass987" aria-describedby="register-field-help-password" required />
+                               placeholder="$ecretPass987" aria-describedby="register-field-help-password"
+                               pattern=".{6,}" title="Password must contain at least 6 characters." required />
 
                         <small id="register-field-help-password" class="form-text text-muted">
                             Your password will be stored on a server in encrypted form that's not possible to decode, but

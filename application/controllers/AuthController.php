@@ -4,6 +4,7 @@ namespace BronyCenter\Controller;
 
 use BronyCenter\Core\Flash;
 use BronyCenter\Core\Mail;
+use BronyCenter\Core\Validation;
 use BronyCenter\Repository\EmailKeyRepository;
 use BronyCenter\Repository\UserRepository;
 
@@ -25,7 +26,36 @@ class AuthController extends ControllerBase
         $postValues = $request->getParsedBody();
         $postValues['registration_ip'] = $request->getAttribute('ip_address');
 
-        // TODO: Validate user input
+        // Validate user input
+        $validation = new Validation($this->container);
+        $validation->checkDisplayName($postValues['display_name']);
+        $validation->checkUsername($postValues['username']);
+        $validation->checkEmail($postValues['email']);
+        $validation->checkPasswords($postValues['password'], $postValues['password_repeat']);
+
+        // Check if all fields are valid
+        if (!$validation->isValid()) {
+            $errors = $validation->getErrors();
+
+            foreach ($errors as $errorType) {
+                foreach ($errorType as $errorMessage) {
+                    if (!empty($errorMessage)) {
+                        (new Flash($this->flash))->error($errorMessage);
+                    }
+                }
+            }
+
+            return $response->withRedirect($this->router->pathFor('authIndex'), 303);
+        }
+
+        // Check if unique fields have not been used yet
+        $displayNameUsed = $validation->checkIfDisplayNameIsUsed($postValues['display_name']);
+        $usernameUsed = $validation->checkIfUsernameIsUsed($postValues['username']);
+        $emailUsed = $validation->checkIfEmailIsUsed($postValues['email']);
+
+        if ($displayNameUsed || $usernameUsed || $emailUsed) {
+            return $response->withRedirect($this->router->pathFor('authIndex'), 303);
+        }
 
         // Add user to the database
         $userRepository = new UserRepository($this->entityManager);
