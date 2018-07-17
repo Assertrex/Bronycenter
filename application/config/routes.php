@@ -6,6 +6,11 @@ $application->group('', function() {
             ->setName('index');
     });
 
+    $this->group('/auth', function() {
+        $this->get('', BronyCenter\Controller\AuthController::class . ':indexAction')
+            ->setName('authIndex');
+    });
+
     $this->group('/social', function() {
         $this->get('', BronyCenter\Controller\FeedController::class . ':indexAction')
             ->setName('socialIndex');

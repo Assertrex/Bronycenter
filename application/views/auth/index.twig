@@ -1,0 +1,102 @@
+{% extends "templates/index/base.twig" %}
+
+{% block title %}Sign In :: BronyCenter{% endblock %}
+{% block description %}Create an account or login with existing one.{% endblock %}
+
+{% block content %}
+    <div class="container-content container">
+        <h1 class="text-center mb-4">Login/Register</h1>
+
+        <div class="row">
+            <div class="col-12 col-lg mb-4 mb-lg-0">
+                <h2 class="text-center mb-4">Sign in using your account</h2>
+
+                <form method="post">
+                    <div class="form-group">
+                        <label for="login-field-username">Username or e-mail address</label>
+                        <input type="text" name="username" class="form-control" id="login-field-username"
+                               autocomplete="username" autofocus required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="login-field-password">Password</label>
+                        <input type="password" name="password" class="form-control" id="login-field-password"
+                               autocomplete="current-password" required />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary d-flex align-items-center" style="margin: 0 auto;">
+                        <i class="fas fa-sign-in-alt mr-3"></i>
+                        <span>Sign in</span>
+                    </button>
+                </form>
+            </div>
+
+            <div class="col-12 col-lg">
+                <h2 class="text-center mb-4">Create new account</h2>
+
+                <form>
+                    <div class="form-group">
+                        <label for="register-field-display-name">Display name</label>
+                        <input type="text" name="display_name" class="form-control" id="register-field-display-name"
+                               placeholder="Example Pony (^_^)" aria-describedby="register-field-help-display-name"
+                               pattern=".{3,32}" title="Display name must contain 3-32 characters." required />
+
+                        <small id="register-field-help-display-name" class="form-text text-muted">
+                            Select how you want to be seen by others.
+                            This can be changed later in settings.
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="register-field-username">Username</label>
+                        <input type="text" name="username" class="form-control" placeholder="examplepony97"
+                               pattern=".{3,24}" title="Username must contain 3-24 characters."
+                               id="register-field-username" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="register-field-email">E-mail address</label>
+                        <input type="email" name="email" class="form-control" id="register-field-email"
+                               placeholder="example@poniland.com" aria-describedby="register-field-help-email"
+                               pattern=".{5,64}" title="E-mail address must contain 5-64 characters." required />
+
+                        <small id="register-field-help-email" class="form-text text-muted">
+                            We won't share your e-mail address with anyone or send any spam to you.
+                            It's required for features like account recovery or important notifications.
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="register-field-password">Password</label>
+                        <input type="password" name="password" class="form-control" id="register-field-password"
+                               placeholder="$ecretPass987" aria-describedby="register-field-help-password" required />
+
+                        <small id="register-field-help-password" class="form-text text-muted">
+                            Your password will be stored on a server in encrypted form that's not possible to decode, but
+                            you still shouldn't use any password that you use on other important websites.
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="register-field-password-repeat">Repeat password</label>
+                        <input type="password" name="password_repeat" class="form-control" id="register-field-password-repeat"
+                               placeholder="$ecretPass987" autocomplete="new-password"
+                               pattern=".{6,}" title="Password must contain at least 6 characters." required />
+                    </div>
+
+                    <div class="form-group custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="register-field-confirm" required />
+                        <label class="custom-control-label" for="register-field-confirm">
+                            I agree to the Terms of Service and Privacy Policy, and Cookie Use.
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary d-flex align-items-center" style="margin: 0 auto;">
+                        <i class="fas fa-user-plus mr-3"></i>
+                        <span>Create account</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
