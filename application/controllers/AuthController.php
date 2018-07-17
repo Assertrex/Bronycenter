@@ -74,9 +74,19 @@ class AuthController extends ControllerBase
 
         // Create a key for e-mail confirmation
         $emailKeyRepository = new EmailKeyRepository($this->entityManager);
+        $hash = null;
+
+        do {
+            $tempHash = substr(md5(uniqid(rand(), true)), 0, 16);
+
+            if (!$emailKeyRepository->checkIfKeyExists($tempHash)) {
+                $hash = $tempHash;
+            }
+        } while (is_null($hash));
+
         $key = $emailKeyRepository->createKey([
             'user_id' => $user->getId(),
-            'hash' => substr(md5(uniqid(rand(), true)), 0, 16),
+            'hash' => $hash,
             'email' => $postValues['email']
         ]);
 

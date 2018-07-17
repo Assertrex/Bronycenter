@@ -8,11 +8,11 @@ use Doctrine\ORM\EntityManager;
 
 class UserRepository
 {
-    private $em;
+    private $entityManager;
 
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManager $entityManager)
     {
-        $this->em = $em;
+        $this->entityManager = $entityManager;
     }
 
     public function createUser(array $array): User
@@ -38,8 +38,8 @@ class UserRepository
         $user->setDevelopmentPoints(0);
         $user->setGender(0);
 
-        $this->em->persist($user);
-        $this->em->flush();
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
 
         return $user;
     }

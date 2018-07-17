@@ -9,17 +9,17 @@ use Doctrine\ORM\EntityManager;
 
 class EmailKeyRepository
 {
-    private $em;
+    private $entityManager;
 
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManager $entityManager)
     {
-        $this->em = $em;
+        $this->entityManager = $entityManager;
     }
 
     public function createKey(array $array): EmailKey
     {
         $currentDatetime = new DateTime();
-        $array['user'] = $this->em->getRepository('BronyCenter\Model\User')->find($array['user_id']);
+        $array['user'] = $this->entityManager->getRepository('BronyCenter\Model\User')->find($array['user_id']);
 
         $key = new EmailKey();
         $key->setUser($array['user']);
@@ -27,9 +27,16 @@ class EmailKeyRepository
         $key->setEmail($array['email']);
         $key->setDatetime($currentDatetime);
 
-        $this->em->persist($key);
-        $this->em->flush();
+        $this->entityManager->persist($key);
+        $this->entityManager->flush();
 
         return $key;
+    }
+
+    public function checkIfKeyExists(string $hash) : bool
+    {
+        $keyFound = $this->entityManager->getRepository('BronyCenter\Model\EmailKey')->count(['hash' => $hash]);
+
+        return boolval($keyFound);
     }
 }
