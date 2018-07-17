@@ -9,6 +9,9 @@ $application->group('', function() {
     $this->group('/auth', function() {
         $this->get('', BronyCenter\Controller\AuthController::class . ':indexAction')
             ->setName('authIndex');
+
+        $this->post('/register', BronyCenter\Controller\AuthController::class . ':registerProcessAction')
+            ->setName('authRegister');
     });
 
     $this->group('/social', function() {

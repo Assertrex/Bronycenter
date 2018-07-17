@@ -34,7 +34,7 @@
             <div class="col-12 col-lg">
                 <h2 class="text-center mb-4">Create new account</h2>
 
-                <form>
+                <form method="post" action="{{ service.router.pathFor('authRegister') }}">
                     <div class="form-group">
                         <label for="register-field-display-name">Display name</label>
                         <input type="text" name="display_name" class="form-control" id="register-field-display-name"
