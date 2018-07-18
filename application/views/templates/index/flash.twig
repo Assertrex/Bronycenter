@@ -3,7 +3,7 @@
         {% for flashMessageType, flashMessagesList in service.flash.messages %}
             {% for flashMessage in flashMessagesList %}
                 <div class="alert alert-{{ flashMessageType }} alert-dismissible fade show" role="alert">
-                    <p class="text-center mb-0"><strong>{{ flashMessageType|capitalize }}!</strong></p>
+                    <p class="text-center mb-2"><strong>{{ flashMessageType|capitalize }}!</strong></p>
                     <p class="mb-0">{{ flashMessage|raw }}</p>
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>

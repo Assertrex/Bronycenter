@@ -17,6 +17,31 @@ class AuthController extends ControllerBase
         ]);
     }
 
+    public function verifyAction($request, $response, $arguments)
+    {
+        $this->services['request']['basePath'] = $request->getAttribute('currentBase');
+        $this->services['request']['currentGroups'] = $request->getAttribute('currentGroups');
+
+        return $this->view->render($response, 'auth/index.twig', [
+            'service' => $this->services,
+            'indexed' => true,
+        ]);
+    }
+
+    public function resendAction($request, $response, $arguments)
+    {
+        // Store values from query strings
+        $queryValues['user_id'] = intval($request->getQueryParam('user_id', $default = null));
+        $queryValues['hash'] = $request->getQueryParam('hash', $default = null);
+
+        // Re-send mail with e-mail verification code
+        (new Account($this->container))->resendVerificationCode($request, $queryValues);
+
+        return $response->withRedirect(
+            $this->router->pathFor('authIndex')
+        );
+    }
+
     public function loginProcessAction($request, $response, $arguments)
     {
         $postValues = $request->getParsedBody();

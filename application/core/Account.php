@@ -98,8 +98,8 @@ class Account
 
         // Return a success flash message
         (new Flash($this->container['flash']))->success(
-            'Your account has been successfully created! ' .
-            'Click on a verification link sent to your e-mail address to confirm your account. ' .
+            'Your account has been successfully created!<br />' .
+            'Click on a verification link sent to your e-mail address to confirm your account.<br />' .
             'If you can\'t find it, check your spam folder.'
         );
 
@@ -126,10 +126,16 @@ class Account
 
                         // Allow user to re-send verification link
                         if (password_verify($postValues['password'], $emailKey->getUser()->getPassword())) {
+                            $pathResend = $this->container['router']->pathFor('authResend');
+                            $userID = $emailKey->getUser()->getId();
+                            $userEmail = $emailKey->getEmail();
+                            $emailHash = $emailKey->getHash();
+
                             (new Flash($this->container['flash']))->error(
                                 'E-mail address for this account has not been verified.<br />' .
-                                'Click a verification link sent on <b>' . $emailKey->getEmail() . '</b> or ' .
-                                '<b><a href="' . $this->container['router']->pathFor('authResend') . '">click here</a></b> to re-send it.'
+                                'Click a verification link sent on <b>' . $userEmail . '</b> or <b>' .
+                                '<a href="' . $pathResend . '?user_id=' . $userID . '&hash=' . $emailHash . '">click here</a>' .
+                                '</b> to re-send it.'
                             );
 
                             return false;
@@ -157,6 +163,48 @@ class Account
         }
 
         // TODO: Create a user session
+
+        return true;
+    }
+
+    public function resendVerificationCode($request, array $queryValues)
+    {
+        if (empty($queryValues['user_id']) || empty($queryValues['hash'])) {
+            (new Flash($this->container['flash']))->error(
+                'Verification link couldn\'t be re-sent, because current link is corrupted!'
+            );
+
+            return false;
+        }
+
+        // Get selected email key
+        $emailKey = $this->container[EntityManager::class]->getRepository('BronyCenter\Model\EmailKey')->findBy([
+            'user' => $queryValues['user_id'],
+            'hash' => $queryValues['hash']
+        ]);
+
+        // Check if hash is valid
+        if (count($emailKey) == 0) {
+            (new Flash($this->container['flash']))->error(
+                'Verification link couldn\'t be re-sent, because selected verification code is invalid!'
+            );
+
+            return false;
+        }
+
+        $emailKey = $emailKey[0];
+
+        // Re-send verification link
+        (new Mail())->sendAsTemplate($emailKey->getEmail(), 'verification', [
+            'display_name' => $emailKey->getUser()->getDisplayName(),
+            'verification_link' => $request->getUri()->getScheme() . '://' . $request->getUri()->getHost() .
+                $this->container['router']->pathFor('authVerify') . '?user_id=' . $emailKey->getUser()->getId() . '&hash=' . $emailKey->getHash()
+        ]);
+
+        (new Flash($this->container['flash']))->success(
+            'Verification link has been sent again on <b>' . $emailKey->getEmail() . '</b>.<br />' .
+            'If you don\'t see it, check your spam folder or contact with adminsitrator.'
+        );
 
         return true;
     }
