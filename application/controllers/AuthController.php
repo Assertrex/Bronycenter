@@ -22,10 +22,16 @@ class AuthController extends ControllerBase
         $this->services['request']['basePath'] = $request->getAttribute('currentBase');
         $this->services['request']['currentGroups'] = $request->getAttribute('currentGroups');
 
-        return $this->view->render($response, 'auth/index.twig', [
-            'service' => $this->services,
-            'indexed' => true,
-        ]);
+        // Store values from query strings
+        $queryValues['user_id'] = intval($request->getQueryParam('user_id', $default = null));
+        $queryValues['hash'] = $request->getQueryParam('hash', $default = null);
+
+        // Verify e-mail verification code
+        (new Account($this->container))->verifyVerificationCode($request, $queryValues);
+
+        return $response->withRedirect(
+            $this->router->pathFor('authIndex')
+        );
     }
 
     public function resendAction($request, $response, $arguments)

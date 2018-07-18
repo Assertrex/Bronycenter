@@ -22,7 +22,7 @@ class EmailKey
     /** @ORM\Column(type="string", nullable=false, length=16, options={"fixed":true}) **/
     private $hash;
 
-    /** @ORM\Column(type="string", nullable=false, length=64) **/
+    /** @ORM\Column(type="string", nullable=true, length=64) **/
     private $email;
 
     /** @ORM\Column(type="datetime", nullable=false) **/

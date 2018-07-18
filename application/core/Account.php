@@ -167,6 +167,67 @@ class Account
         return true;
     }
 
+    public function verifyVerificationCode($request, array $queryValues)
+    {
+        if (empty($queryValues['user_id']) || empty($queryValues['hash'])) {
+            (new Flash($this->container['flash']))->error(
+                'Verification link is corrupted!'
+            );
+
+            return false;
+        }
+
+        // Get selected email key
+        $emailKey = $this->container[EntityManager::class]->getRepository('BronyCenter\Model\EmailKey')->findBy([
+            'user' => $queryValues['user_id'],
+            'hash' => $queryValues['hash']
+        ]);
+
+        // Check if hash is valid
+        if (count($emailKey) == 0) {
+            (new Flash($this->container['flash']))->error(
+                'Verification link is invalid!'
+            );
+
+            return false;
+        }
+
+        // Check if email key has been used
+        if (empty($emailKey[0]->getEmail()) && !empty($emailKey[0]->getUsedDatetime())) {
+            (new Flash($this->container['flash']))->success(
+                'Verification link has been already used!'
+            );
+
+            return false;
+        }
+
+        // Get selected user account
+        $emailKey = $emailKey[0];
+        $user = $this->container[EntityManager::class]->getRepository('BronyCenter\Model\User')->find($emailKey->getUser()->getId());
+        $emailKey->setUser($user);
+
+        // Check if e-mail address is free
+        $validation = new Validation($this->container);
+
+        if ($validation->checkIfEmailIsUsed($emailKey->getEmail())) {
+            return false;
+        }
+
+        // Add e-mail address to user account
+        $emailKeyRepository = new EmailKeyRepository($this->container[EntityManager::class]);
+        $emailKeyRepository->confirmKey([
+            'id' => $emailKey->getId(),
+            'email' => $emailKey->getEmail(),
+            'ip_address' => $request->getAttribute('ip_address')
+        ]);
+
+        (new Flash($this->container['flash']))->success(
+            'Your account has been verified! You can now log in.'
+        );
+
+        return true;
+    }
+
     public function resendVerificationCode($request, array $queryValues)
     {
         if (empty($queryValues['user_id']) || empty($queryValues['hash'])) {

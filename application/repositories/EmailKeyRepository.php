@@ -16,7 +16,7 @@ class EmailKeyRepository
         $this->entityManager = $entityManager;
     }
 
-    public function createKey(array $array): EmailKey
+    public function createKey(array $array) : EmailKey
     {
         $currentDatetime = new DateTime();
         $array['user'] = $this->entityManager->getRepository('BronyCenter\Model\User')->find($array['user_id']);
@@ -26,6 +26,30 @@ class EmailKeyRepository
         $key->setHash($array['hash']);
         $key->setEmail($array['email']);
         $key->setDatetime($currentDatetime);
+
+        $this->entityManager->persist($key);
+        $this->entityManager->flush();
+
+        return $key;
+    }
+
+    public function confirmKey(array $array) : EmailKey
+    {
+        $currentDatetime = new DateTime();
+
+        $key = $this->entityManager->getRepository('BronyCenter\Model\EmailKey')->find($array['id']);
+        $key->setEmail(null);
+        $key->setUsedDatetime($currentDatetime);
+        $key->setUsedIp($array['ip_address']);
+
+        $user = $this->entityManager->getRepository('BronyCenter\Model\User')->find($key->getUser()->getId());
+        $user->setEmail($array['email']);
+        $user->setRegistrationIp($array['ip_address']);
+        $user->setRegistrationDatetime($currentDatetime);
+        $user->setAccountType(1);
+        $user->setAccountStanding(1);
+
+        $key->setUser($user);
 
         $this->entityManager->persist($key);
         $this->entityManager->flush();
