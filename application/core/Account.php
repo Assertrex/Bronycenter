@@ -105,4 +105,59 @@ class Account
 
         return true;
     }
+
+    public function loginUser($request, array $postValues)
+    {
+        $userRepository = new UserRepository($this->container[EntityManager::class]);
+        $user = $userRepository->findByUsername($postValues['username']);
+
+        // Check if selected user have not been found
+        if (is_null($user)) {
+            // Check if selected e-mail address has been found as not verified
+            if (filter_var($postValues['username'], FILTER_VALIDATE_EMAIL)) {
+                $emailKeyRepository = new EmailKeyRepository($this->container[EntityManager::class]);
+                $emailKeys = $emailKeyRepository->findByEmail($postValues['username']);
+
+                // Check if any of last created unverified accounts matches selected password
+                if (count($emailKeys) > 0) {
+                    foreach ($emailKeys as $emailKey) {
+                        $user = $this->container[EntityManager::class]->getRepository('BronyCenter\Model\User')->find($emailKey->getUser()->getId());
+                        $emailKey->setUser($user);
+
+                        // Allow user to re-send verification link
+                        if (password_verify($postValues['password'], $emailKey->getUser()->getPassword())) {
+                            (new Flash($this->container['flash']))->error(
+                                'E-mail address for this account has not been verified.<br />' .
+                                'Click a verification link sent on <b>' . $emailKey->getEmail() . '</b> or ' .
+                                '<b><a href="' . $this->container['router']->pathFor('authResend') . '">click here</a></b> to re-send it.'
+                            );
+
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            // Protect against timing attacks by hashing a random string
+            password_hash(rand(), PASSWORD_ARGON2I, [
+                'memory_cost' => 8192,
+                'time_cost' => 36,
+                'threads' => 2
+            ]);
+
+            // Return an error about wrong username or password
+            (new Flash($this->container['flash']))->error('Wrong username/e-mail address or password.');
+            return false;
+        }
+
+        // Check if password for found user is correct
+        if (!password_verify($postValues['password'], $user->getPassword())) {
+            (new Flash($this->container['flash']))->error('Wrong username/e-mail address or password.');
+            return false;
+        }
+
+        // TODO: Create a user session
+
+        return true;
+    }
 }

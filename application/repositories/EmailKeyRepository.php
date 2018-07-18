@@ -39,4 +39,15 @@ class EmailKeyRepository
 
         return boolval($keyFound);
     }
+
+    public function findByEmail(string $email) : array
+    {
+        $email = $this->entityManager->getRepository('BronyCenter\Model\EmailKey')->findBy(
+            ['email' => $email],
+            ['id' => 'DESC'],
+            2
+        );
+
+        return $email;
+    }
 }

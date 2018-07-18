@@ -17,6 +17,24 @@ class AuthController extends ControllerBase
         ]);
     }
 
+    public function loginProcessAction($request, $response, $arguments)
+    {
+        $postValues = $request->getParsedBody();
+        $postValues['login_ip'] = $request->getAttribute('ip_address');
+
+        // Find user and create a session
+        if (!(new Account($this->container))->loginUser($request, $postValues)) {
+            return $response->withRedirect(
+                $this->router->pathFor('authIndex')
+            );
+        }
+
+        // Redirect into social page
+        return $response->withRedirect(
+            $this->router->pathFor('socialIndex')
+        );
+    }
+
     public function registerProcessAction($request, $response, $arguments)
     {
         $postValues = $request->getParsedBody();

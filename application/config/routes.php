@@ -13,6 +13,12 @@ $application->group('', function() {
         $this->get('/verify', BronyCenter\Controller\AuthController::class . ':verifyAction')
             ->setName('authVerify');
 
+        $this->get('/resend', BronyCenter\Controller\AuthController::class . ':resendAction')
+            ->setName('authResend');
+
+        $this->post('/login', BronyCenter\Controller\AuthController::class . ':loginProcessAction')
+            ->setName('authLogin');
+
         $this->post('/register', BronyCenter\Controller\AuthController::class . ':registerProcessAction')
             ->setName('authRegister');
     });

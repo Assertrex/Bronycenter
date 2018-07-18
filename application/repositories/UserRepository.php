@@ -15,7 +15,7 @@ class UserRepository
         $this->entityManager = $entityManager;
     }
 
-    public function createUser(array $array): User
+    public function createUser(array $array) : User
     {
         $array['password'] = password_hash($array['password'], PASSWORD_ARGON2I, [
             'memory_cost' => 8192,
@@ -42,5 +42,20 @@ class UserRepository
         $this->entityManager->flush();
 
         return $user;
+    }
+
+    public function findByUsername(string $username) : ?User
+    {
+        if (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
+            $user = $this->entityManager->getRepository('BronyCenter\Model\User')->findBy(['username' => $username]);
+        } else {
+            $user = $this->entityManager->getRepository('BronyCenter\Model\User')->findBy(['email' => $username]);
+        }
+
+        if (count($user) > 0) {
+            return $user[0];
+        } else {
+            return null;
+        }
     }
 }

@@ -11,7 +11,7 @@
             <div class="col-12 col-lg mb-4 mb-lg-0">
                 <h2 class="text-center mb-4">Sign in using your account</h2>
 
-                <form method="post">
+                <form method="post" action="{{ service.router.pathFor('authLogin') }}">
                     <div class="form-group">
                         <label for="login-field-username">Username or e-mail address</label>
                         <input type="text" name="username" class="form-control" id="login-field-username"
